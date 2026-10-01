@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maharashtra Election Voter List – PUNE Division</title>
+  <meta name="description" content="Maharashtra State Legislative Council Electoral Roll 2026 – PUNE Division Teachers' Constituency. Search and filter electors by name, age, address, part number." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #ffffff;
+      --bg2:         #ffffff;
+      --bg3:         #f8fafc;
+      --border:      #e2e8f0;
+      --border2:     #cbd5e1;
+      --accent:      #2563eb;
+      --accent-lt:   #eff6ff;
+      --accent2:     #7c3aed;
+      --accent2-lt:  #f5f3ff;
+      --green:       #059669;
+      --green-lt:    #ecfdf5;
+      --orange:      #d97706;
+      --orange-lt:   #fffbeb;
+      --red:         #dc2626;
+      --red-lt:      #fef2f2;
+      --text:        #0f172a;
+      --text2:       #334155;
+      --text3:       #64748b;
+      --text4:       #94a3b8;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow:      0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-lg:   0 20px 40px rgba(0,0,0,0.1);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --radius-xs:   6px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-inner {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; gap: 1rem;
+      height: 64px;
+    }
+    .logo {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    .header-text h1 {
+      font-size: 0.95rem; font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .header-text p { font-size: 0.7rem; color: var(--text3); margin-top: 1px; }
+    .header-actions { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .live-pill {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: var(--green-lt);
+      border: 1px solid rgba(5,150,105,0.2);
+      color: var(--green);
+      padding: 0.3rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.7rem; font-weight: 600;
+    }
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
+
+    /* ── Hero strip ──────────────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      padding: 2.5rem 2rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-inner {
+      max-width: 1400px; margin: 0 auto;
+      position: relative;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; font-size: 0.72rem; font-weight: 600;
+      padding: 0.3rem 0.85rem; border-radius: 20px;
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .hero h2 {
+      font-size: 1.9rem; font-weight: 800;
+      color: #fff; letter-spacing: -0.02em;
+      line-height: 1.2; margin-bottom: 0.5rem;
+    }
+    .hero p { color: rgba(255,255,255,0.75); font-size: 0.875rem; }
+
+    /* ── Stats cards (overlap hero) ──────────────────────────────────── */
+    .stats-wrap {
+      max-width: 1400px; margin: -1.5rem auto 0;
+      padding: 0 2rem;
+      position: relative; z-index: 10;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    @media(max-width:900px){ .stats-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:500px){ .stats-grid { grid-template-columns: 1fr; } }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      box-shadow: var(--shadow);
+      display: flex; align-items: flex-start; gap: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .stat-icon.blue   { background: var(--accent-lt);  }
+    .stat-icon.purple { background: var(--accent2-lt); }
+    .stat-icon.green  { background: var(--green-lt);   }
+    .stat-icon.orange { background: var(--orange-lt);  }
+    .stat-body { flex: 1; min-width: 0; }
+    .stat-label { font-size: 0.68rem; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-value { font-size: 1.65rem; font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1.1; margin-top: 0.2rem; }
+    .stat-value.blue   { color: var(--accent);  }
+    .stat-value.purple { color: var(--accent2); }
+    .stat-value.green  { color: var(--green);   }
+    .stat-value.orange { color: var(--orange);  }
+
+    /* ── Main ────────────────────────────────────────────────────────── */
+    main {
+      max-width: 1400px; margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── Filter card ─────────────────────────────────────────────────── */
+    .filter-card {
+      background: var(--bg2);
+      padding: 1.5rem 0;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .filter-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .filter-title {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .filter-title span { font-size: 1rem; }
+    .btn-reset {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: var(--red-lt);
+      border: 1px solid rgba(220,38,38,0.15);
+      color: var(--red);
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.75rem; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-reset:hover { background: #fee2e2; border-color: rgba(220,38,38,0.3); }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      gap: 0.875rem;
+    }
+    @media(max-width:900px){ .filter-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:500px){ .filter-grid { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .field label {
+      font-size: 0.7rem; font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .field input, .field select {
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 0.6rem 0.875rem;
+      font-size: 0.855rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      width: 100%;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    .field input::placeholder { color: var(--text4); }
+
+    /* search icon wrapper */
+    .search-wrap { position: relative; }
+    .search-wrap input { padding-left: 2.4rem; }
+    .search-icon {
+      position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+      color: var(--text4); font-size: 0.9rem; pointer-events: none;
+    }
+
+    /* ── Table card ──────────────────────────────────────────────────── */
+    .table-card {
+      background: var(--bg2);
+      overflow: hidden;
+    }
+    .table-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .table-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .result-badge {
+      background: var(--accent-lt);
+      border: 1px solid rgba(37,99,235,0.15);
+      color: var(--accent);
+      padding: 0.3rem 0.875rem;
+      border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+
+    /* ── Loading / Empty ─────────────────────────────────────────────── */
+    .state-box {
+      padding: 5rem 2rem; text-align: center;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .state-msg { color: var(--text3); font-size: 0.875rem; }
+
+    /* ── Part header ─────────────────────────────────────────────────── */
+    .part-group {}
+    .part-header {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 64px; z-index: 5;
+    }
+    .part-badge {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      padding: 0.22rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.06em;
+      box-shadow: 0 2px 6px rgba(37,99,235,0.25);
+    }
+    .part-label { font-size: 0.75rem; color: var(--text2); font-weight: 500; }
+    .part-count {
+      margin-left: auto;
+      background: var(--accent-lt);
+      color: var(--accent);
+      font-size: 0.68rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 4px;
+    }
+
+    /* ── Data table ──────────────────────────────────────────────────── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead { position: sticky; top: 101px; z-index: 4; }
+    .data-table th {
+      background: var(--bg3);
+      padding: 0.65rem 0.5rem;
+      text-align: left;
+      font-size: 0.67rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text3);
+      border-bottom: 1.5px solid var(--border);
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 0.7rem 0.5rem;
+      font-size: 0.82rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+      transition: background 0.12s;
+    }
+    .data-table tr:hover td { background: #f8faff; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    .col-sr {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--text4);
+      min-width: 40px;
+    }
+    .col-name { font-weight: 600; color: var(--text); min-width: 160px; }
+    .col-rel  { color: var(--text3); min-width: 130px; font-size: 0.8rem; }
+    .col-addr { color: var(--text3); font-size: 0.78rem; max-width: 220px; line-height: 1.4; }
+    .col-inst { color: var(--text3); font-size: 0.78rem; max-width: 180px; line-height: 1.4; }
+    .col-age  {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600; color: var(--orange);
+      text-align: center; min-width: 40px;
+    }
+    .gender-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 26px; height: 26px; border-radius: 50%;
+      font-size: 0.65rem; font-weight: 700;
+    }
+    .gender-F { background: #fce7f3; color: #be185d; }
+    .gender-M { background: var(--accent-lt); color: var(--accent); }
+    .col-epic {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem; color: var(--text4);
+    }
+    mark.hl {
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 3px;
+      padding: 0 2px;
+      font-weight: 600;
+    }
+
+    /* ── Pagination ──────────────────────────────────────────────────── */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 0;
+      border-top: 1px solid var(--border);
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .page-info { font-size: 0.78rem; color: var(--text3); }
+    .page-info strong { color: var(--text); font-weight: 700; }
+    .page-btns { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .page-btn {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      color: var(--text2);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.8rem; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      min-width: 36px;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: var(--accent-lt);
+      border-color: rgba(37,99,235,0.25);
+      color: var(--accent);
+    }
+    .page-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    }
+    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Footer ──────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text4);
+      font-size: 0.72rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Scroll to top ────────────────────────────────────────────────── */
+    #scrollTop {
+      position: fixed; bottom: 2rem; right: 2rem;
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border: none; border-radius: 50%;
+      color: #fff; font-size: 1rem; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 200;
+    }
+    #scrollTop:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+    #scrollTop.show { display: flex; }
+
+    /* ── Mobile Responsiveness ────────────────────────────────────────── */
+    .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 1rem; }
+    
+    @media (max-width: 768px) {
+      .header-inner { padding: 0 1rem; gap: 0.5rem; }
+      .header-text h1 { font-size: 0.85rem; }
+      .header-text p { display: none; }
+      .hero { padding: 1.5rem 1rem 2.5rem; }
+      .hero h2 { font-size: 1.4rem; }
+      .stats-wrap { padding: 0 1rem; margin-top: -1rem; }
+      .stat-card { padding: 1rem; }
+      .stat-value { font-size: 1.4rem; }
+      main { padding: 1rem; }
+      .filter-card { padding: 1rem 0; }
+      .part-header { flex-wrap: wrap; gap: 0.5rem; }
+      .part-count { margin-left: 0; width: 100%; }
+      .pagination { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .page-btns { justify-content: center; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">🗳️</div>
+    <div class="header-text">
+      <h1>Maharashtra Election Roll 2026</h1>
+      <p>PUNE Division – Teachers' Constituency &nbsp;|&nbsp; Final Voter List</p>
+    </div>
+    <div class="header-actions">
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        Live Data
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Hero ───────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">📋 Electoral Roll</div>
+    <h2>PUNE Division Voter Directory</h2>
+    <p>Maharashtra State Legislative Council · Teachers' Constituency · Published 12-01-2026</p>
+  </div>
+</div>
+
+<!-- ── Stats ──────────────────────────────────────────────────────────── -->
+<div class="stats-wrap">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">👥</div>
+      <div class="stat-body">
+        <div class="stat-label">Total Electors</div>
+        <div class="stat-value blue" id="statTotal">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">📂</div>
+      <div class="stat-body">
+        <div class="stat-label">Total Parts</div>
+        <div class="stat-value purple" id="statParts">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">🔎</div>
+      <div class="stat-body">
+        <div class="stat-label">Filtered Results</div>
+        <div class="stat-value orange" id="statFiltered">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">📄</div>
+      <div class="stat-body">
+        <div class="stat-label">Current Page</div>
+        <div class="stat-value green" id="statPage">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main ───────────────────────────────────────────────────────────── -->
+<main>
+
+  <!-- Filter card -->
+  <div class="filter-card">
+    <div class="filter-head">
+      <div class="filter-title"><span>🔍</span> Search &amp; Filter Electors</div>
+      <button class="btn-reset" id="btnReset" onclick="resetFilters()">✕ Reset All</button>
+    </div>
+    <div class="filter-grid">
+      <div class="field">
+        <label for="f-name">Elector Name</label>
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input type="text" id="f-name" placeholder="Search by elector name…" autocomplete="off" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-part">Part No</label>
+        <select id="f-part">
+          <option value="">All Parts</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-age">Age</label>
+        <input type="number" id="f-age" placeholder="e.g. 35" min="18" max="120" />
+      </div>
+      <div class="field">
+        <label for="f-gender">Gender</label>
+        <select id="f-gender">
+          <option value="">All</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-address">Address</label>
+        <input type="text" id="f-address" placeholder="Village / Area…" autocomplete="off" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Table card -->
+  <div class="table-card">
+    <div class="table-topbar">
+      <span class="table-title">Elector Records</span>
+      <span class="result-badge" id="resultBadge">Loading…</span>
+    </div>
+
+    <div id="tableBody">
+      <div class="state-box">
+        <div class="spinner"></div>
+        <div class="state-msg">Fetching elector data…</div>
+      </div>
+    </div>
+
+    <div class="pagination" id="paginationBar" style="display:none"></div>
+  </div>
+</main>
+
+<footer>
+  Maharashtra State Legislative Council Electoral Roll 2026 &bull; PUNE Division Teachers' Constituency &bull; Data as published on 12-01-2026
+</footer>
+
+<button id="scrollTop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ── JS ─────────────────────────────────────────────────────────────── -->
+<script>
+  const state = {
+    page: 1, limit: 500,
+    name: '', age: '', address: '', part_no: '', gender: '',
+    totalAll: 0, parts: []
+  };
+  let debTimer = null;
+
+  function debounce(fn, ms = 320) {
+    clearTimeout(debTimer);
+    debTimer = setTimeout(fn, ms);
+  }
+
+  async function fetchData() {
+    const params = new URLSearchParams({
+      page: state.page, limit: state.limit,
+      name: state.name, age: state.age,
+      address: state.address, part_no: state.part_no, gender: state.gender,
+    });
+    showLoading();
+    try {
+      const r = await fetch(`api.php?${params}`);
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error || 'API error');
+      render(j);
+    } catch(e) { showError(e.message); }
+  }
+
+  function render(j) {
+    if (!state.totalAll) state.totalAll = j.total;
+    if (j.parts?.length && !state.parts.length) populateParts(j.parts);
+
+    document.getElementById('statTotal').textContent    = (state.totalAll || j.total).toLocaleString('en-IN');
+    document.getElementById('statParts').textContent    = state.parts.length || j.parts?.length || '—';
+    document.getElementById('statFiltered').textContent = j.total.toLocaleString('en-IN');
+    document.getElementById('statPage').textContent     = `${j.page} / ${j.total_pages}`;
+    document.getElementById('resultBadge').innerHTML    =
+      `Showing <strong>${j.data.length}</strong> of <strong>${j.total.toLocaleString('en-IN')}</strong> electors`;
+
+    if (!j.data.length) { showEmpty(); return; }
+
+    // Group by part
+    const groups = {};
+    for (const r of j.data) { if(!groups[r.part_no]) groups[r.part_no]=[]; groups[r.part_no].push(r); }
+
+    let html = '';
+    for (const [part, rows] of Object.entries(groups)) {
+      html += `
+        <div class="part-group">
+          <div class="part-header">
+            <span class="part-badge">PART ${part}</span>
+            <span class="part-label">Electoral Part ${part}</span>
+            <span class="part-count">${rows.length} electors</span>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead><tr>
+                <th>Sr No</th><th>Elector Name</th><th>Relative Name</th>
+                <th>Address</th><th>Institute</th><th>Age</th><th>Gender</th><th>EPIC No</th>
+              </tr></thead>
+              <tbody>`;
+      for (const r of rows) {
+        html += `<tr>
+          <td class="col-sr">${r.sr_no}</td>
+          <td class="col-name">${hl(r.elector_name, state.name)}</td>
+          <td class="col-rel">${esc(r.relative_name)}</td>
+          <td class="col-addr">${hl(r.address, state.address)}</td>
+          <td class="col-inst">${esc(r.institute)}</td>
+          <td class="col-age">${r.age || '—'}</td>
+          <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
+          <td class="col-epic">${r.epic_no || '—'}</td>
+        </tr>`;
+      }
+      html += '</tbody></table></div></div>';
+    }
+    document.getElementById('tableBody').innerHTML = html;
+    renderPagination(j);
+  }
+
+  function hl(text, q) {
+    if (!q || !text) return esc(text);
+    const s = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return esc(text).replace(new RegExp(`(${s})`, 'gi'), '<mark class="hl">$1</mark>');
+  }
+  function esc(s) {
+    return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderPagination(j) {
+    const bar = document.getElementById('paginationBar');
+    if (j.total_pages <= 1) { bar.style.display='none'; return; }
+    bar.style.display = 'flex';
+    const p=j.page, tp=j.total_pages;
+    const s=Math.max(1,p-2), e=Math.min(tp,p+2);
+    let h = `<span class="page-info">Page <strong>${p}</strong> of <strong>${tp}</strong> &bull; <strong>${j.total.toLocaleString('en-IN')}</strong> records</span><div class="page-btns">`;
+    h += `<button class="page-btn" onclick="goPage(1)" ${p===1?'disabled':''}>«</button>`;
+    h += `<button class="page-btn" onclick="goPage(${p-1})" ${p===1?'disabled':''}>‹</button>`;
+    for(let i=s;i<=e;i++) h+=`<button class="page-btn ${i===p?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    h += `<button class="page-btn" onclick="goPage(${p+1})" ${p===tp?'disabled':''}>›</button>`;
+    h += `<button class="page-btn" onclick="goPage(${tp})" ${p===tp?'disabled':''}>»</button></div>`;
+    bar.innerHTML = h;
+  }
+
+  function goPage(n) { state.page=n; fetchData(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  function populateParts(parts) {
+    if (state.parts.length) return;
+    state.parts = parts;
+    const sel = document.getElementById('f-part');
+    parts.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=`Part ${p}`; sel.appendChild(o); });
+  }
+
+  function showLoading() {
+    document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="spinner"></div><div class="state-msg">Loading…</div></div>`;
+    document.getElementById('paginationBar').style.display='none';
+  }
+  function showEmpty() {
+    document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">🔎</div><div class="state-msg">No electors found for the current filters.</div></div>`;
+    document.getElementById('paginationBar').style.display='none';
+  }
+  function showError(msg) {
+    document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg" style="color:var(--red)">Error: ${esc(msg)}</div></div>`;
+  }
+  function resetFilters() {
+    ['f-name','f-age','f-address'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-part').value='';
+    document.getElementById('f-gender').value='';
+    Object.assign(state,{name:'',age:'',address:'',part_no:'',gender:'',page:1});
+    fetchData();
+  }
+
+  document.getElementById('f-name').addEventListener('input', e=>{ state.name=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-age').addEventListener('input', e=>{ state.age=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-address').addEventListener('input', e=>{ state.address=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-part').addEventListener('change', e=>{ state.part_no=e.target.value; state.page=1; fetchData(); });
+  document.getElementById('f-gender').addEventListener('change', e=>{ state.gender=e.target.value; state.page=1; fetchData(); });
+  window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
+
+  fetchData();
+</script>
+</body>
+</html>
