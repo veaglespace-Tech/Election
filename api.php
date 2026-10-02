@@ -11,40 +11,43 @@ header('Access-Control-Allow-Origin: *');
 // ── DB Config ─────────────────────────────────────────────────────────────
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'election_db');
-define('DB_USER', 'root');
-define('DB_PASS', 'Abhi@123');
+define('DB_USER', 'election_app');
+define('DB_PASS', 'Veagle@12345');
 define('DB_PORT', 3306);
 
-function getDB(): PDO {
+function getDB(): PDO
+{
     static $pdo = null;
-    if ($pdo) return $pdo;
+    if ($pdo)
+        return $pdo;
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4;port=' . DB_PORT;
     $pdo = new PDO($dsn, DB_USER, DB_PASS, [
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
     return $pdo;
 }
 
 // ── Input sanitization ────────────────────────────────────────────────────
-function inp(string $key, $default = '') {
+function inp(string $key, $default = '')
+{
     return isset($_GET[$key]) ? trim($_GET[$key]) : $default;
 }
 
 // ── Params ────────────────────────────────────────────────────────────────
-$page     = max(1, (int) inp('page', 1));
-$limit    = min(500, max(10, (int) inp('limit', 500)));
-$offset   = ($page - 1) * $limit;
+$page = max(1, (int) inp('page', 1));
+$limit = min(500, max(10, (int) inp('limit', 500)));
+$offset = ($page - 1) * $limit;
 
 $search = inp('search');
 
 // ── Build WHERE ───────────────────────────────────────────────────────────
-$where  = [];
+$where = [];
 $params = [];
 
 if ($search !== '') {
-    $where[]  = '(elector_name LIKE :search OR address LIKE :search2 OR institute LIKE :search3)';
-    $params[':search']  = "%$search%";
+    $where[] = '(elector_name LIKE :search OR address LIKE :search2 OR institute LIKE :search3)';
+    $params[':search'] = "%$search%";
     $params[':search2'] = "%$search%";
     $params[':search3'] = "%$search%";
 }
@@ -68,8 +71,9 @@ try {
          ORDER BY part_no ASC, sr_no ASC
          LIMIT :limit OFFSET :offset"
     );
-    foreach ($params as $k => $v) $dataStmt->bindValue($k, $v);
-    $dataStmt->bindValue(':limit',  $limit,  PDO::PARAM_INT);
+    foreach ($params as $k => $v)
+        $dataStmt->bindValue($k, $v);
+    $dataStmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $dataStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $dataStmt->execute();
     $rows = $dataStmt->fetchAll();
@@ -79,13 +83,13 @@ try {
     $parts = $partsStmt->fetchAll(PDO::FETCH_COLUMN);
 
     echo json_encode([
-        'success'      => true,
-        'total'        => $total,
-        'page'         => $page,
-        'limit'        => $limit,
-        'total_pages'  => (int) ceil($total / $limit),
-        'parts'        => $parts,
-        'data'         => $rows,
+        'success' => true,
+        'total' => $total,
+        'page' => $page,
+        'limit' => $limit,
+        'total_pages' => (int) ceil($total / $limit),
+        'parts' => $parts,
+        'data' => $rows,
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 } catch (PDOException $e) {
