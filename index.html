@@ -186,7 +186,7 @@
 
     .filter-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 0.875rem;
     }
     @media(max-width:900px){ .filter-grid { grid-template-columns: 1fr 1fr; } }
@@ -554,6 +554,10 @@
         <label for="f-institute">Institute</label>
         <input type="text" id="f-institute" placeholder="Search by institute…" autocomplete="off" />
       </div>
+      <div class="field">
+        <label for="f-part">Part No</label>
+        <input type="text" id="f-part" placeholder="Search by part…" autocomplete="off" />
+      </div>
     </div>
   </div>
 
@@ -585,7 +589,7 @@
 <script>
   const state = {
     page: 1, limit: 500,
-    name: '', address: '', institute: '',
+    name: '', address: '', institute: '', part_no: '',
     totalAll: 0, parts: []
   };
   let debTimer = null;
@@ -598,7 +602,7 @@
   async function fetchData() {
     const params = new URLSearchParams({
       page: state.page, limit: state.limit,
-      name: state.name, address: state.address, institute: state.institute
+      name: state.name, address: state.address, institute: state.institute, part_no: state.part_no
     });
     showLoading();
     try {
@@ -716,8 +720,8 @@
     document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg" style="color:var(--red)">Error: ${esc(msg)}</div></div>`;
   }
   function resetFilters() {
-    ['f-name', 'f-address', 'f-institute'].forEach(id => document.getElementById(id).value = '');
-    Object.assign(state, { name: '', address: '', institute: '', page: 1 });
+    ['f-name', 'f-address', 'f-institute', 'f-part'].forEach(id => document.getElementById(id).value = '');
+    Object.assign(state, { name: '', address: '', institute: '', part_no: '', page: 1 });
     fetchData();
   }
 
@@ -725,6 +729,7 @@
   document.getElementById('f-name').addEventListener('input', e=>{ state.name=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-address').addEventListener('input', e=>{ state.address=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-institute').addEventListener('input', e=>{ state.institute=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-part').addEventListener('input', e=>{ state.part_no=e.target.value; state.page=1; debounce(fetchData); });
   window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
 
   fetchData();

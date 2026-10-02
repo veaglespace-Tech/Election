@@ -43,6 +43,7 @@ $offset = ($page - 1) * $limit;
 $name = inp('name');
 $address = inp('address');
 $institute = inp('institute');
+$part_no = inp('part_no');
 
 // ── Build WHERE ───────────────────────────────────────────────────────────
 $where = [];
@@ -60,6 +61,10 @@ if ($address !== '') {
 if ($institute !== '') {
     $where[] = 'institute LIKE :inst';
     $params[':inst'] = "%$institute%";
+}
+if ($part_no !== '') {
+    $where[] = 'part_no = :part_no';
+    $params[':part_no'] = $part_no;
 }
 
 $whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
