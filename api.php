@@ -39,7 +39,7 @@ $page = max(1, (int) inp('page', 1));
 $limit = min(500, max(10, (int) inp('limit', 500)));
 $offset = ($page - 1) * $limit;
 
-$search = inp('search');
+
 $name = inp('name');
 $address = inp('address');
 $institute = inp('institute');
@@ -48,12 +48,7 @@ $institute = inp('institute');
 $where = [];
 $params = [];
 
-if ($search !== '') {
-    $where[] = '(elector_name LIKE :search OR address LIKE :search2 OR institute LIKE :search3)';
-    $params[':search'] = "%$search%";
-    $params[':search2'] = "%$search%";
-    $params[':search3'] = "%$search%";
-}
+
 if ($name !== '') {
     $where[] = 'elector_name LIKE :name';
     $params[':name'] = "%$name%";
