@@ -411,7 +411,7 @@
 
     /* ── Mobile Responsiveness ────────────────────────────────────────── */
     .table-responsive { width: 100%; margin-bottom: 1rem; }
-    
+
     @media (max-width: 900px) {
       .campaign-text h1 { font-size: 2.2rem; }
       .campaign-text h2 { font-size: 1.4rem; }
@@ -420,16 +420,16 @@
     }
     @media (max-width: 768px) {
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .campaign-inner { 
-        display: grid; 
-        grid-template-columns: 1fr 1fr; 
-        gap: 1rem; 
+      .campaign-inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
         padding: 0 1rem;
       }
-      .campaign-text { 
-        grid-column: 1 / -1; 
-        order: 3; 
-        margin-top: 0.5rem; 
+      .campaign-text {
+        grid-column: 1 / -1;
+        order: 3;
+        margin-top: 0.5rem;
       }
       .campaign-img { width: 120px; height: 120px; margin: 0 auto; }
       .campaign-img.left-img { order: 1; }
@@ -448,7 +448,7 @@
       .page-btns { justify-content: center; width: 100%; }
       footer { padding: 1.5rem 1rem; font-size: 0.65rem; }
     }
-    
+
     @media (max-width: 400px) {
       .stat-card { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; }
       .stat-icon { margin-bottom: 0.2rem; }
@@ -484,7 +484,7 @@
       <img src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
     </div>
     <div class="campaign-text">
-      <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२४</h2>
+      <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
       <h1>मा. श्री. सुनीलभाऊ जगताप</h1>
       <h3>पसंती क्र. १</h3>
       <div style="margin-top: 1rem;">
@@ -556,9 +556,7 @@
       </div>
       <div class="field">
         <label for="f-part">Part No</label>
-        <select id="f-part">
-          <option value="">All Parts</option>
-        </select>
+        <input type="text" id="f-part" placeholder="Search by part…" autocomplete="off" />
       </div>
     </div>
   </div>
@@ -617,16 +615,6 @@
 
   function render(j) {
     if (!state.totalAll) state.totalAll = j.total;
-
-    const partSelect = document.getElementById('f-part');
-    if (j.parts && partSelect.options.length <= 1) {
-      j.parts.forEach(p => {
-        const opt = document.createElement('option');
-        opt.value = p;
-        opt.textContent = `Part ${p}`;
-        partSelect.appendChild(opt);
-      });
-    }
 
     document.getElementById('statTotal').textContent    = (state.totalAll || j.total).toLocaleString('en-IN');
     document.getElementById('statParts').textContent    = state.parts.length || j.parts?.length || '—';
@@ -741,7 +729,7 @@
   document.getElementById('f-name').addEventListener('input', e=>{ state.name=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-address').addEventListener('input', e=>{ state.address=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-institute').addEventListener('input', e=>{ state.institute=e.target.value; state.page=1; debounce(fetchData); });
-  document.getElementById('f-part').addEventListener('change', e=>{ state.part_no=e.target.value; state.page=1; fetchData(); });
+  document.getElementById('f-part').addEventListener('input', e=>{ state.part_no=e.target.value; state.page=1; debounce(fetchData); });
   window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
 
   fetchData();
