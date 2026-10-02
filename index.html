@@ -457,6 +457,23 @@
       .stat-icon { margin-bottom: 0.2rem; }
       .hero h2 { font-size: 1.2rem; }
     }
+
+    /* ── Print Styles ─────────────────────────────────────────────────── */
+    @media print {
+      body { background: #fff; color: #000; }
+      header, .hero, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
+      main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+      .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; }
+      .table-responsive { overflow: visible !important; margin: 0 !important; }
+      .data-table { border: 1px solid #ddd; }
+      .data-table th, .data-table td { padding: 0.4rem !important; border-bottom: 1px solid #ddd !important; font-size: 10pt !important; color: #000 !important; white-space: normal !important; }
+      .data-table th { background: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .data-table thead { position: table-header-group !important; top: auto !important; }
+      .part-header { position: static !important; padding: 0.5rem 0 !important; border-bottom: 2px solid #000 !important; margin-top: 1rem !important; }
+      .part-badge { border: 1px solid #000; color: #000; background: transparent !important; }
+      .gender-badge { border: 1px solid #000; background: transparent !important; color: #000 !important; }
+      mark.hl { background: transparent !important; color: inherit !important; font-weight: inherit !important; }
+    }
   </style>
 </head>
 <body>
@@ -663,7 +680,9 @@
       }
       html += '</tbody></table></div></div>';
     }
-    document.getElementById('tableBody').innerHTML = html;
+    const tb = document.getElementById('tableBody');
+    tb.innerHTML = html;
+    if (typeof resetTableStyle === 'function') resetTableStyle();
     renderPagination(j);
   }
 
@@ -701,14 +720,31 @@
   }
 
   function showLoading() {
-    document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="spinner"></div><div class="state-msg">Loading…</div></div>`;
-    document.getElementById('paginationBar').style.display='none';
+    const tb = document.getElementById('tableBody');
+    if (!tb.querySelector('table')) {
+      tb.innerHTML=`<div class="state-box"><div class="spinner"></div><div class="state-msg">Loading…</div></div>`;
+      document.getElementById('paginationBar').style.display='none';
+    } else {
+      tb.style.opacity = '0.4';
+      tb.style.pointerEvents = 'none';
+      tb.style.transition = 'opacity 0.2s';
+      document.getElementById('resultBadge').innerHTML = 'Loading...';
+    }
+  }
+  function resetTableStyle() {
+    const tb = document.getElementById('tableBody');
+    if(tb) {
+      tb.style.opacity = '1';
+      tb.style.pointerEvents = 'auto';
+    }
   }
   function showEmpty() {
+    resetTableStyle();
     document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">🔎</div><div class="state-msg">No electors found for the current filters.</div></div>`;
     document.getElementById('paginationBar').style.display='none';
   }
   function showError(msg) {
+    resetTableStyle();
     document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg" style="color:var(--red)">Error: ${esc(msg)}</div></div>`;
   }
   function resetFilters() {
