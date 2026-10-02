@@ -87,7 +87,7 @@
     }
     .campaign-text h1 {
       font-size: 2.8rem; font-weight: 900; color: #ffffff;
-      margin-bottom: 0.4rem; line-height: 1.1; 
+      margin-bottom: 0.4rem; line-height: 1.1;
       text-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     .campaign-text h3 {
@@ -419,19 +419,18 @@
     @media (max-width: 768px) {
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .campaign-inner {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 1rem;
         padding: 0 1rem;
       }
       .campaign-text {
-        grid-column: 1 / -1;
-        order: 3;
+        order: 2;
         margin-top: 0.5rem;
       }
       .campaign-img { width: 150px; height: 150px; margin: 0 auto; }
       .campaign-img.left-img { order: 1; }
-      .campaign-img.right-img { order: 2; }
+      .campaign-img.right-img { order: 3; }
       .campaign-text h1 { font-size: 1.8rem; }
       .campaign-text h2 { font-size: 1.1rem; }
       .campaign-text h3 { font-size: 1.5rem; }
@@ -485,7 +484,6 @@
       <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
       <h1>मा. श्री. सुनीलभाऊ जगताप</h1>
       <h3>पसंती क्र. १</h3>
-
     </div>
     <div class="campaign-img right-img">
       <img src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
