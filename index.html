@@ -612,7 +612,6 @@
 
   function render(j) {
     if (!state.totalAll) state.totalAll = j.total;
-    if (j.parts?.length && !state.parts.length) populateParts(j.parts);
 
     document.getElementById('statTotal').textContent    = (state.totalAll || j.total).toLocaleString('en-IN');
     document.getElementById('statParts').textContent    = state.parts.length || j.parts?.length || '—';
@@ -688,13 +687,6 @@
   }
 
   function goPage(n) { state.page=n; fetchData(); window.scrollTo({top:0,behavior:'smooth'}); }
-
-  function populateParts(parts) {
-    if (state.parts.length) return;
-    state.parts = parts;
-    const sel = document.getElementById('f-part');
-    parts.forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=`Part ${p}`; sel.appendChild(o); });
-  }
 
   function showLoading() {
     const tb = document.getElementById('tableBody');
