@@ -11,8 +11,8 @@ header('Access-Control-Allow-Origin: *');
 // ── DB Config ─────────────────────────────────────────────────────────────
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'election_db');
-define('DB_USER', 'election_app');
-define('DB_PASS', 'Veagle@12345');
+define('DB_USER', 'root');
+define('DB_PASS', 'Abhi@123');
 define('DB_PORT', 3306);
 
 function getDB(): PDO {
