@@ -1,9 +1,10 @@
-const CACHE_NAME = 'election-app-v2';
+const CACHE_NAME = 'election-app-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
-  './icon.svg'
+  './icon.png',
+  './icon1.png'
 ];
 
 // Install Event
