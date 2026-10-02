@@ -53,13 +53,12 @@
 
     /* ── Campaign Header ────────────────────────────────────────────── */
     .campaign-header {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-      border-bottom: 4px solid #fff;
+      background: var(--bg);
+      border-bottom: 4px solid var(--accent2);
       position: relative;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
       padding: 1.8rem 0;
       z-index: 100;
-      color: #fff;
     }
     .campaign-inner {
       max-width: 1400px; margin: 0 auto;
@@ -70,8 +69,6 @@
     .campaign-img {
       width: 260px; height: 260px;
       flex-shrink: 0;
-      border-radius: 50%;
-      overflow: hidden;
       display: flex; align-items: center; justify-content: center;
     }
     .campaign-img img {
@@ -81,19 +78,16 @@
       text-align: center; flex: 1;
     }
     .campaign-text h2 {
-      font-size: 1.7rem; font-weight: 800; color: #ffffff;
+      font-size: 1.7rem; font-weight: 800; color: var(--accent);
       margin-bottom: 0.4rem; letter-spacing: 0.02em;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     .campaign-text h1 {
-      font-size: 2.8rem; font-weight: 900; color: #ffffff;
-      margin-bottom: 0.4rem; line-height: 1.1; 
-      text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      font-size: 2.8rem; font-weight: 900; color: var(--orange);
+      margin-bottom: 0.4rem; line-height: 1.1; text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
     }
     .campaign-text h3 {
-      font-size: 2.4rem; font-weight: 800; color: #ffeb3b;
+      font-size: 2.4rem; font-weight: 800; color: var(--accent2);
       margin-bottom: 1rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
     .live-pill {
       display: inline-flex; align-items: center; gap: 0.4rem;
@@ -495,7 +489,7 @@
       <h3>पसंती क्र. १</h3>
       <div style="margin-top: 1rem;">
         <span class="live-pill"><span class="live-dot"></span> Live Data</span>
-        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.9); font-weight: 500;">PUNE Division Voter Directory • Published 12-01-2026</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text3); font-weight: 500;">PUNE Division Voter Directory • Published 12-01-2026</p>
       </div>
     </div>
     <div class="campaign-img right-img">
