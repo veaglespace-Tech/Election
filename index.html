@@ -556,7 +556,9 @@
       </div>
       <div class="field">
         <label for="f-part">Part No</label>
-        <input type="text" id="f-part" placeholder="Search by part…" autocomplete="off" />
+        <select id="f-part">
+          <option value="">All Parts</option>
+        </select>
       </div>
     </div>
   </div>
@@ -615,6 +617,16 @@
 
   function render(j) {
     if (!state.totalAll) state.totalAll = j.total;
+
+    const partSelect = document.getElementById('f-part');
+    if (j.parts && partSelect.options.length <= 1) {
+      j.parts.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = `Part ${p}`;
+        partSelect.appendChild(opt);
+      });
+    }
 
     document.getElementById('statTotal').textContent    = (state.totalAll || j.total).toLocaleString('en-IN');
     document.getElementById('statParts').textContent    = state.parts.length || j.parts?.length || '—';
@@ -729,7 +741,7 @@
   document.getElementById('f-name').addEventListener('input', e=>{ state.name=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-address').addEventListener('input', e=>{ state.address=e.target.value; state.page=1; debounce(fetchData); });
   document.getElementById('f-institute').addEventListener('input', e=>{ state.institute=e.target.value; state.page=1; debounce(fetchData); });
-  document.getElementById('f-part').addEventListener('input', e=>{ state.part_no=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-part').addEventListener('change', e=>{ state.part_no=e.target.value; state.page=1; fetchData(); });
   window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
 
   fetchData();
