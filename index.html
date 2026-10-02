@@ -95,21 +95,7 @@
       margin-bottom: 1rem;
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
-    .live-pill {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: var(--green-lt);
-      border: 1px solid rgba(5,150,105,0.2);
-      color: var(--green);
-      padding: 0.3rem 0.85rem;
-      border-radius: 20px;
-      font-size: 0.75rem; font-weight: 600;
-    }
-    .live-dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--green);
-      animation: blink 1.8s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
+
 
     /* ── Stats cards (overlap hero) ──────────────────────────────────── */
     .stats-wrap {
@@ -123,7 +109,13 @@
       gap: 1rem;
     }
     @media(max-width:900px){ .stats-grid { grid-template-columns: repeat(2,1fr); } }
-    @media(max-width:500px){ .stats-grid { grid-template-columns: 1fr; } }
+    @media(max-width:500px){
+      .stats-grid { grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
+      .stat-card { flex-direction: column; align-items: center; text-align: center; padding: 1rem 0.5rem; gap: 0.5rem; }
+      .stat-icon { width: 38px; height: 38px; font-size: 1.1rem; }
+      .stat-value { font-size: 1.4rem; }
+      .stat-label { font-size: 0.6rem; }
+    }
 
     .stat-card {
       background: var(--bg2);
@@ -493,10 +485,7 @@
       <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
       <h1>मा. श्री. सुनीलभाऊ जगताप</h1>
       <h3>पसंती क्र. १</h3>
-      <div style="margin-top: 1rem;">
-        <span class="live-pill"><span class="live-dot"></span> Live Data</span>
-        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.9); font-weight: 500;">PUNE Division Voter Directory • Published 12-01-2026</p>
-      </div>
+
     </div>
     <div class="campaign-img right-img">
       <img src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
