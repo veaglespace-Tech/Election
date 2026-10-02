@@ -1,4 +1,4 @@
-const CACHE_NAME = 'election-app-v1';
+const CACHE_NAME = 'election-app-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -32,23 +32,22 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event
+// Fetch Event (Network First Strategy)
 self.addEventListener('fetch', (event) => {
-  // Only cache GET requests and skip API calls
   if (event.request.method !== 'GET' || event.request.url.includes('api.php')) {
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).then((fetchResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, fetchResponse.clone());
-          return fetchResponse;
-        });
+    fetch(event.request).then((response) => {
+      // If network fetch is successful, cache the latest version
+      return caches.open(CACHE_NAME).then((cache) => {
+        cache.put(event.request, response.clone());
+        return response;
       });
     }).catch(() => {
-      // Optional fallback
+      // If offline or network fails, fallback to cache
+      return caches.match(event.request);
     })
   );
 });
