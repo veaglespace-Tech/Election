@@ -36,42 +36,17 @@ $page     = max(1, (int) inp('page', 1));
 $limit    = min(500, max(10, (int) inp('limit', 500)));
 $offset   = ($page - 1) * $limit;
 
-$search   = inp('search');       // global search (name)
-$name     = inp('name');
-$age      = inp('age');
-$address  = inp('address');
-$partNo   = inp('part_no');
-$gender   = inp('gender');
+$search = inp('search');
 
 // ── Build WHERE ───────────────────────────────────────────────────────────
 $where  = [];
 $params = [];
 
 if ($search !== '') {
-    $where[]  = '(elector_name LIKE :search OR relative_name LIKE :search2 OR epic_no LIKE :search3)';
+    $where[]  = '(elector_name LIKE :search OR address LIKE :search2 OR institute LIKE :search3)';
     $params[':search']  = "%$search%";
     $params[':search2'] = "%$search%";
     $params[':search3'] = "%$search%";
-}
-if ($name !== '') {
-    $where[]         = 'elector_name LIKE :name';
-    $params[':name'] = "%$name%";
-}
-if ($age !== '') {
-    $where[]        = 'age = :age';
-    $params[':age'] = (int) $age;
-}
-if ($address !== '') {
-    $where[]            = 'address LIKE :address';
-    $params[':address'] = "%$address%";
-}
-if ($partNo !== '') {
-    $where[]           = 'part_no = :part_no';
-    $params[':part_no'] = (int) $partNo;
-}
-if ($gender !== '' && in_array(strtoupper($gender), ['M', 'F'])) {
-    $where[]           = 'gender = :gender';
-    $params[':gender'] = strtoupper($gender);
 }
 
 $whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';

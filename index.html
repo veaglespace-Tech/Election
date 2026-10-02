@@ -547,35 +547,13 @@
       <div class="filter-title"><span>🔍</span> Search &amp; Filter Electors</div>
       <button class="btn-reset" id="btnReset" onclick="resetFilters()">✕ Reset All</button>
     </div>
-    <div class="filter-grid">
+    <div class="filter-grid" style="grid-template-columns: 1fr;">
       <div class="field">
-        <label for="f-name">Elector Name</label>
+        <label for="f-global">Global Search</label>
         <div class="search-wrap">
           <span class="search-icon">⌕</span>
-          <input type="text" id="f-name" placeholder="Search by elector name…" autocomplete="off" />
+          <input type="text" id="f-global" placeholder="Search by elector name, address, or institute…" autocomplete="off" />
         </div>
-      </div>
-      <div class="field">
-        <label for="f-part">Part No</label>
-        <select id="f-part">
-          <option value="">All Parts</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f-age">Age</label>
-        <input type="number" id="f-age" placeholder="e.g. 35" min="18" max="120" />
-      </div>
-      <div class="field">
-        <label for="f-gender">Gender</label>
-        <select id="f-gender">
-          <option value="">All</option>
-          <option value="M">Male</option>
-          <option value="F">Female</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f-address">Address</label>
-        <input type="text" id="f-address" placeholder="Village / Area…" autocomplete="off" />
       </div>
     </div>
   </div>
@@ -608,7 +586,7 @@
 <script>
   const state = {
     page: 1, limit: 500,
-    name: '', age: '', address: '', part_no: '', gender: '',
+    search: '',
     totalAll: 0, parts: []
   };
   let debTimer = null;
@@ -621,8 +599,7 @@
   async function fetchData() {
     const params = new URLSearchParams({
       page: state.page, limit: state.limit,
-      name: state.name, age: state.age,
-      address: state.address, part_no: state.part_no, gender: state.gender,
+      search: state.search
     });
     showLoading();
     try {
@@ -669,10 +646,10 @@
       for (const r of rows) {
         html += `<tr>
           <td class="col-sr">${r.sr_no}</td>
-          <td class="col-name">${hl(r.elector_name, state.name)}</td>
+          <td class="col-name">${hl(r.elector_name, state.search)}</td>
           <td class="col-rel">${esc(r.relative_name)}</td>
-          <td class="col-addr">${hl(r.address, state.address)}</td>
-          <td class="col-inst">${esc(r.institute)}</td>
+          <td class="col-addr">${hl(r.address, state.search)}</td>
+          <td class="col-inst">${hl(r.institute, state.search)}</td>
           <td class="col-age">${r.age || '—'}</td>
           <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
           <td class="col-epic">${r.epic_no || '—'}</td>
@@ -748,18 +725,12 @@
     document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg" style="color:var(--red)">Error: ${esc(msg)}</div></div>`;
   }
   function resetFilters() {
-    ['f-name','f-age','f-address'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('f-part').value='';
-    document.getElementById('f-gender').value='';
-    Object.assign(state,{name:'',age:'',address:'',part_no:'',gender:'',page:1});
+    document.getElementById('f-global').value = '';
+    Object.assign(state, { search: '', page: 1 });
     fetchData();
   }
 
-  document.getElementById('f-name').addEventListener('input', e=>{ state.name=e.target.value; state.page=1; debounce(fetchData); });
-  document.getElementById('f-age').addEventListener('input', e=>{ state.age=e.target.value; state.page=1; debounce(fetchData); });
-  document.getElementById('f-address').addEventListener('input', e=>{ state.address=e.target.value; state.page=1; debounce(fetchData); });
-  document.getElementById('f-part').addEventListener('change', e=>{ state.part_no=e.target.value; state.page=1; fetchData(); });
-  document.getElementById('f-gender').addEventListener('change', e=>{ state.gender=e.target.value; state.page=1; fetchData(); });
+  document.getElementById('f-global').addEventListener('input', e=>{ state.search=e.target.value; state.page=1; debounce(fetchData); });
   window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
 
   fetchData();
