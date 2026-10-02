@@ -15,19 +15,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:          #ffffff;
+      --bg:          #fcfaf6;
       --bg2:         #ffffff;
       --bg3:         #f8fafc;
       --border:      #e2e8f0;
       --border2:     #cbd5e1;
-      --accent:      #2563eb;
-      --accent-lt:   #eff6ff;
-      --accent2:     #7c3aed;
-      --accent2-lt:  #f5f3ff;
+      --accent:      #1a295c;
+      --accent-lt:   #e8eaef;
+      --accent2:     #ff5e14;
+      --accent2-lt:  #ffefe8;
       --green:       #059669;
       --green-lt:    #ecfdf5;
-      --orange:      #d97706;
-      --orange-lt:   #fffbeb;
+      --orange:      #8a371c;
+      --orange-lt:   #f6e9e4;
       --red:         #dc2626;
       --red-lt:      #fef2f2;
       --text:        #0f172a;
@@ -51,42 +51,52 @@
       line-height: 1.6;
     }
 
-    /* ── Header ─────────────────────────────────────────────────────── */
-    header {
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 100;
-      box-shadow: var(--shadow-sm);
+    /* ── Campaign Header ────────────────────────────────────────────── */
+    .campaign-header {
+      background: var(--bg);
+      border-bottom: 4px solid var(--accent2);
+      position: relative;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      padding: 1.8rem 0;
+      z-index: 100;
     }
-    .header-inner {
+    .campaign-inner {
       max-width: 1400px; margin: 0 auto;
       padding: 0 2rem;
-      display: flex; align-items: center; gap: 1rem;
-      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem;
     }
-    .logo {
-      width: 40px; height: 40px; flex-shrink: 0;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border-radius: 10px;
+    .campaign-img {
+      width: 200px; height: 200px;
+      flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 12px rgba(37,99,235,0.3);
     }
-    .header-text h1 {
-      font-size: 0.95rem; font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.01em;
+    .campaign-img img {
+      width: 100%; height: 100%; object-fit: contain;
     }
-    .header-text p { font-size: 0.7rem; color: var(--text3); margin-top: 1px; }
-    .header-actions { margin-left: auto; display: flex; align-items: center; gap: 0.75rem; }
+    .campaign-text {
+      text-align: center; flex: 1;
+    }
+    .campaign-text h2 {
+      font-size: 1.7rem; font-weight: 800; color: var(--accent);
+      margin-bottom: 0.4rem; letter-spacing: 0.02em;
+    }
+    .campaign-text h1 {
+      font-size: 2.8rem; font-weight: 900; color: var(--orange);
+      margin-bottom: 0.4rem; line-height: 1.1; text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+    }
+    .campaign-text h3 {
+      font-size: 1.8rem; font-weight: 800; color: var(--accent2);
+      margin-bottom: 1rem;
+    }
     .live-pill {
-      display: flex; align-items: center; gap: 0.4rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
       background: var(--green-lt);
       border: 1px solid rgba(5,150,105,0.2);
       color: var(--green);
-      padding: 0.3rem 0.75rem;
+      padding: 0.3rem 0.85rem;
       border-radius: 20px;
-      font-size: 0.7rem; font-weight: 600;
+      font-size: 0.75rem; font-weight: 600;
     }
     .live-dot {
       width: 6px; height: 6px; border-radius: 50%;
@@ -95,40 +105,9 @@
     }
     @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.3)} }
 
-    /* ── Hero strip ──────────────────────────────────────────────────── */
-    .hero {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-      padding: 2.5rem 2rem 3.5rem;
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    .hero-inner {
-      max-width: 1400px; margin: 0 auto;
-      position: relative;
-    }
-    .hero-tag {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: #fff; font-size: 0.72rem; font-weight: 600;
-      padding: 0.3rem 0.85rem; border-radius: 20px;
-      margin-bottom: 0.75rem;
-      letter-spacing: 0.04em; text-transform: uppercase;
-    }
-    .hero h2 {
-      font-size: 1.9rem; font-weight: 800;
-      color: #fff; letter-spacing: -0.02em;
-      line-height: 1.2; margin-bottom: 0.5rem;
-    }
-    .hero p { color: rgba(255,255,255,0.75); font-size: 0.875rem; }
-
     /* ── Stats cards (overlap hero) ──────────────────────────────────── */
     .stats-wrap {
-      max-width: 1400px; margin: -1.5rem auto 0;
+      max-width: 1400px; margin: 1.5rem auto 0;
       padding: 0 2rem;
       position: relative; z-index: 10;
     }
@@ -433,13 +412,31 @@
     /* ── Mobile Responsiveness ────────────────────────────────────────── */
     .table-responsive { width: 100%; margin-bottom: 1rem; }
     
+    @media (max-width: 900px) {
+      .campaign-text h1 { font-size: 2.2rem; }
+      .campaign-text h2 { font-size: 1.4rem; }
+      .campaign-text h3 { font-size: 1.5rem; }
+      .campaign-img { width: 140px; height: 140px; }
+    }
     @media (max-width: 768px) {
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-      .header-inner { padding: 0 1rem; gap: 0.5rem; }
-      .header-text h1 { font-size: 0.85rem; }
-      .header-text p { display: none; }
-      .hero { padding: 1.5rem 1rem 2.5rem; }
-      .hero h2 { font-size: 1.4rem; }
+      .campaign-inner { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 1rem; 
+        padding: 0 1rem;
+      }
+      .campaign-text { 
+        grid-column: 1 / -1; 
+        order: 3; 
+        margin-top: 0.5rem; 
+      }
+      .campaign-img { width: 120px; height: 120px; margin: 0 auto; }
+      .campaign-img.left-img { order: 1; }
+      .campaign-img.right-img { order: 2; }
+      .campaign-text h1 { font-size: 1.8rem; }
+      .campaign-text h2 { font-size: 1.1rem; }
+      .campaign-text h3 { font-size: 1.2rem; }
       .stats-wrap { padding: 0 1rem; margin-top: -1rem; }
       .stat-card { padding: 1rem; }
       .stat-value { font-size: 1.4rem; }
@@ -455,13 +452,15 @@
     @media (max-width: 400px) {
       .stat-card { flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; }
       .stat-icon { margin-bottom: 0.2rem; }
-      .hero h2 { font-size: 1.2rem; }
+      .campaign-text h1 { font-size: 1.5rem; }
+      .campaign-text h2 { font-size: 1rem; }
+      .campaign-text h3 { font-size: 1.1rem; }
     }
 
     /* ── Print Styles ─────────────────────────────────────────────────── */
     @media print {
       body { background: #fff; color: #000; }
-      header, .hero, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
+      .campaign-header, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
       main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
       .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; }
       .table-responsive { overflow: visible !important; margin: 0 !important; }
@@ -478,29 +477,24 @@
 </head>
 <body>
 
-<!-- ── Header ─────────────────────────────────────────────────────────── -->
-<header>
-  <div class="header-inner">
-    <div class="logo">🗳️</div>
-    <div class="header-text">
-      <h1>Maharashtra Election Roll 2026</h1>
-      <p>PUNE Division – Teachers' Constituency &nbsp;|&nbsp; Final Voter List</p>
+<!-- ── Campaign Header ────────────────────────────────────────────────── -->
+<div class="campaign-header">
+  <div class="campaign-inner">
+    <div class="campaign-img left-img">
+      <img src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
     </div>
-    <div class="header-actions">
-      <div class="live-pill">
-        <span class="live-dot"></span>
-        Live Data
+    <div class="campaign-text">
+      <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२४</h2>
+      <h1>मा. श्री. सुनीलभाऊ जगताप</h1>
+      <h3>पसंती क्र. १</h3>
+      <div style="margin-top: 1rem;">
+        <span class="live-pill"><span class="live-dot"></span> Live Data</span>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text3); font-weight: 500;">PUNE Division Voter Directory • Published 12-01-2026</p>
       </div>
     </div>
-  </div>
-</header>
-
-<!-- ── Hero ───────────────────────────────────────────────────────────── -->
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-tag">📋 Electoral Roll</div>
-    <h2>PUNE Division Voter Directory</h2>
-    <p>Maharashtra State Legislative Council · Teachers' Constituency · Published 12-01-2026</p>
+    <div class="campaign-img right-img">
+      <img src="icon1.jpeg" alt="Right Image" onerror="this.style.display='none'" />
+    </div>
   </div>
 </div>
 
