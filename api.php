@@ -40,6 +40,9 @@ $limit = min(500, max(10, (int) inp('limit', 500)));
 $offset = ($page - 1) * $limit;
 
 $search = inp('search');
+$name = inp('name');
+$address = inp('address');
+$institute = inp('institute');
 
 // ── Build WHERE ───────────────────────────────────────────────────────────
 $where = [];
@@ -50,6 +53,18 @@ if ($search !== '') {
     $params[':search'] = "%$search%";
     $params[':search2'] = "%$search%";
     $params[':search3'] = "%$search%";
+}
+if ($name !== '') {
+    $where[] = 'elector_name LIKE :name';
+    $params[':name'] = "%$name%";
+}
+if ($address !== '') {
+    $where[] = 'address LIKE :address';
+    $params[':address'] = "%$address%";
+}
+if ($institute !== '') {
+    $where[] = 'institute LIKE :inst';
+    $params[':inst'] = "%$institute%";
 }
 
 $whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';

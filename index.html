@@ -207,7 +207,7 @@
 
     .filter-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, 1fr);
       gap: 0.875rem;
     }
     @media(max-width:900px){ .filter-grid { grid-template-columns: 1fr 1fr; } }
@@ -547,13 +547,25 @@
       <div class="filter-title"><span>🔍</span> Search &amp; Filter Electors</div>
       <button class="btn-reset" id="btnReset" onclick="resetFilters()">✕ Reset All</button>
     </div>
-    <div class="filter-grid" style="grid-template-columns: 1fr;">
+    <div class="filter-grid">
       <div class="field">
         <label for="f-global">Global Search</label>
         <div class="search-wrap">
           <span class="search-icon">⌕</span>
-          <input type="text" id="f-global" placeholder="Search by elector name, address, or institute…" autocomplete="off" />
+          <input type="text" id="f-global" placeholder="Search across all fields…" autocomplete="off" />
         </div>
+      </div>
+      <div class="field">
+        <label for="f-name">Elector Name</label>
+        <input type="text" id="f-name" placeholder="Search by name…" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="f-address">Address</label>
+        <input type="text" id="f-address" placeholder="Search by address…" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="f-institute">Institute</label>
+        <input type="text" id="f-institute" placeholder="Search by institute…" autocomplete="off" />
       </div>
     </div>
   </div>
@@ -586,7 +598,7 @@
 <script>
   const state = {
     page: 1, limit: 500,
-    search: '',
+    search: '', name: '', address: '', institute: '',
     totalAll: 0, parts: []
   };
   let debTimer = null;
@@ -599,7 +611,7 @@
   async function fetchData() {
     const params = new URLSearchParams({
       page: state.page, limit: state.limit,
-      search: state.search
+      search: state.search, name: state.name, address: state.address, institute: state.institute
     });
     showLoading();
     try {
@@ -717,12 +729,15 @@
     document.getElementById('tableBody').innerHTML=`<div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg" style="color:var(--red)">Error: ${esc(msg)}</div></div>`;
   }
   function resetFilters() {
-    document.getElementById('f-global').value = '';
-    Object.assign(state, { search: '', page: 1 });
+    ['f-global', 'f-name', 'f-address', 'f-institute'].forEach(id => document.getElementById(id).value = '');
+    Object.assign(state, { search: '', name: '', address: '', institute: '', page: 1 });
     fetchData();
   }
 
   document.getElementById('f-global').addEventListener('input', e=>{ state.search=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-name').addEventListener('input', e=>{ state.name=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-address').addEventListener('input', e=>{ state.address=e.target.value; state.page=1; debounce(fetchData); });
+  document.getElementById('f-institute').addEventListener('input', e=>{ state.institute=e.target.value; state.page=1; debounce(fetchData); });
   window.addEventListener('scroll', ()=>{ document.getElementById('scrollTop').classList.toggle('show', window.scrollY>400); });
 
   fetchData();
