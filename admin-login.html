@@ -335,8 +335,10 @@
 <div class="version-tag">v2.0 Admin</div>
 
 <script>
-  const ADMIN_EMAIL = 'abhijeetambhore4@gmail.com';
-  const ADMIN_PASS  = 'Veagle@123';
+  const ADMIN_USERS = [
+    { email: 'veaglespace@gmail.com', username: 'admin', pass: 'Veagle@123' },
+    { email: 'abhijeetambhore4@gmail.com', username: 'admin', pass: 'Veagle@123' }
+  ];
 
   (function createParticles() {
     const container = document.getElementById('particles');
@@ -388,9 +390,15 @@
 
     await new Promise(r => setTimeout(r, 900));
 
-    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-      sessionStorage.setItem('admin_auth', btoa(email + ':' + Date.now()));
-      sessionStorage.setItem('admin_email', email);
+    const matchedAdmin = ADMIN_USERS.find(u => 
+      (u.email.toLowerCase() === email.toLowerCase() || u.username.toLowerCase() === email.toLowerCase()) && 
+      u.pass === pass
+    );
+
+    if (matchedAdmin) {
+      sessionStorage.setItem('admin_auth', btoa(matchedAdmin.email + ':' + Date.now()));
+      sessionStorage.setItem('admin_email', matchedAdmin.email);
+      sessionStorage.setItem('admin_name', matchedAdmin.username);
       btn.innerHTML = '<span>✓ Redirecting…</span>';
       btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
       await new Promise(r => setTimeout(r, 500));
