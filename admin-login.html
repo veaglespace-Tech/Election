@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login — Election Dashboard</title>
+  <meta name="description" content="Secure admin login for Pune Shikshak Matdar Sangh Election Dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fcfaf6;
+      --card: rgba(255, 255, 255, 0.75);
+      --card2: #ffffff;
+      --border: rgba(226, 232, 240, 0.8);
+      --accent: #1a295c;
+      --accent2: #ff5e14;
+      --gold: #b38728;
+      --text: #0f172a;
+      --text2: #334155;
+      --text3: #64748b;
+      --red: #dc2626;
+      --green: #059669;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(26,41,92,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(255,94,20,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 70% 80% at 50% 50%, rgba(179,135,40,0.05) 0%, transparent 70%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes bgPulse {
+      0%   { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .particles { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(26,41,92,0.1);
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    .grid-overlay {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    .login-wrap {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 460px;
+      padding: 1.5rem;
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .brand-icon {
+      width: 72px; height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1rem;
+      box-shadow: 0 10px 25px rgba(26,41,92,0.2);
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+    @keyframes iconPulse {
+      0%, 100% { box-shadow: 0 10px 25px rgba(26,41,92,0.2); }
+      50%       { box-shadow: 0 15px 35px rgba(26,41,92,0.3); transform: scale(1.05); }
+    }
+    .brand-title {
+      font-size: 1.5rem; font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .brand-sub {
+      font-size: 0.8rem; color: var(--text3); font-weight: 500;
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+
+    .login-card {
+      background: var(--card);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.08);
+      animation: slideUp 0.7s 0.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header { margin-bottom: 2rem; }
+    .card-title { font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem; }
+    .card-subtitle { font-size: 0.85rem; color: var(--text2); }
+
+    .field { margin-bottom: 1.5rem; }
+    .field label {
+      display: block;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+    }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--text3); font-size: 1rem; pointer-events: none;
+      transition: color 0.2s;
+    }
+    .input-wrap input {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 0.85rem 1rem 0.85rem 2.8rem;
+      font-size: 0.95rem; font-weight: 500;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s;
+    }
+    .input-wrap input::placeholder { color: var(--text3); font-weight: 400; }
+    .input-wrap input:focus {
+      border-color: var(--accent);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(26,41,92,0.1);
+    }
+
+    .toggle-eye {
+      position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--text3); cursor: pointer; font-size: 1rem;
+      transition: color 0.2s; padding: 0;
+    }
+    .toggle-eye:hover { color: var(--text); }
+
+    .error-box {
+      background: rgba(220,38,38,0.1);
+      border: 1px solid rgba(220,38,38,0.3);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: var(--red);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .error-box.hidden { display: none; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-8px); }
+      75%      { transform: translateX(8px); }
+    }
+    .shake { animation: shake 0.4s ease; }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), #2d4599);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      padding: 0.95rem;
+      font-size: 1rem; font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      box-shadow: 0 8px 24px rgba(26,41,92,0.2);
+      letter-spacing: 0.02em;
+    }
+    .btn-login:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 40px rgba(26,41,92,0.3);
+      background: linear-gradient(135deg, #2d4599, var(--accent));
+    }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.5rem 0 1rem;
+    }
+    .divider-line { flex: 1; height: 1px; background: rgba(0,0,0,0.08); }
+    .divider-text { font-size: 0.75rem; color: var(--text3); white-space: nowrap; }
+
+    .security-note {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.75rem; color: var(--text3);
+      justify-content: center; margin-top: 1.5rem;
+    }
+    .security-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(5,150,105,0.4);
+      flex-shrink: 0;
+    }
+
+    .back-link {
+      text-align: center; margin-top: 1.5rem;
+      animation: slideUp 0.7s 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    .back-link a {
+      color: var(--text3); font-size: 0.82rem; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .back-link a:hover { color: var(--accent); }
+
+    .version-tag {
+      position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
+      font-size: 0.7rem; color: var(--text3);
+      background: rgba(0,0,0,0.02);
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="grid-overlay"></div>
+<div class="particles" id="particles"></div>
+
+<div class="login-wrap">
+
+  <div class="brand">
+    <div class="brand-icon">🗳️</div>
+    <div class="brand-title">Election Admin</div>
+    <div class="brand-sub">पुणे शिक्षक मतदारसंघ निवडणूक २०२६</div>
+  </div>
+
+  <div class="login-card">
+    <div class="card-header">
+      <div class="card-title">Welcome back 👋</div>
+      <div class="card-subtitle">Sign in to access the admin dashboard</div>
+    </div>
+
+    <div class="error-box hidden" id="errorBox">
+      <span>⚠️</span>
+      <span id="errorMsg">Invalid email or password</span>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="emailInput">Email Address</label>
+        <div class="input-wrap">
+          <input type="email" id="emailInput" placeholder="Enter your email…" autocomplete="email" required />
+          <span class="input-icon">✉️</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="passInput">Password</label>
+        <div class="input-wrap">
+          <input type="password" id="passInput" placeholder="Enter your password…" autocomplete="current-password" required />
+          <span class="input-icon">🔒</span>
+          <button type="button" class="toggle-eye" id="toggleEye" onclick="togglePass()">👁️</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" id="loginBtn">
+        <span id="loginBtnText">Sign In to Dashboard</span>
+        <span id="loginBtnArrow">→</span>
+      </button>
+    </form>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-text">SECURE ACCESS</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="security-note">
+      <div class="security-dot"></div>
+      <span>Protected admin area • Unauthorized access is prohibited</span>
+    </div>
+  </div>
+
+  <div class="back-link">
+    <a href="index.html">← Back to Public Portal</a>
+  </div>
+</div>
+
+<div class="version-tag">v2.0 Admin</div>
+
+<script>
+  const ADMIN_EMAIL = 'abhijeetambhore4@gmail.com';
+  const ADMIN_PASS  = 'Veagle@123';
+
+  (function createParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 40; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (6 + Math.random() * 12) + 's';
+      p.style.animationDelay    = (Math.random() * 10) + 's';
+      const size = 1 + Math.random() * 3;
+      p.style.width  = size + 'px';
+      p.style.height = size + 'px';
+      p.style.opacity = 0.1 + Math.random() * 0.4;
+      container.appendChild(p);
+    }
+  })();
+
+  function togglePass() {
+    const inp = document.getElementById('passInput');
+    const eye = document.getElementById('toggleEye');
+    if (inp.type === 'password') { inp.type = 'text'; eye.textContent = '🙈'; }
+    else { inp.type = 'password'; eye.textContent = '👁️'; }
+  }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    document.getElementById('errorMsg').textContent = msg;
+    box.classList.remove('hidden', 'shake');
+    void box.offsetWidth;
+    box.classList.add('shake');
+  }
+  function hideError() { document.getElementById('errorBox').classList.add('hidden'); }
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    hideError();
+
+    const email = document.getElementById('emailInput').value.trim();
+    const pass  = document.getElementById('passInput').value;
+
+    if (!email || !pass) { showError('Please fill in all fields.'); return; }
+
+    const btn    = document.getElementById('loginBtn');
+    const btnTxt = document.getElementById('loginBtnText');
+    const btnArr = document.getElementById('loginBtnArrow');
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div><span>Signing in…</span>';
+
+    await new Promise(r => setTimeout(r, 900));
+
+    if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
+      sessionStorage.setItem('admin_auth', btoa(email + ':' + Date.now()));
+      sessionStorage.setItem('admin_email', email);
+      btn.innerHTML = '<span>✓ Redirecting…</span>';
+      btn.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+      await new Promise(r => setTimeout(r, 500));
+      window.location.href = 'admin-dashboard.html';
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Sign In to Dashboard</span><span>→</span>';
+      btn.style.background = '';
+      showError('Invalid email or password. Please try again.');
+    }
+  });
+
+  document.getElementById('emailInput').addEventListener('input', hideError);
+  document.getElementById('passInput').addEventListener('input', hideError);
+
+  if (sessionStorage.getItem('admin_auth')) { window.location.href = 'admin-dashboard.html'; }
+</script>
+</body>
+</html>

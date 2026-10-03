@@ -11,8 +11,8 @@ header('Access-Control-Allow-Origin: *');
 // ── DB Config ─────────────────────────────────────────────────────────────
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'election_db');
-define('DB_USER', 'election_app');
-define('DB_PASS', 'Veagle@12345');
+define('DB_USER', 'root');
+define('DB_PASS', 'Abhi@123');
 define('DB_PORT', 3306);
 
 function getDB(): PDO
@@ -21,10 +21,15 @@ function getDB(): PDO
     if ($pdo)
         return $pdo;
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4;port=' . DB_PORT;
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+    $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    ]);
+    ];
+    try {
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+    } catch (PDOException $e) {
+        $pdo = new PDO($dsn, 'election_app', 'Veagle@12345', $options);
+    }
     return $pdo;
 }
 
@@ -44,6 +49,7 @@ $name = inp('name');
 $address = inp('address');
 $institute = inp('institute');
 $part_no = inp('part_no');
+$gender = inp('gender');
 
 // ── Build WHERE ───────────────────────────────────────────────────────────
 $where = [];
@@ -65,6 +71,10 @@ if ($institute !== '') {
 if ($part_no !== '') {
     $where[] = 'part_no = :part_no';
     $params[':part_no'] = $part_no;
+}
+if ($gender !== '') {
+    $where[] = 'gender = :gender';
+    $params[':gender'] = $gender;
 }
 
 $whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
