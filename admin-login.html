@@ -32,7 +32,7 @@
 
     body {
       font-family: 'Inter', sans-serif;
-      background: var(--bg);
+      background: linear-gradient(135deg, #ea580c 0%, #991b1b 100%);
       color: var(--text);
       min-height: 100vh;
       display: flex;
@@ -42,24 +42,11 @@
       position: relative;
     }
 
-    .bg-mesh {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(26,41,92,0.05) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(255,94,20,0.05) 0%, transparent 60%),
-        radial-gradient(ellipse 70% 80% at 50% 50%, rgba(179,135,40,0.05) 0%, transparent 70%);
-      animation: bgPulse 8s ease-in-out infinite alternate;
-    }
-    @keyframes bgPulse {
-      0%   { opacity: 0.7; }
-      100% { opacity: 1; }
-    }
-
     .particles { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
     .particle {
       position: absolute;
       border-radius: 50%;
-      background: rgba(26,41,92,0.1);
+      background: rgba(255,255,255,0.1);
       animation: floatUp linear infinite;
     }
     @keyframes floatUp {
@@ -92,27 +79,14 @@
       from { opacity: 0; transform: translateY(-20px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    .brand-icon {
-      width: 72px; height: 72px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-      margin: 0 auto 1rem;
-      box-shadow: 0 10px 25px rgba(26,41,92,0.2);
-      animation: iconPulse 3s ease-in-out infinite;
-    }
-    @keyframes iconPulse {
-      0%, 100% { box-shadow: 0 10px 25px rgba(26,41,92,0.2); }
-      50%       { box-shadow: 0 15px 35px rgba(26,41,92,0.3); transform: scale(1.05); }
-    }
+
     .brand-title {
       font-size: 1.5rem; font-weight: 800;
-      color: var(--text);
+      color: #ffffff;
       margin-bottom: 0.3rem;
     }
     .brand-sub {
-      font-size: 0.8rem; color: var(--text3); font-weight: 500;
+      font-size: 0.8rem; color: rgba(255,255,255,0.8); font-weight: 500;
       letter-spacing: 0.05em; text-transform: uppercase;
     }
 
@@ -131,8 +105,8 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    .card-header { margin-bottom: 2rem; }
-    .card-title { font-size: 1.4rem; font-weight: 800; color: var(--text); margin-bottom: 0.4rem; }
+    .card-header { margin-bottom: 2rem; text-align: center; }
+    .card-title { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin-bottom: 0.4rem; }
     .card-subtitle { font-size: 0.85rem; color: var(--text2); }
 
     .field { margin-bottom: 1.5rem; }
@@ -250,11 +224,11 @@
       animation: slideUp 0.7s 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
     }
     .back-link a {
-      color: var(--text3); font-size: 0.82rem; text-decoration: none;
+      color: rgba(255,255,255,0.8); font-size: 0.82rem; text-decoration: none;
       display: inline-flex; align-items: center; gap: 0.4rem;
       transition: color 0.2s;
     }
-    .back-link a:hover { color: var(--accent); }
+    .back-link a:hover { color: #ffffff; }
 
     .version-tag {
       position: fixed; bottom: 1rem; right: 1rem; z-index: 100;
@@ -264,18 +238,57 @@
       border-radius: 6px;
       border: 1px solid rgba(0,0,0,0.05);
     }
+    .side-img {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 400px;
+      height: 400px;
+      z-index: 5;
+      object-fit: contain;
+      clip-path: circle(43.5% at 50.5% 52.5%);
+      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.3));
+    }
+    .left-img { left: 2%; }
+    .right-img { right: 2%; }
+
+    @media (max-width: 1200px) {
+      .side-img { width: 320px; height: 320px; }
+      .left-img { left: 2%; }
+      .right-img { right: 2%; }
+    }
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 1rem;
+        justify-content: flex-start;
+        gap: 0.5rem;
+      }
+      .side-img {
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
+        transform: none;
+        width: 200px;
+        height: 200px;
+        display: block;
+        margin: 0 auto;
+      }
+    }
   </style>
 </head>
 <body>
 
-<div class="bg-mesh"></div>
 <div class="grid-overlay"></div>
 <div class="particles" id="particles"></div>
+
+<img src="icon.png" class="side-img left-img" alt="Candidate Left" />
 
 <div class="login-wrap">
 
   <div class="brand">
-    <div class="brand-icon">🗳️</div>
     <div class="brand-title">Election Admin</div>
     <div class="brand-sub">पुणे शिक्षक मतदारसंघ निवडणूक २०२६</div>
   </div>
@@ -331,6 +344,8 @@
     <a href="index.html">← Back to Public Portal</a>
   </div>
 </div>
+
+<img src="icon1.png" class="side-img right-img" alt="Candidate Right" />
 
 <div class="version-tag">v2.0 Admin</div>
 
