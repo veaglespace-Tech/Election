@@ -51845,7 +51845,7 @@ LOCK TABLES `electors` WRITE;
  (51877,338,92,'Jyoti Jayavant Vhatkar','Jayavant Namdevrao Vhatkar','641, Sai Nagar, Majare Karve, Chandgad, KOLHAPUR, 416507','Yashwantrao Chavan Mahavidylaya, Halkarni',49,'F',''),
  (51878,338,93,'Narayan Khachu Zajari','Khachu Narayan Zajari','Tudaye , Tudaye , Tudaye , Tudaye , Chandgad, KOLHAPUR, 416507','Bramhaling Vidyalaya Hajgoli',57,'M',''),
  (51879,338,94,'sambhaji tukaram zajari','tukaram','tudiye , tudiye , tudiye , tudiye , Chandgad, KOLHAPUR, 416507','shri. Ramling highschool Tudiye',50,'M',''),
-c(51880,338,95,'ashok tangappa khangutkar','tangappa','tawarewadi, a, s, Chandgad, KOLHAPUR, 416508','chaloba madhyamik vidyalay',58,'M',''),
+ (51880,338,95,'ashok tangappa khangutkar','tangappa','tawarewadi, a, s, Chandgad, KOLHAPUR, 416508','chaloba madhyamik vidyalay',58,'M',''),
 
 
 (51767,59,1001,'NANASAHEB JAYWANTRAO SATHE','JAYWANTRAO SATHE','A104, SHREE VYANKATESH NISARG, SAMARTH NAGAR, SAMARTH NAGAR, Haveli, PUNE, 411041','RAJGAD DNYANPITH',50,'M',NULL),
