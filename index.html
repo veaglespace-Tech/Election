@@ -60,15 +60,43 @@
       padding: 1.8rem 0;
       z-index: 100;
       color: #fff;
+      overflow: hidden;
+    }
+    /* Decorative radial glow overlays */
+    .campaign-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,200,0,0.08) 0%, transparent 40%),
+        radial-gradient(circle at 60% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Watermark BG image (center, faint) */
+    .campaign-bg-img {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 210px; height: 210px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .campaign-bg-img img {
+      width: 100%; height: 100%; object-fit: contain;
+      clip-path: circle(43.5% at 50.5% 52.5%);
     }
     .campaign-inner {
       max-width: 1400px; margin: 0 auto;
       padding: 0 2rem;
       display: flex; align-items: center; justify-content: space-between;
       gap: 1.5rem;
+      position: relative; z-index: 1;
     }
     .campaign-img {
-      width: 260px; height: 260px;
+      width: 220px; height: 220px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
@@ -77,6 +105,75 @@
       width: 100%; height: 100%; object-fit: contain;
       clip-path: circle(43.5% at 50.5% 52.5%);
     }
+
+    /* ── Ticker / Info Scroller ─────────────────────────────────────── */
+    .ticker-wrap {
+      background: linear-gradient(90deg, #1a295c 0%, #2d4a8a 40%, #1a295c 100%);
+      border-bottom: 3px solid #facc15;
+      overflow: hidden;
+      position: relative;
+      z-index: 99;
+    }
+    .ticker-label {
+      background: #facc15;
+      color: #1a295c;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      height: 38px;
+    }
+    .ticker-inner {
+      display: flex;
+      align-items: center;
+      height: 38px;
+      overflow: hidden;
+    }
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      animation: tickerScroll 60s linear infinite;
+      white-space: nowrap;
+      will-change: transform;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes tickerScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0 2rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #fff;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+    .ticker-item .tick-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #facc15;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px rgba(250,204,21,0.6);
+    }
+    .ticker-item .tick-badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 4px;
+      padding: 0.1rem 0.45rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #facc15;
+    }
+    .ticker-item.highlight { color: #fde68a; }
     .campaign-text {
       text-align: center; flex: 1;
     }
@@ -339,6 +436,42 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; color: var(--text4);
     }
+
+    /* ── Remarks / Review column ─────────────────────────────────────── */
+    .col-review {
+      font-size: 0.75rem;
+      color: var(--text3);
+      max-width: 200px;
+      line-height: 1.4;
+    }
+    .review-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      color: #92400e;
+      border-radius: 5px;
+      padding: 0.15rem 0.55rem;
+      font-size: 0.68rem;
+      font-weight: 600;
+      line-height: 1.6;
+    }
+    .review-badge.shifted {
+      background: #ede9fe;
+      border-color: #c4b5fd;
+      color: #5b21b6;
+    }
+    .review-badge.deleted {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+    .review-empty {
+      color: var(--text4);
+      font-size: 0.7rem;
+    }
+
     mark.hl {
       background: #fef3c7;
       color: #92400e;
@@ -408,13 +541,26 @@
     #scrollTop.show { display: flex; }
 
     /* ── Mobile Responsiveness ────────────────────────────────────────── */
-    .table-responsive { width: 100%; margin-bottom: 1rem; }
+    /* ── Table horizontal scroller ──────────────────────────────────── */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) var(--bg3);
+    }
+    .table-responsive::-webkit-scrollbar { height: 6px; }
+    .table-responsive::-webkit-scrollbar-track { background: var(--bg3); border-radius: 3px; }
+    .table-responsive::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+    .table-responsive::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
 
     @media (max-width: 900px) {
       .campaign-text h1 { font-size: 2.2rem; }
       .campaign-text h2 { font-size: 1.4rem; }
       .campaign-text h3 { font-size: 1.8rem; }
-      .campaign-img { width: 180px; height: 180px; }
+      .campaign-img { width: 160px; height: 160px; }
+      .campaign-bg-img { width: 140px; height: 140px; }
     }
     @media (max-width: 768px) {
       .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -428,9 +574,12 @@
         order: 2;
         margin-top: 0.5rem;
       }
-      .campaign-img { width: 150px; height: 150px; margin: 0 auto; }
+      .campaign-img { width: 120px; height: 120px; margin: 0 auto; }
       .campaign-img.left-img { order: 1; }
       .campaign-img.right-img { order: 3; }
+      .campaign-bg-img { width: 100px; height: 100px; }
+      .ticker-label { padding: 0 0.8rem; font-size: 0.65rem; }
+      .ticker-item { padding: 0 1rem; font-size: 0.72rem; }
       .campaign-text h1 { font-size: 1.8rem; }
       .campaign-text h2 { font-size: 1.1rem; }
       .campaign-text h3 { font-size: 1.5rem; }
@@ -577,7 +726,8 @@
     /* ── Print Styles ─────────────────────────────────────────────────── */
     @media print {
       body { background: #fff; color: #000; }
-      .campaign-header, .carousel-section, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
+      .campaign-header, .carousel-section, .ticker-wrap, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
+      .review-badge { background: transparent !important; border: 1px solid #999 !important; color: #333 !important; }
       main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
       .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; }
       .table-responsive { overflow: visible !important; margin: 0 !important; }
@@ -596,6 +746,10 @@
 
 <!-- ── Campaign Header ────────────────────────────────────────────────── -->
 <div class="campaign-header">
+  <!-- Watermark background image (faint, centered behind text) -->
+  <div class="campaign-bg-img" aria-hidden="true">
+    <img src="icon.png" alt="" onerror="this.parentElement.style.display='none'" />
+  </div>
   <div class="campaign-inner">
     <div class="campaign-img left-img">
       <img id="headerLeftImg" src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
@@ -607,6 +761,35 @@
     </div>
     <div class="campaign-img right-img">
       <img id="headerRightImg" src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
+    </div>
+  </div>
+</div>
+
+<!-- ── Ticker / Info Scroller ────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <div class="ticker-label">📢 माहिती</div>
+    <div style="flex:1; overflow:hidden;">
+      <div class="ticker-track">
+        <!-- First copy of items -->
+        <span class="ticker-item highlight"><span class="tick-dot"></span>पुणे शिक्षक मतदारसंघ मतदार यादी २०२६ – सर्व माहिती येथे उपलब्ध आहे</span>
+        <span class="ticker-item"><span class="tick-dot"></span>मतदार याद्यांमध्ये नाव शोधण्यासाठी वरील शोध पट्टी वापरा</span>
+        <span class="ticker-item"><span class="tick-dot"></span><span class="tick-badge">महत्त्वाचे</span>&nbsp;मतदार ओळखपत्र (EPIC No) असलेल्या मतदारांना प्राधान्य</span>
+        <span class="ticker-item highlight"><span class="tick-dot"></span>"Shifted from" म्हणजे मतदार दुसऱ्या भागातून स्थानांतरित झाला आहे</span>
+        <span class="ticker-item"><span class="tick-dot"></span>जिल्हा: पुणे, कोल्हापूर, सातारा, सांगली, सोलापूर</span>
+        <span class="ticker-item"><span class="tick-dot"></span><span class="tick-badge">Note</span>&nbsp;Remarks column shows elector-specific notes &amp; transfers</span>
+        <span class="ticker-item highlight"><span class="tick-dot"></span>एकूण मतदार संख्या लोड होण्यासाठी थोडी वाट पाहा</span>
+        <span class="ticker-item"><span class="tick-dot"></span>कोणत्याही अडचणीसाठी संपर्क करा: Veagle Space Technology Pvt. Ltd.</span>
+        <!-- Second copy for seamless infinite loop -->
+        <span class="ticker-item highlight"><span class="tick-dot"></span>पुणे शिक्षक मतदारसंघ मतदार यादी २०२६ – सर्व माहिती येथे उपलब्ध आहे</span>
+        <span class="ticker-item"><span class="tick-dot"></span>मतदार याद्यांमध्ये नाव शोधण्यासाठी वरील शोध पट्टी वापरा</span>
+        <span class="ticker-item"><span class="tick-dot"></span><span class="tick-badge">महत्त्वाचे</span>&nbsp;मतदार ओळखपत्र (EPIC No) असलेल्या मतदारांना प्राधान्य</span>
+        <span class="ticker-item highlight"><span class="tick-dot"></span>"Shifted from" म्हणजे मतदार दुसऱ्या भागातून स्थानांतरित झाला आहे</span>
+        <span class="ticker-item"><span class="tick-dot"></span>जिल्हा: पुणे, कोल्हापूर, सातारा, सांगली, सोलापूर</span>
+        <span class="ticker-item"><span class="tick-dot"></span><span class="tick-badge">Note</span>&nbsp;Remarks column shows elector-specific notes &amp; transfers</span>
+        <span class="ticker-item highlight"><span class="tick-dot"></span>एकूण मतदार संख्या लोड होण्यासाठी थोडी वाट पाहा</span>
+        <span class="ticker-item"><span class="tick-dot"></span>कोणत्याही अडचणीसाठी संपर्क करा: Veagle Space Technology Pvt. Ltd.</span>
+      </div>
     </div>
   </div>
 </div>
@@ -773,7 +956,7 @@
             <table class="data-table">
               <thead><tr>
                 <th>Sr No</th><th>Elector Name</th><th>Relative Name</th>
-                <th>Address</th><th>Institute</th><th>Age</th><th>Gender</th><th>EPIC No</th>
+                <th>Address</th><th>Institute</th><th>Age</th><th>Gender</th><th>EPIC No</th><th>Remarks</th>
               </tr></thead>
               <tbody>`;
       for (const r of rows) {
@@ -786,6 +969,7 @@
           <td class="col-age">${r.age || '—'}</td>
           <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
           <td class="col-epic">${r.epic_no || '—'}</td>
+          <td class="col-review">${renderReview(r.review || r.remarks || '')}</td>
         </tr>`;
       }
       html += '</tbody></table></div></div>';
@@ -794,6 +978,17 @@
     tb.innerHTML = html;
     if (typeof resetTableStyle === 'function') resetTableStyle();
     renderPagination(j);
+  }
+
+  /* ── Render remarks / review badge ─────────────────────────── */
+  function renderReview(v) {
+    if (!v || v.trim() === '') return '<span class="review-empty">—</span>';
+    v = v.trim();
+    let cls = 'review-badge';
+    let icon = '📝';
+    if (/shifted/i.test(v)) { cls += ' shifted'; icon = '🔀'; }
+    else if (/delet|remov/i.test(v)) { cls += ' deleted'; icon = '🗑️'; }
+    return `<span class="${cls}">${icon} ${esc(v)}</span>`;
   }
 
   function hl(text, q) {
