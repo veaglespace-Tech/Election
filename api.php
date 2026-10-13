@@ -52,59 +52,67 @@ $part_no = inp('part_no');
 $gender = inp('gender');
 $status = inp('status', 'ACTIVE');
 
-// ── Build WHERE ───────────────────────────────────────────────────────────
-$where = [];
-$params = [];
-
-if ($status !== '' && $status !== 'ALL') {
-    $where[] = 'status = :status';
-    $params[':status'] = $status;
-}
-
-if ($name !== '') {
-    $where[] = 'elector_name LIKE :name';
-    $params[':name'] = "%$name%";
-}
-if ($address !== '') {
-    $where[] = 'address LIKE :address';
-    $params[':address'] = "%$address%";
-}
-if ($institute !== '') {
-    $where[] = 'institute LIKE :inst';
-    $params[':inst'] = "%$institute%";
-}
-if ($part_no !== '') {
-    $where[] = 'part_no = :part_no';
-    $params[':part_no'] = $part_no;
-}
-if ($gender !== '') {
-    $where[] = 'gender = :gender';
-    $params[':gender'] = $gender;
-}
-
-$whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
-
 // ── Query ─────────────────────────────────────────────────────────────────
 try {
     $db = getDB();
+
+    // Check if 'status' and 'review' columns exist (schema migration safe)
+    $hasStatus = false;
+    $hasReview = false;
+    try {
+        $cols = $db->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors' AND COLUMN_NAME IN ('status', 'review')")
+            ->fetchAll(PDO::FETCH_COLUMN);
+        $hasStatus = in_array('status', $cols, true);
+        $hasReview = in_array('review', $cols, true);
+    } catch (Exception $e) {
+        $hasStatus = false;
+        $hasReview = false;
+    }
+
+    // ── Build WHERE ───────────────────────────────────────────────────────────
+    $where = [];
+    $params = [];
+
+    if ($hasStatus && $status !== '' && $status !== 'ALL') {
+        $where[] = 'status = :status';
+        $params[':status'] = $status;
+    }
+
+    if ($name !== '') {
+        $where[] = 'elector_name LIKE :name';
+        $params[':name'] = "%$name%";
+    }
+    if ($address !== '') {
+        $where[] = 'address LIKE :address';
+        $params[':address'] = "%$address%";
+    }
+    if ($institute !== '') {
+        $where[] = 'institute LIKE :inst';
+        $params[':inst'] = "%$institute%";
+    }
+    if ($part_no !== '') {
+        $where[] = 'part_no = :part_no';
+        $params[':part_no'] = $part_no;
+    }
+    if ($gender !== '') {
+        $where[] = 'gender = :gender';
+        $params[':gender'] = $gender;
+    }
+
+    $whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
     // Count
     $countStmt = $db->prepare("SELECT COUNT(*) FROM electors $whereSQL");
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
-    // Check if 'review' column exists (may not exist if DB not yet migrated)
-    $hasReview = false;
-    try {
-        $colCheck = $db->query("SELECT COUNT(*) FROM information_schema.COLUMNS
-            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors' AND COLUMN_NAME = 'review'");
-        $hasReview = (int)$colCheck->fetchColumn() > 0;
-    } catch (Exception $e) { $hasReview = false; }
+    $statusSel = $hasStatus ? ', status' : ", 'ACTIVE' AS status";
     $reviewSel = $hasReview ? ', review' : ", '' AS review";
 
     // Data — ordered by part_no, sr_no
     $dataStmt = $db->prepare(
-        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no, status{$reviewSel}
+        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no{$statusSel}{$reviewSel}
          FROM electors
          $whereSQL
          ORDER BY part_no ASC, sr_no ASC
@@ -118,7 +126,8 @@ try {
     $rows = $dataStmt->fetchAll();
 
     // Get distinct part numbers for UI
-    $partsStmt = $db->query("SELECT DISTINCT part_no FROM electors WHERE status = 'ACTIVE' ORDER BY part_no ASC");
+    $partsWhere = $hasStatus ? "WHERE status = 'ACTIVE'" : "";
+    $partsStmt = $db->query("SELECT DISTINCT part_no FROM electors $partsWhere ORDER BY part_no ASC");
     $parts = $partsStmt->fetchAll(PDO::FETCH_COLUMN);
 
     echo json_encode([
