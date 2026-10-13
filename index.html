@@ -454,10 +454,130 @@
       .campaign-text h3 { font-size: 1.3rem; }
     }
 
+    /* ── Image Carousel ───────────────────────────────────────────────── */
+    .carousel-section {
+      width: 100%;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      border-bottom: 3px solid #facc15;
+    }
+    .carousel-wrapper {
+      position: relative;
+      width: 100%;
+      height: 500px;
+      overflow: hidden;
+    }
+    @media(max-width: 1200px) { .carousel-wrapper { height: 440px; } }
+    @media(max-width: 900px)  { .carousel-wrapper { height: 350px; } }
+    @media(max-width: 600px)  { .carousel-wrapper { height: 260px; } }
+    @media(max-width: 420px)  { .carousel-wrapper { height: 220px; } }
+
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      will-change: transform;
+    }
+    .carousel-slide {
+      min-width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      background: #000;
+    }
+    .carousel-slide-backdrop {
+      display: none;
+    }
+    .carousel-slide-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 48%;
+      display: block;
+      transition: transform 6s ease;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      filter: contrast(1.05) saturate(1.04) brightness(1.01);
+    }
+    @media(max-width: 768px) {
+      .carousel-slide-img {
+        object-position: center 50%;
+      }
+    }
+    .carousel-slide.active .carousel-slide-img {
+      transform: scale(1.03);
+    }
+
+    /* Prev/Next buttons */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      color: #fff;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+      user-select: none;
+    }
+    .carousel-btn:hover {
+      background: rgba(234,88,12,0.7);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .carousel-btn.prev { left: 14px; }
+    .carousel-btn.next { right: 14px; }
+
+    /* Dots */
+    .carousel-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 20;
+    }
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      border: none;
+      padding: 0;
+    }
+    .carousel-dot.active {
+      background: #ea580c;
+      transform: scale(1.35);
+    }
+
+    /* Progress bar */
+    .carousel-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, #ea580c, #facc15);
+      z-index: 20;
+      transition: width 0.1s linear;
+    }
+
     /* ── Print Styles ─────────────────────────────────────────────────── */
     @media print {
       body { background: #fff; color: #000; }
-      .campaign-header, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
+      .campaign-header, .carousel-section, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
       main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
       .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; padding: 0 !important; }
       .table-responsive { overflow: visible !important; margin: 0 !important; }
@@ -478,16 +598,34 @@
 <div class="campaign-header">
   <div class="campaign-inner">
     <div class="campaign-img left-img">
-      <img src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
+      <img id="headerLeftImg" src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
     </div>
     <div class="campaign-text">
-      <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
-      <h1>मा. श्री. सुनीलभाऊ जगताप</h1>
-      <h3>पसंती क्र. १</h3>
+      <h2 id="headerConstituency">पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
+      <h1 id="headerCandidateName">मा. श्री. सुनीलभाऊ जगताप</h1>
+      <h3 id="headerPreference">पसंती क्र. १</h3>
     </div>
     <div class="campaign-img right-img">
-      <img src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
+      <img id="headerRightImg" src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
     </div>
+  </div>
+</div>
+
+<!-- ── Image Carousel ───────────────────────────────────────────────────── -->
+<div class="carousel-section">
+  <div class="carousel-wrapper" id="mainCarousel">
+    <!-- Slides are injected dynamically by loadSiteSettings() -->
+    <div class="carousel-track" id="carouselTrack"></div>
+
+    <!-- Prev / Next buttons -->
+    <button class="carousel-btn prev" id="carouselPrev" aria-label="Previous slide">&#8249;</button>
+    <button class="carousel-btn next" id="carouselNext" aria-label="Next slide">&#8250;</button>
+
+    <!-- Dots -->
+    <div class="carousel-dots" id="carouselDots"></div>
+
+    <!-- Progress bar -->
+    <div class="carousel-progress" id="carouselProgress"></div>
   </div>
 </div>
 
@@ -734,6 +872,195 @@
         .catch(err => console.error('Service Worker registration failed', err));
     });
   }
+
+  /* ── Site Settings Loader + Carousel ─────────────────────────────── */
+  async function loadSiteSettings() {
+    let settings = null;
+    try {
+      const r = await fetch('settings_api.php?action=get');
+      const j = await r.json();
+      if (j.success) settings = j.settings;
+    } catch(e) { console.warn('Settings API unavailable, using defaults.'); }
+
+    // ── Apply header text ──────────────────────────────────────────────
+    if (settings) {
+      const el = (id) => document.getElementById(id);
+      if (settings.candidate_name    && el('headerCandidateName'))
+        el('headerCandidateName').textContent = settings.candidate_name;
+      if (settings.constituency_name && el('headerConstituency'))
+        el('headerConstituency').textContent  = settings.constituency_name;
+      if (settings.preference_number && el('headerPreference'))
+        el('headerPreference').textContent    = settings.preference_number;
+      if (settings.header_left_image && el('headerLeftImg'))
+        el('headerLeftImg').src               = settings.header_left_image;
+      if (settings.header_right_image && el('headerRightImg'))
+        el('headerRightImg').src              = settings.header_right_image;
+    }
+
+    // ── Build carousel slides ──────────────────────────────────────────
+    const slides_data = (settings && settings.carousel_slides && settings.carousel_slides.length)
+      ? settings.carousel_slides
+      : [
+          { src: 'images/slide1.jpg', alt: 'Campaign Photo 1' },
+          { src: 'images/slide2.jpg', alt: 'Campaign Photo 2' },
+          { src: 'images/slide3.jpg', alt: 'Campaign Photo 3' },
+        ];
+
+    const autoMs = settings ? (parseInt(settings.carousel_speed_ms, 10) || 2000) : 2000;
+
+    // ── Build carousel slides with clones for seamless infinite loop ───
+    const N = slides_data.length;
+    const track  = document.getElementById('carouselTrack');
+    const dotsEl = document.getElementById('carouselDots');
+    if (!track) return;
+
+    if (N === 0) return;
+
+    let dotsHtml = '';
+    for (let i = 0; i < N; i++) {
+      dotsHtml += `<button class="carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}" aria-label="Slide ${i+1}"></button>`;
+    }
+    if (dotsEl) dotsEl.innerHTML = dotsHtml;
+
+    function createSlideHtml(s) {
+      return `<div class="carousel-slide">
+        <img class="carousel-slide-img" src="${s.src}" alt="${s.alt || ''}"
+             onerror="this.src='icon.png';" />
+      </div>`;
+    }
+
+    if (N === 1) {
+      track.innerHTML = createSlideHtml(slides_data[0]);
+      return;
+    }
+
+    // Wrap with clones: [Clone Last, Slide 0, Slide 1, ... Slide N-1, Clone First]
+    let trackHtml = createSlideHtml(slides_data[N - 1]); // clone of last
+    slides_data.forEach(s => { trackHtml += createSlideHtml(s); });
+    trackHtml += createSlideHtml(slides_data[0]); // clone of first
+    track.innerHTML = trackHtml;
+
+    // ── Seamless Infinite Carousel Logic ────────────────────────────────
+    const dots     = dotsEl ? dotsEl.querySelectorAll('.carousel-dot') : [];
+    const prevBtn  = document.getElementById('carouselPrev');
+    const nextBtn  = document.getElementById('carouselNext');
+    const progress = document.getElementById('carouselProgress');
+    const wrapper  = document.getElementById('mainCarousel');
+
+    const TRANSITION_CSS = 'transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)';
+    let current = 1; // start at real first slide (index 1)
+    let autoTimer = null;
+    let isAnimating = false;
+
+    // Initial position
+    track.style.transition = 'none';
+    track.style.transform = `translateX(-${current * 100}%)`;
+
+    function updateDots() {
+      let realIdx = 0;
+      if (current === 0) realIdx = N - 1;
+      else if (current === N + 1) realIdx = 0;
+      else realIdx = current - 1;
+
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === realIdx);
+      });
+    }
+
+    function slideTo(idx) {
+      if (isAnimating) return;
+      isAnimating = true;
+      current = idx;
+      track.style.transition = TRANSITION_CSS;
+      track.style.transform = `translateX(-${current * 100}%)`;
+      updateDots();
+    }
+
+    // Instant swap after transition ends on clones
+    track.addEventListener('transitionend', (e) => {
+      if (e.target !== track) return;
+      if (current === N + 1) {
+        track.style.transition = 'none';
+        current = 1;
+        track.style.transform = `translateX(-${current * 100}%)`;
+        void track.offsetWidth; // force reflow
+      } else if (current === 0) {
+        track.style.transition = 'none';
+        current = N;
+        track.style.transform = `translateX(-${current * 100}%)`;
+        void track.offsetWidth; // force reflow
+      }
+      isAnimating = false;
+    });
+
+    function nextSlide() {
+      if (isAnimating) return;
+      slideTo(current + 1);
+    }
+
+    function prevSlide() {
+      if (isAnimating) return;
+      slideTo(current - 1);
+    }
+
+    function startProgress() {
+      if (progress) {
+        progress.style.transition = 'none';
+        progress.style.width = '0%';
+        void progress.offsetWidth; // force reflow
+        progress.style.transition = `width ${autoMs}ms linear`;
+        progress.style.width = '100%';
+      }
+    }
+
+    function startAuto() {
+      stopAuto();
+      startProgress();
+      autoTimer = setInterval(() => {
+        nextSlide();
+        startProgress();
+      }, autoMs);
+    }
+
+    function stopAuto() {
+      clearInterval(autoTimer);
+      if (progress) { progress.style.transition = 'none'; progress.style.width = '0%'; }
+    }
+
+    prevBtn && prevBtn.addEventListener('click', () => { prevSlide(); startAuto(); });
+    nextBtn && nextBtn.addEventListener('click', () => { nextSlide(); startAuto(); });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', () => {
+        if (isAnimating) return;
+        const targetDot = parseInt(dot.dataset.idx, 10);
+        slideTo(targetDot + 1);
+        startAuto();
+      });
+    });
+
+    wrapper && wrapper.addEventListener('mouseenter', stopAuto);
+    wrapper && wrapper.addEventListener('mouseleave', startAuto);
+
+    let touchStartX = 0;
+    wrapper && wrapper.addEventListener('touchstart', e => {
+      touchStartX = e.touches[0].clientX;
+      stopAuto();
+    }, { passive: true });
+
+    wrapper && wrapper.addEventListener('touchend', e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) {
+        if (diff > 0) nextSlide();
+        else prevSlide();
+      }
+      startAuto();
+    }, { passive: true });
+
+    startAuto();
+  }
+
+  loadSiteSettings();
 </script>
 </body>
 </html>

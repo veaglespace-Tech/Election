@@ -1,5 +1,25 @@
+# Dependencies
 node_modules/
+package-lock.json
+
+# Temporary & Local Database Dumps
+*.sql.bak
 temp_import.sql
 electors_part5.sql
+*.tmp
+
+# Raw Voter PDFs
 PUNE ENGLISH TEACHERS VOTERS  JAN 2026/
 *.pdf
+
+# Environment & Credentials (if any added in future)
+.env
+.env.local
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.log

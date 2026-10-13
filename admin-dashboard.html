@@ -1,9 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard — Election 2026</title>
+  <script>
+    // ── Instant Auth Guard (runs before any HTML renders) ──
+    if (!sessionStorage.getItem('admin_auth')) {
+      window.location.replace('admin-login.html');
+    }
+  </script>
   <meta name="description" content="Admin dashboard for Pune Shikshak Matdar Sangh Election 2026." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -634,6 +640,11 @@
 
     <div class="nav-section-label">System</div>
 
+    <a class="nav-item" id="nav-settings" onclick="showSection('settings')">
+      <span class="nav-icon">⚙️</span>
+      Website Settings
+    </a>
+
     <a class="nav-item" href="index.html" target="_blank">
       <span class="nav-icon">🌐</span>
       Public Portal ↗
@@ -875,15 +886,120 @@
       </div>
     </div>
 
+
+    <!-- ── Website Settings Section ──────────────────────────────────────── -->
+    <div class="section" id="section-settings">
+      <div class="section-header">
+        <div class="section-title-wrap">
+          <div class="section-title">⚙️ Website Settings</div>
+          <div class="section-subtitle">Header, candidate info aani carousel dynamically change kara</div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()">&#128190; Save All Changes</button>
+      </div>
+
+      <!-- Toast -->
+      <div id="settingsToast" style="display:none;padding:0.75rem 1.25rem;border-radius:8px;font-size:0.85rem;font-weight:600;margin-bottom:1.25rem;"></div>
+
+      <div class="overview-grid" style="gap:1.5rem;">
+
+        <!-- ── Candidate Text Info ──────────────────────────────────── -->
+        <div class="info-card">
+          <div class="info-card-title">📝 Candidate &amp; Header Text</div>
+          <div style="display:flex;flex-direction:column;gap:1rem;margin-top:0.75rem;">
+
+            <div class="field">
+              <label for="s-constituency">Constituency Name (Top line)</label>
+              <input type="text" id="s-constituency" placeholder="e.g. पुणे शिक्षक मतदारसंघ निवडणूक २०२६" />
+            </div>
+
+            <div class="field">
+              <label for="s-candidate">Candidate Name (Main heading)</label>
+              <input type="text" id="s-candidate" placeholder="e.g. मा. श्री. सुनीलभाऊ जगताप" />
+            </div>
+
+            <div class="field">
+              <label for="s-preference">Preference / Tagline (Yellow line)</label>
+              <input type="text" id="s-preference" placeholder="e.g. पसंती क्र. १" />
+            </div>
+
+            <div class="field">
+              <label for="s-speed">Carousel Auto-Scroll Speed (milliseconds)</label>
+              <input type="number" id="s-speed" placeholder="2000" min="500" max="10000" step="500" />
+              <span style="font-size:0.7rem;color:var(--text3);">Default: 2000ms (2 seconds). Min: 500ms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Header Images ───────────────────────────────────────── -->
+        <div class="info-card">
+          <div class="info-card-title">🖼️ Header Images</div>
+          <div style="display:flex;flex-direction:column;gap:1.25rem;margin-top:0.75rem;">
+
+            <!-- Left Image -->
+            <div>
+              <label style="font-size:0.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;">Left Header Image</label>
+              <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
+                <img id="preview-left" src="icon.png" alt="Left preview"
+                     style="width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);" />
+                <div style="flex:1;">
+                  <input type="file" id="upload-left" accept="image/*" style="display:none"
+                         onchange="handleHeaderUpload('left')" />
+                  <button class="btn btn-ghost" style="width:100%;" onclick="document.getElementById('upload-left').click()">
+                    📤 Upload New Left Image
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Image -->
+            <div>
+              <label style="font-size:0.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;">Right Header Image</label>
+              <div style="display:flex;align-items:center;gap:1rem;margin-top:0.5rem;">
+                <img id="preview-right" src="icon1.png" alt="Right preview"
+                     style="width:70px;height:70px;object-fit:cover;border-radius:50%;border:2px solid var(--border2);" />
+                <div style="flex:1;">
+                  <input type="file" id="upload-right" accept="image/*" style="display:none"
+                         onchange="handleHeaderUpload('right')" />
+                  <button class="btn btn-ghost" style="width:100%;" onclick="document.getElementById('upload-right').click()">
+                    📤 Upload New Right Image
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <p style="font-size:0.75rem;color:var(--text3);line-height:1.5;">
+              Allowed: JPG, PNG, WEBP, GIF &bull; Max 10MB per image
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /overview-grid -->
+
+      <!-- ── Carousel Slides ─────────────────────────────────────────── -->
+      <div class="info-card" style="margin-top:1.5rem;">
+        <div class="info-card-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>🎞️ Carousel Slides</span>
+          <div style="display:flex;gap:0.5rem;">
+            <input type="file" id="upload-slide" accept="image/*" style="display:none" onchange="addCarouselSlide()" />
+            <button class="btn btn-success" onclick="document.getElementById('upload-slide').click()">
+              + Add Slide Image
+            </button>
+          </div>
+        </div>
+
+        <div id="slidesList" style="margin-top:1rem;display:flex;flex-direction:column;gap:0.75rem;">
+          <div class="state-msg" style="color:var(--text3);font-size:0.82rem;">Loading slides…</div>
+        </div>
+      </div>
+
+    </div><!-- /section-settings -->
+
   </div><!-- /content -->
 </div><!-- /main-area -->
 
 <script>
-// ── Auth Guard ──────────────────────────────────────────────────────────────
+// ── Auth Guard (already handled in <head>, just set admin info) ────────────
 (function() {
-  if (!sessionStorage.getItem('admin_auth')) {
-    window.location.href = 'admin-login.html';
-  }
   // Set admin name
   const email = sessionStorage.getItem('admin_email') || '';
   const name  = email.split('@')[0] || 'Admin';
@@ -909,6 +1025,7 @@ const sectionTitles = {
   overview : ['Dashboard Overview',   'Summary of all elector data'],
   data     : ['Elector Records',      'Browse, search and filter all electors'],
   download : ['Download & Export',    'Export elector data in various formats'],
+  settings : ['Website Settings',     'Header, candidate info aani carousel manage kara'],
 };
 
 function showSection(id) {
@@ -1215,6 +1332,156 @@ function hl(text, q) {
 function esc(s) {
   return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+
+
+// ── Website Settings ──────────────────────────────────────────────────────────
+let _settingsCache = {};
+
+async function loadSettings() {
+  try {
+    const r = await fetch('settings_api.php?action=get');
+    const j = await r.json();
+    if (!j.success) throw new Error(j.error);
+    const s = j.settings;
+    _settingsCache = s;
+    document.getElementById('s-constituency').value = s.constituency_name || '';
+    document.getElementById('s-candidate').value    = s.candidate_name    || '';
+    document.getElementById('s-preference').value   = s.preference_number || '';
+    document.getElementById('s-speed').value        = s.carousel_speed_ms || '2000';
+    if (s.header_left_image)  document.getElementById('preview-left').src  = s.header_left_image  + '?t=' + Date.now();
+    if (s.header_right_image) document.getElementById('preview-right').src = s.header_right_image + '?t=' + Date.now();
+    renderSlides(s.carousel_slides || []);
+  } catch(e) { showToast('Error loading settings: ' + e.message, 'error'); }
+}
+
+function renderSlides(slides) {
+  const list = document.getElementById('slidesList');
+  if (!slides.length) {
+    list.innerHTML = '<p style="color:var(--text3);font-size:0.82rem;">No slides yet. Click "+ Add Slide Image" to add one.</p>';
+    return;
+  }
+  list.innerHTML = slides.map((s, i) => `
+    <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);">
+      <img src="${s.src}?t=${Date.now()}" alt="slide ${i+1}"
+           style="width:80px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border2);flex-shrink:0;"
+           onerror="this.src='icon.png'" />
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text2);margin-bottom:0.2rem;">Slide ${i+1}</div>
+        <input type="text" value="${esc(s.alt||'')}" placeholder="Caption / Alt text"
+               style="width:100%;padding:0.3rem 0.5rem;border:1px solid var(--border2);border-radius:4px;font-size:0.78rem;font-family:inherit;"
+               oninput="_settingsCache.carousel_slides[${i}].alt=this.value" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.3rem;">
+        ${i > 0 ? `<button class="btn btn-ghost" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="moveSlide(${i},-1)">&#8593;</button>` : '<div style="height:30px;"></div>'}
+        ${i < slides.length-1 ? `<button class="btn btn-ghost" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="moveSlide(${i},1)">&#8595;</button>` : '<div style="height:30px;"></div>'}
+      </div>
+      <button class="btn" style="background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,0.2);padding:0.3rem 0.7rem;font-size:0.78rem;" onclick="deleteSlide(${i})">&#128465;</button>
+    </div>
+  `).join('');
+}
+
+async function saveSettings() {
+  const payload = {
+    constituency_name  : document.getElementById('s-constituency').value.trim(),
+    candidate_name     : document.getElementById('s-candidate').value.trim(),
+    preference_number  : document.getElementById('s-preference').value.trim(),
+    carousel_speed_ms  : document.getElementById('s-speed').value || '2000',
+    header_left_image  : _settingsCache.header_left_image  || 'icon.png',
+    header_right_image : _settingsCache.header_right_image || 'icon1.png',
+    carousel_slides    : _settingsCache.carousel_slides    || [],
+  };
+  try {
+    const r = await fetch('settings_api.php?action=save', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+    });
+    const j = await r.json();
+    if (!j.success) throw new Error(j.error);
+    showToast('&#10003; Settings saved! Public website is now updated.', 'success');
+  } catch(e) { showToast('&#10007; Save failed: ' + e.message, 'error'); }
+}
+
+async function handleHeaderUpload(side) {
+  const fileInput = document.getElementById('upload-' + side);
+  const file = fileInput.files[0];
+  if (!file) return;
+  showToast('Uploading image...', 'info');
+  const fd = new FormData();
+  fd.append('image', file);
+  try {
+    const r = await fetch('settings_api.php?action=upload', { method:'POST', body:fd });
+    const j = await r.json();
+    if (!j.success) throw new Error(j.error);
+    if (side === 'left') {
+      _settingsCache.header_left_image  = j.url;
+      document.getElementById('preview-left').src  = j.url + '?t=' + Date.now();
+    } else {
+      _settingsCache.header_right_image = j.url;
+      document.getElementById('preview-right').src = j.url + '?t=' + Date.now();
+    }
+    showToast('Image uploaded! Click "Save All Changes" to apply.', 'success');
+  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+  fileInput.value = '';
+}
+
+async function addCarouselSlide() {
+  const fileInput = document.getElementById('upload-slide');
+  const file = fileInput.files[0];
+  if (!file) return;
+  showToast('Uploading slide...', 'info');
+  const fd = new FormData();
+  fd.append('image', file);
+  try {
+    const r = await fetch('settings_api.php?action=upload', { method:'POST', body:fd });
+    const j = await r.json();
+    if (!j.success) throw new Error(j.error);
+    if (!_settingsCache.carousel_slides) _settingsCache.carousel_slides = [];
+    _settingsCache.carousel_slides.push({ src: j.url, alt: file.name.replace(/\.[^.]+$/, '') });
+    renderSlides(_settingsCache.carousel_slides);
+    showToast('Slide added! Click "Save All Changes" to apply.', 'success');
+  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+  fileInput.value = '';
+}
+
+async function deleteSlide(idx) {
+  if (!confirm('Yaa slide delete karaychi?')) return;
+  const slide = _settingsCache.carousel_slides[idx];
+  if (slide && slide.src && slide.src.indexOf('uploads/') === 0) {
+    try {
+      await fetch('settings_api.php?action=delete_slide', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ url: slide.src })
+      });
+    } catch(e) {}
+  }
+  _settingsCache.carousel_slides.splice(idx, 1);
+  renderSlides(_settingsCache.carousel_slides);
+  showToast('Slide removed. Click "Save All Changes" to apply.', 'success');
+}
+
+function moveSlide(idx, dir) {
+  const slides = _settingsCache.carousel_slides;
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= slides.length) return;
+  [slides[idx], slides[newIdx]] = [slides[newIdx], slides[idx]];
+  renderSlides(slides);
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('settingsToast');
+  if (!t) return;
+  const colors = { success:{bg:'var(--green-lt)',color:'var(--green)'}, error:{bg:'var(--red-lt)',color:'var(--red)'}, info:{bg:'var(--accent-lt)',color:'var(--accent)'} };
+  const c = colors[type] || colors.info;
+  t.style.display='block'; t.style.background=c.bg; t.style.color=c.color; t.innerHTML=msg;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.display='none'; }, 4000);
+}
+
+// Override showSection to load settings when tab is opened
+const _origShowSection = showSection;
+window.showSection = function(id) {
+  _origShowSection(id);
+  if (id === 'settings') loadSettings();
+};
 
 // ── Init ─────────────────────────────────────────────────────────────────────
 setupFilters();

@@ -3,10 +3,24 @@ import re
 import sys
 
 def main():
-    filename = 'vps_seed_data.sql'
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    else:
+        # Check standard locations
+        candidates = [
+            os.path.join(os.path.dirname(__file__), '..', 'database', 'vps_seed_data.sql'),
+            os.path.join('database', 'vps_seed_data.sql'),
+            'vps_seed_data.sql'
+        ]
+        filename = next((p for p in candidates if os.path.exists(p)), candidates[0])
+
     if not os.path.exists(filename):
-        print("File not found!")
+        print(f"File not found: {filename}")
+        print("Usage: python clean_sql.py [path/to/file.sql]")
         return
+
+    filename = os.path.abspath(filename)
+    print(f"Target SQL file: {filename}")
 
     with open(filename, 'rb') as f:
         raw_data = f.read()

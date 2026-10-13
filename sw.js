@@ -1,4 +1,4 @@
-const CACHE_NAME = 'election-app-v3';
+const CACHE_NAME = 'election-app-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -35,7 +35,16 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event (Network First Strategy)
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET' || event.request.url.includes('api.php')) {
+  const url = event.request.url;
+  if (
+    event.request.method !== 'GET' ||
+    url.includes('api.php') ||
+    url.includes('settings_api.php') ||
+    url.endsWith('index.html') ||
+    url.endsWith(':8000/') ||
+    url.endsWith('localhost/') ||
+    url.includes('admin-')
+  ) {
     return;
   }
 
