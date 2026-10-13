@@ -521,6 +521,9 @@
 
     /* ── Table scroll wrapper ─────────────────────────────────────────── */
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    /* Admin sticky thead */
+    .table-card .data-table thead { position: sticky; top: 0; z-index: 5; }
+    .table-card .data-table th { box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
 
     /* ── Overview / Home ─────────────────────────────────────────────── */
     .overview-grid {
@@ -798,7 +801,8 @@
           <span class="table-title">Elector Records</span>
           <span id="tableBadge" style="font-size:0.78rem;color:var(--text2);">Loading…</span>
         </div>
-        <div class="table-scroll">
+        <div class="table-scroll" style="position:relative;">
+          <!-- thead sticks to top of .content scroll container -->
           <table class="data-table">
             <thead>
               <tr>

@@ -357,15 +357,7 @@
     .state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
     .state-msg { color: var(--text3); font-size: 0.875rem; }
 
-    /* ── Part header ─────────────────────────────────────────────────── */
-    .part-group {}
-    .part-header {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.65rem 0;
-      background: var(--bg2);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 64px; z-index: 5;
-    }
+    /* ── Part header (inline row inside table) ─────────────────────── */
     .part-badge {
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: #fff;
@@ -386,18 +378,26 @@
 
     /* ── Data table ──────────────────────────────────────────────────── */
     .data-table { width: 100%; border-collapse: collapse; }
-    .data-table thead { position: sticky; top: 101px; z-index: 4; }
-    @media (max-width: 768px) {
-      .data-table thead { top: 0; } /* Prevent header from jumping down inside scroll container on mobile */
-    }
+    .data-table thead { position: sticky; top: 0; z-index: 6; }
     .data-table th {
-      background: var(--bg3);
+      background: #eef2fb;
       padding: 0.65rem 0.5rem;
       text-align: left;
       font-size: 0.67rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--text3);
       border-bottom: 1.5px solid var(--border);
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .data-table th .th-sub {
+      display: block;
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: var(--text4);
+      text-transform: none;
+      letter-spacing: 0.02em;
+      margin-top: 0.18rem;
       white-space: nowrap;
     }
     .data-table td {
@@ -409,6 +409,23 @@
     }
     .data-table tr:hover td { background: #f8faff; }
     .data-table tr:last-child td { border-bottom: none; }
+
+    /* ── Part separator row inside single table ─────────────────────── */
+    .part-sep-row td {
+      padding: 0 !important;
+      border-bottom: none !important;
+      background: transparent !important;
+    }
+    .part-sep-row:hover td { background: transparent !important; }
+    .part-header-inline {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0.5rem;
+      background: var(--bg2);
+      border-top: 2px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: 0.25rem;
+    }
+    .part-sep-row:first-child .part-header-inline { border-top: none; margin-top: 0; }
 
     .col-sr {
       font-family: 'JetBrains Mono', monospace;
@@ -441,21 +458,22 @@
     .col-review {
       font-size: 0.75rem;
       color: var(--text3);
-      max-width: 200px;
-      line-height: 1.4;
+      max-width: 220px;
+      line-height: 1.6;
     }
     .review-badge {
       display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.15rem;
       background: #fef3c7;
       border: 1px solid #fcd34d;
       color: #92400e;
       border-radius: 5px;
-      padding: 0.15rem 0.55rem;
+      padding: 0.25rem 0.55rem;
       font-size: 0.68rem;
       font-weight: 600;
-      line-height: 1.6;
+      line-height: 1.5;
     }
     .review-badge.shifted {
       background: #ede9fe;
@@ -466,6 +484,13 @@
       background: #fef2f2;
       border-color: #fca5a5;
       color: #b91c1c;
+    }
+    .review-ref {
+      font-size: 0.62rem;
+      font-weight: 700;
+      opacity: 0.75;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.04em;
     }
     .review-empty {
       color: var(--text4);
@@ -542,18 +567,17 @@
 
     /* ── Mobile Responsiveness ────────────────────────────────────────── */
     /* ── Table horizontal scroller ──────────────────────────────────── */
-    .table-responsive {
+    .table-wrap {
       width: 100%;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
-      margin-bottom: 1rem;
       scrollbar-width: thin;
       scrollbar-color: var(--accent) var(--bg3);
     }
-    .table-responsive::-webkit-scrollbar { height: 6px; }
-    .table-responsive::-webkit-scrollbar-track { background: var(--bg3); border-radius: 3px; }
-    .table-responsive::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-    .table-responsive::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+    .table-wrap::-webkit-scrollbar { height: 6px; }
+    .table-wrap::-webkit-scrollbar-track { background: var(--bg3); border-radius: 3px; }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+    .table-wrap::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
 
     @media (max-width: 900px) {
       .campaign-text h1 { font-size: 2.2rem; }
@@ -588,7 +612,7 @@
       .stat-value { font-size: 1.4rem; }
       main { padding: 1rem; }
       .filter-card { padding: 1rem 0; }
-      .part-header { flex-wrap: wrap; gap: 0.5rem; }
+      .part-header-inline { flex-wrap: wrap; gap: 0.5rem; }
       .part-count { margin-left: 0; width: 100%; }
       .pagination { flex-direction: column; align-items: flex-start; gap: 1rem; }
       .page-btns { justify-content: center; width: 100%; }
@@ -943,25 +967,25 @@
     const groups = {};
     for (const r of j.data) { if(!groups[r.part_no]) groups[r.part_no]=[]; groups[r.part_no].push(r); }
 
-    let html = '';
+    // Single table with part-separator rows
+    let html = `<div class="table-wrap"><table class="data-table"><thead><tr>
+      <th>Sr No</th><th>Elector Name</th><th>Relative Name</th>
+      <th>Address</th><th>Institute</th><th>Age</th><th>Gender</th><th>EPIC No</th>
+      <th>Remarks<span class="th-sub">Part No / Sr No</span></th>
+    </tr></thead><tbody>`;
+
+    let isFirst = true;
     for (const [part, rows] of Object.entries(groups)) {
-      html += `
-        <div class="part-group">
-          <div class="part-header">
-            <span class="part-badge">PART ${part}</span>
-            <span class="part-label">Electoral Part ${part}</span>
-            <span class="part-count">${rows.length} electors</span>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead><tr>
-                <th>Sr No</th><th>Elector Name</th><th>Relative Name</th>
-                <th>Address</th><th>Institute</th><th>Age</th><th>Gender</th><th>EPIC No</th><th>Remarks</th>
-              </tr></thead>
-              <tbody>`;
+      html += `<tr class="part-sep-row${isFirst ? ' first-part' : ''}"><td colspan="9">
+        <div class="part-header-inline">
+          <span class="part-badge">PART ${part}</span>
+          <span class="part-label">Electoral Part ${part}</span>
+          <span class="part-count">${rows.length} electors</span>
+        </div></td></tr>`;
+      isFirst = false;
       for (const r of rows) {
         html += `<tr>
-          <td class="col-sr"></td>
+          <td class="col-sr">${r.sr_no || '—'}</td>
           <td class="col-name">${hl(r.elector_name, state.name)}</td>
           <td class="col-rel">${esc(r.relative_name)}</td>
           <td class="col-addr">${hl(r.address, state.address)}</td>
@@ -972,8 +996,8 @@
           <td class="col-review">${renderReview(r.review || r.remarks || '', part, r.sr_no)}</td>
         </tr>`;
       }
-      html += '</tbody></table></div></div>';
     }
+    html += '</tbody></table></div>';
     const tb = document.getElementById('tableBody');
     tb.innerHTML = html;
     if (typeof resetTableStyle === 'function') resetTableStyle();
@@ -988,8 +1012,7 @@
     let icon = '📝';
     if (/shifted/i.test(v)) { cls += ' shifted'; icon = '🔀'; }
     else if (/delet|remov/i.test(v)) { cls += ' deleted'; icon = '🗑️'; }
-    const partSr = part && sr ? ` (${part}/${sr})` : '';
-    return `<span class="${cls}">${icon} ${esc(v)}${partSr}</span>`;
+    return `<span class="${cls}">${icon} ${esc(v)}</span>`;
   }
 
   function hl(text, q) {
