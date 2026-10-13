@@ -823,7 +823,7 @@
               <tbody>`;
       for (const r of rows) {
         html += `<tr>
-          <td class="col-sr">${r.sr_no}</td>
+          <td class="col-sr"></td>
           <td class="col-name">${hl(r.elector_name, state.name)}</td>
           <td class="col-rel">${esc(r.relative_name)}</td>
           <td class="col-addr">${hl(r.address, state.address)}</td>
@@ -831,7 +831,7 @@
           <td class="col-age">${r.age || '—'}</td>
           <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
           <td class="col-epic">${r.epic_no || '—'}</td>
-          <td class="col-review">${renderReview(r.review || r.remarks || '')}</td>
+          <td class="col-review">${renderReview(r.review || r.remarks || '', part, r.sr_no)}</td>
         </tr>`;
       }
       html += '</tbody></table></div></div>';
@@ -843,14 +843,15 @@
   }
 
   /* ── Render remarks / review badge ─────────────────────────── */
-  function renderReview(v) {
+  function renderReview(v, part, sr) {
     if (!v || v.trim() === '') return '<span class="review-empty">—</span>';
     v = v.trim();
     let cls = 'review-badge';
     let icon = '📝';
     if (/shifted/i.test(v)) { cls += ' shifted'; icon = '🔀'; }
     else if (/delet|remov/i.test(v)) { cls += ' deleted'; icon = '🗑️'; }
-    return `<span class="${cls}">${icon} ${esc(v)}</span>`;
+    const partSr = part && sr ? ` (${part}/${sr})` : '';
+    return `<span class="${cls}">${icon} ${esc(v)}${partSr}</span>`;
   }
 
   function hl(text, q) {
