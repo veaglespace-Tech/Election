@@ -93,9 +93,18 @@ try {
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
+    // Check if 'review' column exists (may not exist if DB not yet migrated)
+    $hasReview = false;
+    try {
+        $colCheck = $db->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors' AND COLUMN_NAME = 'review'");
+        $hasReview = (int)$colCheck->fetchColumn() > 0;
+    } catch (Exception $e) { $hasReview = false; }
+    $reviewSel = $hasReview ? ', review' : ", '' AS review";
+
     // Data — ordered by part_no, sr_no
     $dataStmt = $db->prepare(
-        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no, status
+        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no, status{$reviewSel}
          FROM electors
          $whereSQL
          ORDER BY part_no ASC, sr_no ASC
