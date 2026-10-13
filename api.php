@@ -50,11 +50,16 @@ $address = inp('address');
 $institute = inp('institute');
 $part_no = inp('part_no');
 $gender = inp('gender');
+$status = inp('status', 'ACTIVE');
 
 // ── Build WHERE ───────────────────────────────────────────────────────────
 $where = [];
 $params = [];
 
+if ($status !== '' && $status !== 'ALL') {
+    $where[] = 'status = :status';
+    $params[':status'] = $status;
+}
 
 if ($name !== '') {
     $where[] = 'elector_name LIKE :name';
@@ -90,7 +95,7 @@ try {
 
     // Data — ordered by part_no, sr_no
     $dataStmt = $db->prepare(
-        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no
+        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no, status
          FROM electors
          $whereSQL
          ORDER BY part_no ASC, sr_no ASC
@@ -104,7 +109,7 @@ try {
     $rows = $dataStmt->fetchAll();
 
     // Get distinct part numbers for UI
-    $partsStmt = $db->query("SELECT DISTINCT part_no FROM electors ORDER BY part_no ASC");
+    $partsStmt = $db->query("SELECT DISTINCT part_no FROM electors WHERE status = 'ACTIVE' ORDER BY part_no ASC");
     $parts = $partsStmt->fetchAll(PDO::FETCH_COLUMN);
 
     echo json_encode([

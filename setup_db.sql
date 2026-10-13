@@ -39,12 +39,14 @@ CREATE TABLE IF NOT EXISTS `electors` (
   `age`           TINYINT UNSIGNED DEFAULT NULL,
   `gender`        CHAR(1) DEFAULT '',
   `epic_no`       VARCHAR(20) DEFAULT '',
+  `status`        VARCHAR(10) NOT NULL DEFAULT 'ACTIVE',
   UNIQUE KEY `uq_part_sr`  (`part_no`, `sr_no`),
   INDEX `idx_name`    (`elector_name`(80)),
   INDEX `idx_epic`    (`epic_no`),
   INDEX `idx_age`     (`age`),
   INDEX `idx_gender`  (`gender`),
   INDEX `idx_part`    (`part_no`),
+  INDEX `idx_status`  (`status`),
   INDEX `idx_addr`    (`address`(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
