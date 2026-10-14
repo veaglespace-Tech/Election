@@ -68,8 +68,24 @@ $DEFAULTS = [
     'carousel_speed_ms'    => '2000',
 ];
 
+function fixUploadPermissions(): void {
+    if (!is_dir(UPLOAD_DIR)) {
+        @mkdir(UPLOAD_DIR, 0755, true);
+    }
+    @chmod(UPLOAD_DIR, 0755);
+    $files = @glob(UPLOAD_DIR . '*');
+    if (is_array($files)) {
+        foreach ($files as $f) {
+            if (is_file($f)) {
+                @chmod($f, 0644);
+            }
+        }
+    }
+}
+
 try {
     ensureTable();
+    fixUploadPermissions();
     $action = $_GET['action'] ?? $_POST['action'] ?? 'get';
 
     if ($action === 'get') {
@@ -98,16 +114,25 @@ try {
 
     elseif ($action === 'upload') {
         if (!isset($_FILES['image'])) err('No image uploaded');
-        $file    = $_FILES['image'];
-        $allowed = ['image/jpeg','image/jpg','image/png','image/webp','image/gif'];
-        if (!in_array($file['type'], $allowed)) err('Only JPG PNG WEBP GIF allowed');
-        if ($file['size'] > 10*1024*1024)       err('Max file size is 10MB');
-        if ($file['error'] !== UPLOAD_ERR_OK)   err('Upload error: '.$file['error']);
-        if (!is_dir(UPLOAD_DIR)) mkdir(UPLOAD_DIR, 0755, true);
-        $ext      = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg');
+        $file = $_FILES['image'];
+        if ($file['error'] !== UPLOAD_ERR_OK) err('Upload error: '.$file['error']);
+        if ($file['size'] > 10*1024*1024)     err('Max file size is 10MB');
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg');
+        $allowedExts = ['jpg','jpeg','png','webp','gif'];
+        if (!in_array($ext, $allowedExts, true)) {
+            err('Only JPG, PNG, WEBP, GIF allowed');
+        }
+
+        if (!is_dir(UPLOAD_DIR)) {
+            @mkdir(UPLOAD_DIR, 0755, true);
+        }
+        @chmod(UPLOAD_DIR, 0755);
+
         $filename = 'img_'.time().'_'.substr(md5(rand()),0,8).'.'.$ext;
         $dest     = UPLOAD_DIR . $filename;
         if (!move_uploaded_file($file['tmp_name'], $dest)) err('Failed to save file');
+        @chmod($dest, 0644);
         ok(['url' => UPLOAD_URL.$filename, 'filename' => $filename]);
     }
 
