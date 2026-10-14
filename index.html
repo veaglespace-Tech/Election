@@ -517,23 +517,26 @@
     /* ── Polling Stations / Building column ────────────────────────────── */
     .col-building {
       color: var(--green);
-      font-size: 0.76rem;
-      min-width: 200px;
-      max-width: 320px;
-      line-height: 1.4;
+      font-size: 0.73rem;
+      min-width: 180px;
+      max-width: 260px;
+      line-height: 1.35;
     }
     .col-building .building-text {
-      display: inline-flex;
-      align-items: flex-start;
-      gap: 0.35rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
       color: #166534;
-      border-radius: 6px;
-      padding: 0.3rem 0.55rem;
-      font-size: 0.72rem;
+      border-radius: 5px;
+      padding: 0.25rem 0.45rem;
+      font-size: 0.7rem;
       font-weight: 500;
-      line-height: 1.4;
+      line-height: 1.35;
+      max-height: 2.7em;
     }
 
     /* ── Download button (Image 4 matching orange icon) ───────────────── */
@@ -1128,10 +1131,10 @@
 
     // Single table with part-separator rows
     let html = `<div class="table-wrap"><table class="data-table"><thead><tr>
-      <th>Sr No</th><th>Elector Name</th><th>Relative Name</th>
+      <th>Sr No</th><th>Slip</th><th>Elector Name</th><th>Relative Name</th>
       <th>Address</th><th>Institute</th><th>Polling Stations<span class="th-sub">Booth / Building</span></th>
       <th>Age</th><th>Gender</th><th>EPIC No</th>
-      <th>Remarks<span class="th-sub">Part No / Sr No</span></th><th>Slip</th>
+      <th>Remarks<span class="th-sub">Part No / Sr No</span></th>
     </tr></thead><tbody>`;
 
     let isFirst = true;
@@ -1146,6 +1149,7 @@
       for (const r of rows) {
         html += `<tr>
           <td class="col-sr">${r.sr_no || '—'}</td>
+          <td><button class="btn-dl" title="Download Voter Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button></td>
           <td class="col-name">${hl(r.elector_name, state.name)}</td>
           <td class="col-rel">${esc(r.relative_name)}</td>
           <td class="col-addr">${hl(r.address, state.address)}</td>
@@ -1155,7 +1159,6 @@
           <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
           <td class="col-epic">${r.epic_no || '—'}</td>
           <td class="col-review">${renderReview(r.review || r.remarks || '', part, r.sr_no)}</td>
-          <td><button class="btn-dl" title="Download Voter Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button></td>
         </tr>`;
       }
     }
