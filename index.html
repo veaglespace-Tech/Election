@@ -135,48 +135,67 @@
       height: 38px;
       overflow: hidden;
     }
+
 .ticker-track {
   display: flex;
   align-items: center;
-  animation: tickerScroll 25s linear infinite;
+  animation: tickerScroll 15s linear infinite;
   white-space: nowrap;
   will-change: transform;
 }
-    .ticker-track:hover { animation-play-state: paused; }
-    @keyframes tickerScroll {
-      0%   { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
-    .ticker-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0 2rem;
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: #fff;
-      border-right: 1px solid rgba(255,255,255,0.15);
-    }
-    .ticker-item .tick-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #facc15;
-      flex-shrink: 0;
-      box-shadow: 0 0 6px rgba(250,204,21,0.6);
-    }
-    .ticker-item .tick-badge {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 4px;
-      padding: 0.1rem 0.45rem;
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: #facc15;
-    }
-    .ticker-item.highlight { color: #fde68a; }
-    .campaign-text {
-      text-align: center; flex: 1;
-    }
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 2rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #fff;
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ticker-item .tick-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #facc15;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+}
+
+.ticker-item .tick-badge {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #facc15;
+}
+
+.ticker-item.highlight {
+  color: #fde68a;
+}
+
+.campaign-text {
+  text-align: center;
+  flex: 1;
+}
+
     .campaign-text h2 {
       font-size: 1.7rem; font-weight: 800; color: #ffffff;
       margin-bottom: 0.4rem; letter-spacing: 0.02em;
