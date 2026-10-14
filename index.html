@@ -135,13 +135,13 @@
       height: 38px;
       overflow: hidden;
     }
-    .ticker-track {
-      display: flex;
-      align-items: center;
-      animation: tickerScroll 60s linear infinite;
-      white-space: nowrap;
-      will-change: transform;
-    }
+.ticker-track {
+  display: flex;
+  align-items: center;
+  animation: tickerScroll 25s linear infinite;
+  white-space: nowrap;
+  will-change: transform;
+}
     .ticker-track:hover { animation-play-state: paused; }
     @keyframes tickerScroll {
       0%   { transform: translateX(0); }
@@ -662,25 +662,28 @@
     .carousel-slide-backdrop {
       display: none;
     }
-    .carousel-slide-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 48%;
-      display: block;
-      transition: transform 6s ease;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-      filter: contrast(1.05) saturate(1.04) brightness(1.01);
-    }
+
+.carousel-slide-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  display: block;
+  transition: none;
+  image-rendering: auto;
+  filter: none;
+}
+
     @media(max-width: 768px) {
       .carousel-slide-img {
         object-position: center 50%;
       }
     }
-    .carousel-slide.active .carousel-slide-img {
-      transform: scale(1.03);
-    }
+
+.carousel-slide.active .carousel-slide-img {
+  transform: none;
+}
+
 
     /* Prev/Next buttons */
     .carousel-btn {
