@@ -56,18 +56,22 @@ $status = inp('status', 'ACTIVE');
 try {
     $db = getDB();
 
-    // Check if 'status' and 'review' columns exist (schema migration safe)
+    // Check which optional columns exist (schema migration safe)
+    $hasId = false;
     $hasStatus = false;
     $hasReview = false;
+    $hasBuilding = false;
     try {
         $cols = $db->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS
-            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors' AND COLUMN_NAME IN ('status', 'review')")
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors'
+            AND COLUMN_NAME IN ('id', 'status', 'review', 'building')")
             ->fetchAll(PDO::FETCH_COLUMN);
-        $hasStatus = in_array('status', $cols, true);
-        $hasReview = in_array('review', $cols, true);
+        $hasId       = in_array('id', $cols, true);
+        $hasStatus   = in_array('status', $cols, true);
+        $hasReview   = in_array('review', $cols, true);
+        $hasBuilding = in_array('building', $cols, true);
     } catch (Exception $e) {
-        $hasStatus = false;
-        $hasReview = false;
+        // defaults are all false
     }
 
     // ── Build WHERE ───────────────────────────────────────────────────────────
@@ -107,12 +111,15 @@ try {
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
-    $statusSel = $hasStatus ? ', status' : ", 'ACTIVE' AS status";
-    $reviewSel = $hasReview ? ', review' : ", '' AS review";
+    // Dynamic column selection
+    $idSel       = $hasId       ? 'id, '        : '';
+    $buildingSel = $hasBuilding ? ', building'   : ", '' AS building";
+    $statusSel   = $hasStatus   ? ', status'     : ", 'ACTIVE' AS status";
+    $reviewSel   = $hasReview   ? ', review'     : ", '' AS review";
 
     // Data — ordered by part_no, sr_no
     $dataStmt = $db->prepare(
-        "SELECT id, part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no{$statusSel}{$reviewSel}
+        "SELECT {$idSel}part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no{$buildingSel}{$statusSel}{$reviewSel}
          FROM electors
          $whereSQL
          ORDER BY part_no ASC, sr_no ASC

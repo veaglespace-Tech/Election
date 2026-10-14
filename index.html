@@ -484,6 +484,40 @@
       font-size: 0.7rem; color: var(--text4);
     }
 
+    /* ── Polling Stations / Building column ────────────────────────────── */
+    .col-building {
+      color: var(--green);
+      font-size: 0.76rem;
+      max-width: 220px;
+      line-height: 1.4;
+    }
+    .col-building .building-text {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 0.3rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 5px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    /* ── Download button ──────────────────────────────────────────────── */
+    .btn-dl {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #ea580c, #c2410c);
+      border: none; color: #fff; font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 6px rgba(234,88,12,0.3);
+    }
+    .btn-dl:hover { transform: scale(1.12); box-shadow: 0 4px 12px rgba(234,88,12,0.45); }
+    .btn-dl:active { transform: scale(0.95); }
+
     /* ── Remarks / Review column ─────────────────────────────────────── */
     .col-review {
       font-size: 0.75rem;
@@ -1024,7 +1058,9 @@
     } catch(e) { showError(e.message); }
   }
 
+  let _pageData = [];
   function render(j) {
+    _pageData = j.data;
     if (!state.totalAll) state.totalAll = j.total;
 
     document.getElementById('statTotal').textContent    = (state.totalAll || j.total).toLocaleString('en-IN');
@@ -1043,13 +1079,14 @@
     // Single table with part-separator rows
     let html = `<div class="table-wrap"><table class="data-table"><thead><tr>
       <th>Sr No</th><th>Elector Name</th><th>Relative Name</th>
-      <th>Address</th><th>Institute</th><th>Age</th><th>Gender</th><th>EPIC No</th>
-      <th>Remarks<span class="th-sub">Part No / Sr No</span></th>
+      <th>Address</th><th>Institute</th><th>Polling Stations<span class="th-sub">Booth / Building</span></th>
+      <th>Age</th><th>Gender</th><th>EPIC No</th>
+      <th>Remarks<span class="th-sub">Part No / Sr No</span></th><th>Slip</th>
     </tr></thead><tbody>`;
 
     let isFirst = true;
     for (const [part, rows] of Object.entries(groups)) {
-      html += `<tr class="part-sep-row${isFirst ? ' first-part' : ''}"><td colspan="9">
+      html += `<tr class="part-sep-row${isFirst ? ' first-part' : ''}"><td colspan="11">
         <div class="part-header-inline">
           <span class="part-badge">PART ${part}</span>
           <span class="part-label">Electoral Part ${part}</span>
@@ -1063,10 +1100,12 @@
           <td class="col-rel">${esc(r.relative_name)}</td>
           <td class="col-addr">${hl(r.address, state.address)}</td>
           <td class="col-inst">${hl(r.institute, state.institute)}</td>
+          <td class="col-building">${r.building ? '<span class="building-text">🏛️ '+esc(r.building)+'</span>' : '<span class="review-empty">—</span>'}</td>
           <td class="col-age">${r.age || '—'}</td>
           <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
           <td class="col-epic">${r.epic_no || '—'}</td>
           <td class="col-review">${renderReview(r.review || r.remarks || '', part, r.sr_no)}</td>
+          <td><button class="btn-dl" title="Download Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})">📥</button></td>
         </tr>`;
       }
     }
@@ -1095,6 +1134,109 @@
   }
   function esc(s) {
     return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── Download Slip ──────────────────────────────────────────── */
+  let _slipSlides = ['images/slide1.jpg','images/slide2.jpg','images/slide3.jpg','icon.png'];
+  let _slipCandidateName = 'मा. श्री. सुनीलभाऊ जगताप';
+  let _slipConstituency  = 'पुणे शिक्षक मतदारसंघ निवडणूक २०२६';
+  let _slipPreference    = 'पसंती क्र. १';
+
+  async function downloadSlip(partNo, srNo) {
+    const r = _pageData.find(e => e.part_no == partNo && e.sr_no == srNo);
+    if (!r) { alert('Data not found'); return; }
+
+    // Lazy-load html2canvas
+    if (!window.html2canvas) {
+      try {
+        await new Promise((res, rej) => {
+          const s = document.createElement('script');
+          s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+          s.onload = res; s.onerror = rej;
+          document.head.appendChild(s);
+        });
+      } catch(e) { alert('Could not load image generator. Check internet.'); return; }
+    }
+
+    const slipDiv = document.createElement('div');
+    slipDiv.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;z-index:-1;background:#fff;';
+    const genderTxt = r.gender === 'M' ? 'Male (पुरुष)' : r.gender === 'F' ? 'Female (स्त्री)' : r.gender || '—';
+
+    slipDiv.innerHTML = `
+      <div style="width:800px;font-family:Inter,Arial,sans-serif;background:#fff;padding:0;">
+        <!-- Campaign Images Row -->
+        <div style="display:flex;gap:0;background:#0f172a;">
+          ${_slipSlides.map(s => `<img src="${s}" crossorigin="anonymous" style="width:${100/_slipSlides.length}%;height:175px;object-fit:cover;" onerror="this.style.display='none'" />`).join('')}
+        </div>
+
+        <!-- Candidate Header -->
+        <div style="background:linear-gradient(135deg,#ea580c,#991b1b);color:#fff;padding:14px 24px;text-align:center;">
+          <div style="font-size:13px;opacity:0.9;letter-spacing:0.5px;">${esc(_slipConstituency)}</div>
+          <div style="font-size:22px;font-weight:800;margin:4px 0;letter-spacing:0.3px;">${esc(_slipCandidateName)}</div>
+          <div style="font-size:15px;font-weight:700;">${esc(_slipPreference)}</div>
+        </div>
+
+        <!-- Elector Card -->
+        <div style="margin:16px 20px;border:2px solid #1a295c;border-radius:12px;overflow:hidden;">
+          <div style="background:#1a295c;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-weight:700;font-size:15px;">PT ${r.part_no} &nbsp;|&nbsp; SR ${r.sr_no}</span>
+            <span style="font-size:12px;opacity:0.8;">Electoral Roll 2026</span>
+          </div>
+          <div style="padding:18px 20px;">
+            <div style="font-size:19px;font-weight:800;color:#0f172a;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.3px;">${esc(r.elector_name)}</div>
+
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
+              <div style="flex:1;min-width:180px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Relative Name</span><div style="font-weight:600;font-size:14px;margin-top:2px;">${esc(r.relative_name || '—')}</div></div>
+              <div style="width:80px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Age</span><div style="font-weight:700;font-size:18px;color:#ea580c;margin-top:2px;">${r.age || '—'}</div></div>
+              <div style="width:100px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Gender</span><div style="font-weight:600;font-size:14px;margin-top:2px;">${genderTxt}</div></div>
+              <div style="width:130px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">EPIC No</span><div style="font-weight:600;font-size:13px;font-family:monospace;margin-top:2px;">${esc(r.epic_no || '—')}</div></div>
+            </div>
+
+            <div style="border-top:1px solid #e2e8f0;padding-top:12px;">
+              <div style="margin-bottom:10px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">📍 Address</span><div style="font-weight:500;font-size:13px;margin-top:3px;color:#334155;">${esc(r.address || '—')}</div></div>
+              <div style="margin-bottom:10px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🎓 Institute</span><div style="font-weight:500;font-size:13px;margin-top:3px;color:#334155;">${esc(r.institute || '—')}</div></div>
+            </div>
+
+            <!-- Polling Station -->
+            <div style="background:#f0fdf4;padding:12px 16px;border-radius:8px;border:1px solid #86efac;margin-top:6px;">
+              <span style="color:#15803d;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">🏛️ Polling Station (Booth)</span>
+              <div style="font-weight:600;font-size:13px;color:#166534;margin-top:4px;line-height:1.5;">${esc(r.building || '—')}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="margin:0 20px 12px;text-align:center;padding:10px;background:#fef3c7;border-radius:8px;border:1px solid #fcd34d;">
+          <div style="font-weight:700;color:#92400e;font-size:13px;">मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ &nbsp;|&nbsp; वेळ: सकाळी ०८ ते दुपारी ०४ वा.</div>
+        </div>
+        <div style="text-align:center;padding-bottom:10px;font-size:9px;color:#94a3b8;">Designed & Developed by Veagle Space Technology Pvt. Ltd.</div>
+      </div>
+    `;
+    document.body.appendChild(slipDiv);
+
+    // Wait for images
+    const imgs = slipDiv.querySelectorAll('img');
+    await Promise.all([...imgs].map(img => new Promise(res => {
+      if (img.complete) res(); else { img.onload = res; img.onerror = res; }
+    })));
+
+    try {
+      const canvas = await html2canvas(slipDiv.firstElementChild, {
+        scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff'
+      });
+      canvas.toBlob(blob => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Slip_PT${r.part_no}_SR${r.sr_no}_${(r.elector_name||'').replace(/\s+/g,'_').substring(0,25)}.png`;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { a.remove(); URL.revokeObjectURL(a.href); }, 1000);
+      }, 'image/png');
+    } catch(e) {
+      console.error('Slip generation failed:', e);
+      alert('Slip download failed. Please try again.');
+    }
+    document.body.removeChild(slipDiv);
   }
 
   function renderPagination(j) {
@@ -1187,6 +1329,14 @@
         el('headerLeftImg').src               = settings.header_left_image;
       if (settings.header_right_image && el('headerRightImg'))
         el('headerRightImg').src              = settings.header_right_image;
+
+      // Store settings for slip generator
+      if (settings.candidate_name)    _slipCandidateName = settings.candidate_name;
+      if (settings.constituency_name) _slipConstituency  = settings.constituency_name;
+      if (settings.preference_number) _slipPreference    = settings.preference_number;
+      if (settings.carousel_slides && settings.carousel_slides.length) {
+        _slipSlides = settings.carousel_slides.map(s => s.src).slice(0, 4);
+      }
     }
 
     // ── Build carousel slides ──────────────────────────────────────────
