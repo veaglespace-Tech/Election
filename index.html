@@ -145,11 +145,17 @@
   width: max-content;
   white-space: nowrap;
   will-change: transform;
-  animation: tickerScroll 12s linear infinite !important;
+  animation: tickerScroll 35s linear infinite !important;
 }
 
 .ticker-track:hover {
   animation-play-state: paused !important;
+}
+
+@media (max-width: 768px) {
+  .ticker-track {
+    animation-duration: 42s !important;
+  }
 }
 
 @keyframes tickerScroll {

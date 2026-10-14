@@ -1,1 +1,1027 @@
-REBUILD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polling Stations – पुणे शिक्षक मतदारसंघ निवडणूक २०२६</title>
+  <meta name="description" content="Complete list of Polling Stations for Pune Division Teachers' Constituency 2026. Filter by district, voter type, station number and location." />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#ea580c" />
+  <link rel="apple-touch-icon" href="icon1.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #fcfaf6;
+      --bg2:         #ffffff;
+      --bg3:         #f8fafc;
+      --border:      #e2e8f0;
+      --border2:     #cbd5e1;
+      --accent:      #1a295c;
+      --accent-lt:   #e8eaef;
+      --accent2:     #ff5e14;
+      --accent2-lt:  #ffefe8;
+      --green:       #059669;
+      --green-lt:    #ecfdf5;
+      --orange:      #8a371c;
+      --orange-lt:   #f6e9e4;
+      --red:         #dc2626;
+      --red-lt:      #fef2f2;
+      --text:        #0f172a;
+      --text2:       #334155;
+      --text3:       #64748b;
+      --text4:       #94a3b8;
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow:      0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-lg:   0 20px 40px rgba(0,0,0,0.1);
+      --radius:      16px;
+      --radius-sm:   10px;
+      --radius-xs:   6px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Campaign Header ──────────────────────────────────── */
+    .campaign-header {
+      background: linear-gradient(135deg, #ea580c 0%, #991b1b 100%);
+      border-bottom: 4px solid #facc15;
+      position: relative;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      padding: 1.8rem 0;
+      z-index: 100;
+      color: #fff;
+      overflow: hidden;
+    }
+    .campaign-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,200,0,0.08) 0%, transparent 40%),
+        radial-gradient(circle at 60% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .campaign-bg-img {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 210px; height: 210px;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .campaign-bg-img img {
+      width: 100%; height: 100%; object-fit: contain;
+      clip-path: circle(43.5% at 50.5% 52.5%);
+    }
+    .campaign-inner {
+      max-width: 1400px; margin: 0 auto;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem;
+      position: relative; z-index: 1;
+    }
+    .campaign-img {
+      width: 200px; height: 200px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+    }
+    .campaign-img img {
+      width: 100%; height: 100%; object-fit: contain;
+      clip-path: circle(43.5% at 50.5% 52.5%);
+    }
+    .campaign-text { text-align: center; flex: 1; }
+    .campaign-text h2 {
+      font-size: 1.5rem; font-weight: 800; color: #ffffff;
+      margin-bottom: 0.3rem; letter-spacing: 0.02em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .campaign-text h1 {
+      font-size: 2.4rem; font-weight: 900; color: #ffffff;
+      margin-bottom: 0.35rem; line-height: 1.1;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .campaign-text .page-subtitle {
+      font-size: 1.4rem; font-weight: 800; color: #ffeb3b;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .campaign-text .page-subtitle span { font-size: 1.6rem; }
+
+    /* Back button in header */
+    .back-btn {
+      position: absolute;
+      top: 1rem; left: 1rem;
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem; font-weight: 600;
+      padding: 0.45rem 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 10;
+    }
+    .back-btn:hover {
+      background: rgba(255,255,255,0.28);
+      transform: translateX(-3px);
+    }
+
+    /* ── Ticker ─────────────────────────────────────────── */
+    .ticker-wrap {
+      background: linear-gradient(90deg, #1a295c 0%, #2d4a8a 40%, #1a295c 100%);
+      border-bottom: 3px solid #facc15;
+      overflow: hidden;
+      position: relative;
+      z-index: 99;
+    }
+    .ticker-label {
+      background: #facc15;
+      color: #1a295c;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      height: 38px;
+    }
+    .ticker-inner {
+      display: flex;
+      align-items: center;
+      height: 38px;
+      overflow: hidden;
+    }
+    .ticker-track {
+      display: flex;
+      align-items: center;
+      width: max-content;
+      white-space: nowrap;
+      will-change: transform;
+      animation: tickerScroll 35s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @media (max-width: 768px) {
+      .ticker-track {
+        animation-duration: 42s;
+      }
+    }
+    @keyframes tickerScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0 2rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #fff;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+    .ticker-item .tick-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #facc15;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px rgba(250,204,21,0.6);
+    }
+    .ticker-item .tick-badge {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 4px;
+      padding: 0.1rem 0.45rem;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #facc15;
+    }
+    .ticker-item.highlight { color: #fde68a; }
+
+    /* ── Stats cards ─────────────────────────────────────── */
+    .stats-wrap {
+      max-width: 1400px; margin: 2.5rem auto 0;
+      padding: 0 2rem;
+      position: relative; z-index: 10;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    @media(max-width:900px){ .stats-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:500px){
+      .stats-grid { grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
+      .stat-card { flex-direction: column; align-items: center; text-align: center; padding: 1rem 0.5rem; gap: 0.5rem; }
+      .stat-icon { width: 38px; height: 38px; font-size: 1.1rem; }
+      .stat-value { font-size: 1.4rem; }
+      .stat-label { font-size: 0.6rem; }
+    }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.4rem;
+      box-shadow: var(--shadow);
+      display: flex; align-items: flex-start; gap: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+    .stat-icon {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .stat-icon.blue   { background: var(--accent-lt);  }
+    .stat-icon.purple { background: var(--accent2-lt); }
+    .stat-icon.green  { background: var(--green-lt);   }
+    .stat-icon.orange { background: var(--orange-lt);  }
+    .stat-body { flex: 1; min-width: 0; }
+    .stat-label { font-size: 0.68rem; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-value { font-size: 1.65rem; font-weight: 800; color: var(--text); letter-spacing: -0.03em; line-height: 1.1; margin-top: 0.2rem; }
+    .stat-value.blue   { color: var(--accent);  }
+    .stat-value.purple { color: var(--accent2); }
+    .stat-value.green  { color: var(--green);   }
+    .stat-value.orange { color: var(--orange);  }
+
+    /* ── Main ────────────────────────────────────────────── */
+    main {
+      max-width: 1400px; margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── Filter card ─────────────────────────────────────── */
+    .filter-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;
+    }
+    .filter-title {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.8rem; font-weight: 700;
+      color: var(--text2);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .filter-title span { font-size: 1rem; }
+    .btn-reset {
+      display: flex; align-items: center; gap: 0.4rem;
+      background: var(--red-lt);
+      border: 1px solid rgba(220,38,38,0.15);
+      color: var(--red);
+      padding: 0.4rem 1rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.75rem; font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-reset:hover { background: #fee2e2; border-color: rgba(220,38,38,0.3); }
+
+    /* Global search bar */
+    .global-search-wrap {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+    .global-search-wrap input {
+      width: 100%;
+      background: var(--bg3);
+      border: 2px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .global-search-wrap input:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(26,41,92,0.12);
+    }
+    .global-search-wrap input::placeholder { color: var(--text4); }
+    .global-search-icon {
+      position: absolute; left: 1rem; top: 50%; transform: translateY(-50%);
+      color: var(--text3); font-size: 1.1rem; pointer-events: none;
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.875rem;
+    }
+    @media(max-width:900px){ .filter-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:500px){ .filter-grid { grid-template-columns: 1fr; } }
+
+    .field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .field label {
+      font-size: 0.7rem; font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .field input, .field select {
+      background: var(--bg3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 0.6rem 0.875rem;
+      font-size: 0.855rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+      width: 100%;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(26,41,92,0.1);
+    }
+    .field input::placeholder { color: var(--text4); }
+
+    /* Active filter chips */
+    .active-filters {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-top: 0.875rem;
+    }
+    .filter-chip {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      background: var(--accent-lt);
+      border: 1px solid rgba(26,41,92,0.2);
+      color: var(--accent);
+      padding: 0.25rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.72rem; font-weight: 600;
+    }
+    .filter-chip button {
+      background: none; border: none; color: inherit;
+      cursor: pointer; padding: 0; font-size: 0.85rem; line-height: 1;
+      opacity: 0.7;
+      transition: opacity 0.15s;
+    }
+    .filter-chip button:hover { opacity: 1; }
+
+    /* ── Table card ──────────────────────────────────────── */
+    .table-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .table-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .table-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .result-badge {
+      background: var(--accent-lt);
+      border: 1px solid rgba(26,41,92,0.15);
+      color: var(--accent);
+      padding: 0.3rem 0.875rem;
+      border-radius: 20px;
+      font-size: 0.75rem; font-weight: 600;
+    }
+
+    /* ── Loading / Empty ─────────────────────────────────── */
+    .state-box { padding: 5rem 2rem; text-align: center; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .state-msg { color: var(--text3); font-size: 0.875rem; }
+
+    /* ── Data table ──────────────────────────────────────── */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) var(--bg3);
+    }
+    .table-wrap::-webkit-scrollbar { height: 6px; }
+    .table-wrap::-webkit-scrollbar-track { background: var(--bg3); border-radius: 3px; }
+    .table-wrap::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead { position: sticky; top: 0; z-index: 6; }
+    .data-table th {
+      background: #eef2fb;
+      padding: 0.75rem 0.875rem;
+      text-align: left;
+      font-size: 0.67rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text3);
+      border-bottom: 1.5px solid var(--border);
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .data-table td {
+      padding: 0.875rem 0.875rem;
+      font-size: 0.82rem;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+      transition: background 0.12s;
+    }
+    .data-table tr:hover td { background: #f8faff; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    /* Station number col */
+    .col-stn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--accent);
+      text-align: center;
+      white-space: nowrap;
+      min-width: 70px;
+    }
+    .stn-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--accent);
+      color: #fff;
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      font-size: 0.75rem; font-weight: 800;
+      box-shadow: 0 2px 6px rgba(26,41,92,0.25);
+    }
+
+    .col-location { font-weight: 600; color: var(--text); min-width: 140px; }
+    .col-building { color: var(--text3); font-size: 0.8rem; max-width: 260px; line-height: 1.5; min-width: 200px; }
+    .col-area { color: var(--text3); font-size: 0.77rem; max-width: 260px; line-height: 1.5; min-width: 200px; }
+    .col-district { white-space: nowrap; }
+
+    .district-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: var(--accent-lt);
+      color: var(--accent);
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.7rem; font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .type-badge {
+      display: inline-flex; align-items: center;
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.68rem; font-weight: 700;
+      white-space: nowrap;
+    }
+    .type-TEACHERS_ONLY  { background: #eff6ff; color: #1d4ed8; border: 1px solid rgba(29,78,216,0.15); }
+    .type-GRADUATES_ONLY { background: #f0fdf4; color: #15803d; border: 1px solid rgba(21,128,61,0.15); }
+    .type-ALL_ELECTORS   { background: #fef9c3; color: #a16207; border: 1px solid rgba(161,98,7,0.15); }
+
+    /* Highlight */
+    mark.hl {
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 3px;
+      padding: 0 2px;
+      font-weight: 600;
+    }
+
+    /* ── Pagination ──────────────────────────────────────── */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-top: 1px solid var(--border);
+      gap: 1rem; flex-wrap: wrap;
+    }
+    .page-info { font-size: 0.78rem; color: var(--text3); }
+    .page-info strong { color: var(--text); font-weight: 700; }
+    .page-btns { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .page-btn {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      color: var(--text2);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-xs);
+      font-size: 0.8rem; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      min-width: 36px;
+    }
+    .page-btn:hover:not(:disabled) {
+      background: var(--accent-lt);
+      border-color: rgba(26,41,92,0.25);
+      color: var(--accent);
+    }
+    .page-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(26,41,92,0.3);
+    }
+    .page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Footer ──────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text4);
+      font-size: 0.72rem;
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+
+    /* ── Scroll to top ───────────────────────────────────── */
+    #scrollTop {
+      position: fixed; bottom: 2rem; right: 2rem;
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border: none; border-radius: 50%;
+      color: #fff; font-size: 1rem; cursor: pointer;
+      display: none; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(26,41,92,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 200;
+    }
+    #scrollTop:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(26,41,92,0.4); }
+    #scrollTop.show { display: flex; }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media(max-width:900px) {
+      .campaign-text h1 { font-size: 1.9rem; }
+      .campaign-text h2 { font-size: 1.25rem; }
+      .campaign-text .page-subtitle { font-size: 1.2rem; }
+      .campaign-img { width: 150px; height: 150px; }
+      .campaign-bg-img { width: 130px; height: 130px; }
+      .back-btn { position: static; margin-bottom: 0.5rem; }
+    }
+    @media(max-width:768px) {
+      .campaign-inner {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0 1rem;
+      }
+      .campaign-text { order: 2; margin-top: 0.5rem; }
+      .campaign-img { width: 110px; height: 110px; margin: 0 auto; }
+      .campaign-img.left-img { order: 1; }
+      .campaign-img.right-img { order: 3; }
+      .campaign-bg-img { width: 90px; height: 90px; }
+      .campaign-text h1 { font-size: 1.6rem; }
+      .campaign-text h2 { font-size: 1.05rem; }
+      .campaign-text .page-subtitle { font-size: 1.05rem; }
+      .stats-wrap { padding: 0 1rem; margin-top: 1.5rem; }
+      main { padding: 1rem; }
+      .table-topbar { padding: 1rem; }
+      .pagination { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1rem; }
+      .page-btns { justify-content: center; width: 100%; }
+      .filter-card { padding: 1rem 1rem; }
+      .back-btn { font-size: 0.72rem; padding: 0.35rem 0.75rem; }
+    }
+    @media(max-width:480px) {
+      .campaign-text h1 { font-size: 1.35rem; }
+      .campaign-text h2 { font-size: 0.9rem; }
+      .campaign-text .page-subtitle { font-size: 0.95rem; }
+    }
+
+    /* ── Print ───────────────────────────────────────────── */
+    @media print {
+      body { background: #fff; color: #000; }
+      .campaign-header, .ticker-wrap, .stats-wrap, .filter-card, .table-topbar, .pagination, #scrollTop, footer { display: none !important; }
+      main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+      .table-card { box-shadow: none !important; border: none !important; border-radius: 0 !important; }
+      .data-table { border: 1px solid #ddd; }
+      .data-table th, .data-table td { padding: 0.4rem !important; border-bottom: 1px solid #ddd !important; font-size: 9pt !important; color: #000 !important; white-space: normal !important; }
+      .data-table th { background: #f1f5f9 !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Campaign Header ─────────────────────────────────── -->
+<div class="campaign-header">
+  <div class="campaign-bg-img" aria-hidden="true">
+    <img src="icon.png" alt="" onerror="this.parentElement.style.display='none'" />
+  </div>
+  <a href="index.html" class="back-btn" id="backBtn">← मतदार यादी</a>
+  <div class="campaign-inner">
+    <div class="campaign-img left-img">
+      <img src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
+    </div>
+    <div class="campaign-text">
+      <h2>पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
+      <h1>मा. श्री. सुनीलभाऊ जगताप</h1>
+      <div class="page-subtitle"><span>🏛️</span> Polling Stations – मतदान केंद्रे</div>
+    </div>
+    <div class="campaign-img right-img">
+      <img src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
+    </div>
+  </div>
+</div>
+
+<!-- ── Ticker ───────────────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <div class="ticker-label">🏛️ Info</div>
+    <div style="flex:1; overflow:hidden;">
+      <div class="ticker-track">
+        <span class="ticker-item highlight"><span class="tick-dot"></span>पुणे शिक्षक मतदारसंघ – मतदान केंद्र यादी (Constituency 03)</span>
+        <span class="ticker-item"><span class="tick-dot"></span>एकूण ३१० मतदान केंद्रे – पुणे, सोलापूर, सातारा, सांगली, कोल्हापूर</span>
+        <span class="ticker-item"><span class="tick-dot"></span><span class="tick-badge">महत्त्वाचे</span>&nbsp;Source: Annexure 11-M, Notice dated 12/10/2026</span>
+        <span class="ticker-item highlight"><span class="tick-dot"></span>जिल्हा, मतदार प्रकार आणि केंद्र क्रमांकानुसार फिल्टर करा</span>
+        <span class="ticker-item"><span class="tick-dot"></span>District Election Officer, Pune – Official Polling Station List</span>
+        <span class="ticker-item"><span class="tick-dot"></span>कोणत्याही अडचणीसाठी संपर्क करा: Veagle Space Technology Pvt. Ltd.</span>
+        <!-- duplicate for seamless loop -->
+        <span class="ticker-item highlight"><span class="tick-dot"></span>पुणे शिक्षक मतदारसंघ – मतदान केंद्र यादी (Constituency 03)</span>
+        <span class="ticker-item"><span class="tick-dot"></span>एकूण ३१० मतदान केंद्रे – पुणे, सोलापूर, सातारा, सांगली, कोल्हापूर</span>
+        <span class="ticker-item"><span class="tick-dot"></span><span class="tick-badge">महत्त्वाचे</span>&nbsp;Source: Annexure 11-M, Notice dated 12/10/2026</span>
+        <span class="ticker-item highlight"><span class="tick-dot"></span>जिल्हा, मतदार प्रकार आणि केंद्र क्रमांकानुसार फिल्टर करा</span>
+        <span class="ticker-item"><span class="tick-dot"></span>District Election Officer, Pune – Official Polling Station List</span>
+        <span class="ticker-item"><span class="tick-dot"></span>कोणत्याही अडचणीसाठी संपर्क करा: Veagle Space Technology Pvt. Ltd.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Stats ────────────────────────────────────────────── -->
+<div class="stats-wrap">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">🏛️</div>
+      <div class="stat-body">
+        <div class="stat-label">Total Stations</div>
+        <div class="stat-value blue" id="statTotal">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">🗺️</div>
+      <div class="stat-body">
+        <div class="stat-label">Districts</div>
+        <div class="stat-value purple" id="statDistricts">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">🔎</div>
+      <div class="stat-body">
+        <div class="stat-label">Filtered Results</div>
+        <div class="stat-value orange" id="statFiltered">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">📄</div>
+      <div class="stat-body">
+        <div class="stat-label">Current Page</div>
+        <div class="stat-value green" id="statPage">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Main ─────────────────────────────────────────────── -->
+<main>
+
+  <!-- Filter card -->
+  <div class="filter-card">
+    <div class="filter-head">
+      <div class="filter-title"><span>🔍</span> Search &amp; Filter Polling Stations</div>
+      <button class="btn-reset" id="btnReset" onclick="resetFilters()">✕ Reset All</button>
+    </div>
+
+    <!-- Global Search -->
+    <div class="global-search-wrap">
+      <span class="global-search-icon">🔍</span>
+      <input type="text" id="f-search" placeholder="Global search – location, building, area villages…" autocomplete="off" />
+    </div>
+
+    <div class="filter-grid">
+      <div class="field">
+        <label for="f-district">District / जिल्हा</label>
+        <select id="f-district">
+          <option value="">All Districts</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-votertype">Voter Type / मतदार प्रकार</label>
+        <select id="f-votertype">
+          <option value="">All Types</option>
+          <option value="TEACHERS_ONLY">Teachers Only</option>
+          <option value="GRADUATES_ONLY">Graduates Only</option>
+          <option value="ALL_ELECTORS">All Electors</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-stno">Station No / केंद्र क्र.</label>
+        <input type="text" id="f-stno" placeholder="e.g. 25" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="f-location">Location / ठिकाण</label>
+        <input type="text" id="f-location" placeholder="e.g. Pune, Satara…" autocomplete="off" />
+      </div>
+    </div>
+
+    <!-- Active filter chips -->
+    <div class="active-filters" id="activeFilters"></div>
+  </div>
+
+  <!-- Table card -->
+  <div class="table-card">
+    <div class="table-topbar">
+      <span class="table-title">🏛️ Polling Station Records – मतदान केंद्र नोंदी</span>
+      <span class="result-badge" id="resultBadge">Loading…</span>
+    </div>
+
+    <div id="tableBody">
+      <div class="state-box">
+        <div class="spinner"></div>
+        <div class="state-msg">Fetching polling station data…</div>
+      </div>
+    </div>
+
+    <div class="pagination" id="paginationBar" style="display:none"></div>
+  </div>
+</main>
+
+<footer>
+  <span style="display:inline-block; font-weight:500; color:var(--text2);">
+    Designed &amp; Developed by
+    <a href="https://veaglespace.com/" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;font-weight:600;">Veagle Space Technology Pvt. Ltd.</a>
+    | &copy; 2026 All Rights Reserved.
+  </span>
+</footer>
+
+<button id="scrollTop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ── JS ────────────────────────────────────────────────── -->
+<script>
+  const state = {
+    page: 1, limit: 50,
+    search: '', district: '', voter_type: '', station_no: '', location: '',
+    totalAll: 0, districts: []
+  };
+  let debTimer = null;
+
+  function debounce(fn, ms = 350) {
+    clearTimeout(debTimer);
+    debTimer = setTimeout(fn, ms);
+  }
+
+  /* ── Fetch ─────────────────────────────────────────────── */
+  async function fetchData() {
+    const params = new URLSearchParams({
+      page:       state.page,
+      limit:      state.limit,
+      search:     state.search,
+      district:   state.district,
+      voter_type: state.voter_type,
+      station_no: state.station_no,
+      location:   state.location,
+    });
+    showLoading();
+    try {
+      const r = await fetch(`stations_api.php?${params}`);
+      const j = await r.json();
+      if (!j.success) throw new Error(j.error || 'API error');
+      render(j);
+    } catch(e) { showError(e.message); }
+  }
+
+  /* ── Render ────────────────────────────────────────────── */
+  function render(j) {
+    // Store total and districts on first load
+    if (!state.totalAll) state.totalAll = j.total;
+    if (!state.districts.length && j.districts?.length) {
+      state.districts = j.districts;
+      populateDistrictDropdown(j.districts);
+    }
+
+    const q = state.search || state.location;
+
+    document.getElementById('statTotal').textContent    = (state.totalAll).toLocaleString('en-IN');
+    document.getElementById('statDistricts').textContent = state.districts.length || j.districts?.length || '—';
+    document.getElementById('statFiltered').textContent = j.total.toLocaleString('en-IN');
+    document.getElementById('statPage').textContent     = `${j.page} / ${j.total_pages}`;
+    document.getElementById('resultBadge').innerHTML    =
+      `Showing <strong>${j.data.length}</strong> of <strong>${j.total.toLocaleString('en-IN')}</strong> stations`;
+
+    renderChips();
+
+    if (!j.data.length) { showEmpty(); return; }
+
+    let html = `<div class="table-wrap"><table class="data-table"><thead><tr>
+      <th>Station No</th>
+      <th>Location / ठिकाण</th>
+      <th>Building / इमारत</th>
+      <th>Area / गाव-वस्ती</th>
+      <th>District / जिल्हा</th>
+      <th>Voter Type</th>
+    </tr></thead><tbody>`;
+
+    for (const r of j.data) {
+      const typeLabel = {
+        'TEACHERS_ONLY':  'Teachers Only',
+        'GRADUATES_ONLY': 'Graduates Only',
+        'ALL_ELECTORS':   'All Electors',
+      }[r.voter_type] || r.voter_type;
+
+      const loc  = q ? hl(r.location, q) : esc(r.location);
+      const bld  = q ? hl(r.building, q) : esc(r.building);
+      const area = q ? hl(r.area || '—', q) : esc(r.area || '—');
+
+      html += `<tr>
+        <td class="col-stn"><div class="stn-badge">${r.station_no}</div></td>
+        <td class="col-location">${loc}</td>
+        <td class="col-building">${bld}</td>
+        <td class="col-area">${area}</td>
+        <td class="col-district"><span class="district-badge">📍 ${esc(r.district_name)}</span></td>
+        <td><span class="type-badge type-${r.voter_type}">${typeLabel}</span></td>
+      </tr>`;
+    }
+    html += `</tbody></table></div>`;
+
+    document.getElementById('tableBody').innerHTML = html;
+    renderPagination(j);
+  }
+
+  function populateDistrictDropdown(districts) {
+    const sel = document.getElementById('f-district');
+    districts.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.id;
+      opt.textContent = d.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  /* ── Active filter chips ───────────────────────────────── */
+  function renderChips() {
+    const container = document.getElementById('activeFilters');
+    const chips = [];
+    if (state.search)     chips.push({ label: `Search: "${state.search}"`,       key: 'search' });
+    if (state.district) {
+      const d = state.districts.find(x => String(x.id) === String(state.district));
+      chips.push({ label: `District: ${d ? d.name : state.district}`, key: 'district' });
+    }
+    if (state.voter_type) chips.push({ label: `Type: ${state.voter_type.replace('_', ' ')}`, key: 'voter_type' });
+    if (state.station_no) chips.push({ label: `Station: ${state.station_no}`,     key: 'station_no' });
+    if (state.location)   chips.push({ label: `Location: "${state.location}"`,    key: 'location' });
+
+    container.innerHTML = chips.map(c =>
+      `<span class="filter-chip">${esc(c.label)}<button onclick="clearFilter('${c.key}')" title="Remove">✕</button></span>`
+    ).join('');
+  }
+
+  function clearFilter(key) {
+    state[key] = '';
+    if (key === 'search')     document.getElementById('f-search').value = '';
+    if (key === 'district')   document.getElementById('f-district').value = '';
+    if (key === 'voter_type') document.getElementById('f-votertype').value = '';
+    if (key === 'station_no') document.getElementById('f-stno').value = '';
+    if (key === 'location')   document.getElementById('f-location').value = '';
+    state.page = 1;
+    if (key === 'district' || key === 'voter_type') {
+      state.totalAll = 0; state.districts = [];
+    }
+    fetchData();
+  }
+
+  /* ── Pagination ────────────────────────────────────────── */
+  function renderPagination(j) {
+    const bar = document.getElementById('paginationBar');
+    if (j.total_pages <= 1) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+
+    const cur = j.page, tot = j.total_pages;
+    const start = ((cur - 1) * state.limit) + 1;
+    const end   = Math.min(cur * state.limit, j.total);
+
+    let pages = [];
+    pages.push(1);
+    if (cur > 3) pages.push('…');
+    for (let p = Math.max(2, cur-1); p <= Math.min(tot-1, cur+1); p++) pages.push(p);
+    if (cur < tot - 2) pages.push('…');
+    if (tot > 1) pages.push(tot);
+
+    bar.innerHTML = `
+      <div class="page-info">Showing <strong>${start.toLocaleString('en-IN')}–${end.toLocaleString('en-IN')}</strong> of <strong>${j.total.toLocaleString('en-IN')}</strong></div>
+      <div class="page-btns">
+        <button class="page-btn" onclick="goPage(${cur-1})" ${cur===1?'disabled':''}>‹ Prev</button>
+        ${pages.map(p => p === '…'
+          ? `<button class="page-btn" disabled>…</button>`
+          : `<button class="page-btn ${p===cur?'active':''}" onclick="goPage(${p})">${p}</button>`
+        ).join('')}
+        <button class="page-btn" onclick="goPage(${cur+1})" ${cur===tot?'disabled':''}>Next ›</button>
+      </div>`;
+  }
+
+  function goPage(p) {
+    if (p < 1) return;
+    state.page = p;
+    fetchData();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ── UI States ─────────────────────────────────────────── */
+  function showLoading() {
+    document.getElementById('tableBody').innerHTML = `<div class="state-box"><div class="spinner"></div><div class="state-msg">Fetching data…</div></div>`;
+    document.getElementById('paginationBar').style.display = 'none';
+  }
+  function showEmpty() {
+    document.getElementById('tableBody').innerHTML = `<div class="state-box"><div class="state-icon">🏛️</div><div class="state-msg">No polling stations found matching your filters.<br/>Try adjusting or resetting filters.</div></div>`;
+    document.getElementById('paginationBar').style.display = 'none';
+  }
+  function showError(msg) {
+    document.getElementById('tableBody').innerHTML = `<div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg">Error: ${esc(msg)}<br/><small>Make sure the database is seeded and stations_api.php is reachable.</small></div></div>`;
+  }
+
+  /* ── Helpers ───────────────────────────────────────────── */
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function hl(text, q) {
+    if (!text || !q) return esc(text);
+    const escaped = esc(text);
+    const escapedQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return escaped.replace(new RegExp(`(${escapedQ})`, 'gi'), '<mark class="hl">$1</mark>');
+  }
+
+  /* ── Reset ─────────────────────────────────────────────── */
+  function resetFilters() {
+    state.search = ''; state.district = ''; state.voter_type = '';
+    state.station_no = ''; state.location = '';
+    state.page = 1; state.totalAll = 0; state.districts = [];
+    document.getElementById('f-search').value   = '';
+    document.getElementById('f-district').value = '';
+    document.getElementById('f-votertype').value= '';
+    document.getElementById('f-stno').value     = '';
+    document.getElementById('f-location').value = '';
+    fetchData();
+  }
+
+  /* ── Input bindings ────────────────────────────────────── */
+  function bindInput(id, stateKey) {
+    document.getElementById(id).addEventListener('input', e => {
+      state[stateKey] = e.target.value.trim();
+      state.page = 1;
+      if (stateKey === 'district' || stateKey === 'voter_type') {
+        state.totalAll = 0;
+        fetchData();
+      } else {
+        debounce(() => fetchData());
+      }
+    });
+  }
+  function bindSelect(id, stateKey) {
+    document.getElementById(id).addEventListener('change', e => {
+      state[stateKey] = e.target.value;
+      state.page = 1;
+      state.totalAll = 0;
+      fetchData();
+    });
+  }
+
+  bindInput('f-search',   'search');
+  bindInput('f-stno',     'station_no');
+  bindInput('f-location', 'location');
+  bindSelect('f-district',  'district');
+  bindSelect('f-votertype', 'voter_type');
+
+  /* ── Scroll to top button ──────────────────────────────── */
+  window.addEventListener('scroll', () => {
+    document.getElementById('scrollTop').classList.toggle('show', window.scrollY > 400);
+  }, { passive: true });
+
+  /* ── Init ──────────────────────────────────────────────── */
+  fetchData();
+</script>
+</body>
+</html>

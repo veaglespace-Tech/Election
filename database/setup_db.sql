@@ -51,7 +51,60 @@ CREATE TABLE IF NOT EXISTS `electors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- AFTER creating the table, import Part 5 data:
--- Run electors_part5.sql
--- Or use phpMyAdmin → Import → select electors_part5.sql
+-- Districts table
 -- ============================================================
+CREATE TABLE IF NOT EXISTS `districts` (
+  `id`   TINYINT UNSIGNED NOT NULL PRIMARY KEY,
+  `name` VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- Polling Stations table
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `polling_stations` (
+  `station_no`   SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
+  `district_id`  TINYINT UNSIGNED NOT NULL,
+  `location`     VARCHAR(100) NOT NULL,
+  `building`     TEXT NOT NULL,
+  `area`         TEXT NULL,
+  `voter_type`   ENUM('TEACHERS_ONLY','GRADUATES_ONLY','ALL_ELECTORS') NOT NULL DEFAULT 'TEACHERS_ONLY',
+  `constituency` VARCHAR(80) NOT NULL DEFAULT '03 Pune Division Teachers'' Constituency',
+  CONSTRAINT `fk_ps_district` FOREIGN KEY (`district_id`) REFERENCES `districts` (`id`),
+  INDEX `idx_ps_district` (`district_id`),
+  INDEX `idx_ps_location` (`location`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- Default Districts Seed
+-- ============================================================
+INSERT INTO `districts` (`id`, `name`) VALUES
+  (1, 'Pune'),
+  (2, 'Solapur'),
+  (3, 'Satara'),
+  (4, 'Sangli'),
+  (5, 'Kolhapur')
+ON DUPLICATE KEY UPDATE `name`=VALUES(`name`);
+
+-- ============================================================
+-- Site Settings & Carousel Slides table
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `site_settings` (
+  `skey`    VARCHAR(100) NOT NULL PRIMARY KEY,
+  `sval`    MEDIUMTEXT   NOT NULL,
+  `updated` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Default Settings & Carousel
+INSERT INTO `site_settings` (`skey`, `sval`) VALUES
+  ('carousel_speed_ms', '2000'),
+  ('carousel_slides', '[{"src":"images/slide1.jpg","alt":"Campaign Photo 1"},{"src":"images/slide2.jpg","alt":"Campaign Photo 2"},{"src":"images/slide3.jpg","alt":"Campaign Photo 3"}]')
+ON DUPLICATE KEY UPDATE `sval`=VALUES(`sval`);
+
+-- ============================================================
+-- AFTER creating the tables, import data:
+-- 1. Elector Data: Run electors_part5.sql
+-- 2. Polling Stations Data: Run seed.sql
+-- (Or use phpMyAdmin → Import)
+-- ============================================================
+
+
