@@ -409,26 +409,29 @@
     /* ── Table Wrap & Scroller (Left-to-Right full data view) ───────── */
     .table-wrap {
       width: 100%;
-      overflow-x: auto;
+      max-height: 72vh;
+      overflow: auto;
       -webkit-overflow-scrolling: touch;
       border: 1px solid var(--border);
       border-radius: 8px;
       background: #ffffff;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      position: relative;
     }
     .table-wrap::-webkit-scrollbar {
-      height: 9px;
+      width: 8px;
+      height: 10px;
     }
     .table-wrap::-webkit-scrollbar-track {
       background: #f1f5f9;
-      border-radius: 4px;
+      border-radius: 5px;
     }
     .table-wrap::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
+      background: #94a3b8;
+      border-radius: 5px;
     }
     .table-wrap::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: #64748b;
     }
 
     /* ── Data table ──────────────────────────────────────────────────── */
@@ -540,6 +543,12 @@
     }
 
     /* ── Download button (Image 4 matching orange icon) ───────────────── */
+    .col-dl {
+      min-width: 52px;
+      width: 52px;
+      text-align: center;
+      padding: 0.5rem 0.4rem !important;
+    }
     .btn-dl {
       display: inline-flex;
       align-items: center;
@@ -1131,7 +1140,7 @@
 
     // Single table with part-separator rows
     let html = `<div class="table-wrap"><table class="data-table"><thead><tr>
-      <th>Sr No</th><th>Slip</th><th>Elector Name</th><th>Relative Name</th>
+      <th class="col-dl">Slip</th><th class="col-sr">Sr No</th><th>Elector Name</th><th>Relative Name</th>
       <th>Address</th><th>Institute</th><th>Polling Stations<span class="th-sub">Booth / Building</span></th>
       <th>Age</th><th>Gender</th><th>EPIC No</th>
       <th>Remarks<span class="th-sub">Part No / Sr No</span></th>
@@ -1148,8 +1157,8 @@
       isFirst = false;
       for (const r of rows) {
         html += `<tr>
+          <td class="col-dl"><button class="btn-dl" title="Download Voter Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button></td>
           <td class="col-sr">${r.sr_no || '—'}</td>
-          <td><button class="btn-dl" title="Download Voter Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button></td>
           <td class="col-name">${hl(r.elector_name, state.name)}</td>
           <td class="col-rel">${esc(r.relative_name)}</td>
           <td class="col-addr">${hl(r.address, state.address)}</td>
