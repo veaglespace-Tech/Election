@@ -685,60 +685,55 @@
     /* ── Image Carousel ───────────────────────────────────────────────── */
     .carousel-section {
       width: 100%;
-      background: #000;
+      background: #0f172a;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.18);
       border-bottom: 3px solid #facc15;
     }
     .carousel-wrapper {
       position: relative;
       width: 100%;
-      height: 500px;
+      max-width: 1200px;
+      margin: 0 auto;
+      aspect-ratio: 4 / 3;
+      max-height: 80vh;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    @media(max-width: 1200px) { .carousel-wrapper { height: 440px; } }
-    @media(max-width: 900px)  { .carousel-wrapper { height: 350px; } }
-    @media(max-width: 600px)  { .carousel-wrapper { height: 260px; } }
-    @media(max-width: 420px)  { .carousel-wrapper { height: 220px; } }
 
     .carousel-track {
       display: flex;
+      width: 100%;
       height: 100%;
       will-change: transform;
     }
     .carousel-slide {
       min-width: 100%;
+      width: 100%;
       height: 100%;
       position: relative;
       overflow: hidden;
-      background: #000;
+      background: #0b1120;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .carousel-slide-backdrop {
       display: none;
     }
 
-.carousel-slide-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center center;
-  display: block;
-  transition: none;
-  image-rendering: auto;
-  filter: none;
-}
-
-    @media(max-width: 768px) {
-      .carousel-slide-img {
-        object-position: center 50%;
-      }
+    .carousel-slide-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center center;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
     }
-
-.carousel-slide.active .carousel-slide-img {
-  transform: none;
-}
-
 
     /* Prev/Next buttons */
     .carousel-btn {
@@ -746,27 +741,38 @@
       top: 50%;
       transform: translateY(-50%);
       z-index: 20;
-      background: rgba(255,255,255,0.18);
+      background: rgba(15, 23, 42, 0.55);
       backdrop-filter: blur(8px);
-      border: 1.5px solid rgba(255,255,255,0.35);
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
       color: #fff;
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.2s, transform 0.2s, border-color 0.2s;
       user-select: none;
     }
     .carousel-btn:hover {
-      background: rgba(234,88,12,0.7);
+      background: #ea580c;
+      border-color: #facc15;
       transform: translateY(-50%) scale(1.08);
     }
-    .carousel-btn.prev { left: 14px; }
-    .carousel-btn.next { right: 14px; }
+    .carousel-btn.prev { left: 16px; }
+    .carousel-btn.next { right: 16px; }
+
+    @media(max-width: 600px) {
+      .carousel-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+      }
+      .carousel-btn.prev { left: 8px; }
+      .carousel-btn.next { right: 8px; }
+    }
 
     /* Dots */
     .carousel-dots {
@@ -1208,10 +1214,18 @@
     }
     if (dotsEl) dotsEl.innerHTML = dotsHtml;
 
+    function escapeAttr(str) {
+      return String(str || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+      })[m]);
+    }
+
     function createSlideHtml(s) {
+      const safeSrc = escapeAttr(s.src || '');
+      const safeAlt = escapeAttr(s.alt || 'Campaign Photo');
       return `<div class="carousel-slide">
-        <img class="carousel-slide-img" src="${s.src}" alt="${s.alt || ''}"
-             onerror="this.src='icon.png';" />
+        <img class="carousel-slide-img" src="${safeSrc}" alt="${safeAlt}"
+             onerror="this.onerror=null; this.src='icon.png';" />
       </div>`;
     }
 
@@ -1253,6 +1267,7 @@
       });
     }
 
+    let animTimeout = null;
     function slideTo(idx) {
       if (isAnimating) return;
       isAnimating = true;
@@ -1260,11 +1275,16 @@
       track.style.transition = TRANSITION_CSS;
       track.style.transform = `translateX(-${current * 100}%)`;
       updateDots();
+
+      // Safety fallback: if transitionend fails to fire (e.g. background tab or rapid click)
+      clearTimeout(animTimeout);
+      animTimeout = setTimeout(() => {
+        handleTransitionEnd();
+      }, 700);
     }
 
-    // Instant swap after transition ends on clones
-    track.addEventListener('transitionend', (e) => {
-      if (e.target !== track) return;
+    function handleTransitionEnd() {
+      clearTimeout(animTimeout);
       if (current === N + 1) {
         track.style.transition = 'none';
         current = 1;
@@ -1277,6 +1297,12 @@
         void track.offsetWidth; // force reflow
       }
       isAnimating = false;
+    }
+
+    // Instant swap after transition ends on clones
+    track.addEventListener('transitionend', (e) => {
+      if (e.target !== track) return;
+      handleTransitionEnd();
     });
 
     function nextSlide() {
