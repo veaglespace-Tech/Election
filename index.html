@@ -406,8 +406,37 @@
       padding: 0.2rem 0.6rem; border-radius: 4px;
     }
 
+    /* ── Table Wrap & Scroller (Left-to-Right full data view) ───────── */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .table-wrap::-webkit-scrollbar {
+      height: 9px;
+    }
+    .table-wrap::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .table-wrap::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
     /* ── Data table ──────────────────────────────────────────────────── */
-    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table {
+      width: 100%;
+      min-width: 1380px;
+      border-collapse: collapse;
+    }
     .data-table thead { position: sticky; top: 0; z-index: 6; }
     .data-table th {
       background: #eef2fb;
@@ -460,17 +489,17 @@
     .col-sr {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem; color: var(--text4);
-      min-width: 40px;
+      min-width: 45px;
     }
-    .col-name { font-weight: 600; color: var(--text); min-width: 160px; }
+    .col-name { font-weight: 600; color: var(--text); min-width: 170px; }
     .col-rel  { color: var(--text3); min-width: 130px; font-size: 0.8rem; }
-    .col-addr { color: var(--text3); font-size: 0.78rem; max-width: 220px; line-height: 1.4; }
-    .col-inst { color: var(--text3); font-size: 0.78rem; max-width: 180px; line-height: 1.4; }
+    .col-addr { color: var(--text3); font-size: 0.78rem; min-width: 220px; line-height: 1.4; }
+    .col-inst { color: var(--text3); font-size: 0.78rem; min-width: 180px; line-height: 1.4; }
     .col-age  {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.78rem;
       font-weight: 600; color: var(--orange);
-      text-align: center; min-width: 40px;
+      text-align: center; min-width: 45px;
     }
     .gender-badge {
       display: inline-flex; align-items: center; justify-content: center;
@@ -482,41 +511,62 @@
     .col-epic {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem; color: var(--text4);
+      min-width: 100px;
     }
 
     /* ── Polling Stations / Building column ────────────────────────────── */
     .col-building {
       color: var(--green);
       font-size: 0.76rem;
-      max-width: 220px;
+      min-width: 200px;
+      max-width: 320px;
       line-height: 1.4;
     }
     .col-building .building-text {
       display: inline-flex;
       align-items: flex-start;
-      gap: 0.3rem;
+      gap: 0.35rem;
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
       color: #166534;
-      border-radius: 5px;
-      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      padding: 0.3rem 0.55rem;
       font-size: 0.72rem;
       font-weight: 500;
       line-height: 1.4;
     }
 
-    /* ── Download button ──────────────────────────────────────────────── */
+    /* ── Download button (Image 4 matching orange icon) ───────────────── */
     .btn-dl {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: 8px;
-      background: linear-gradient(135deg, #ea580c, #c2410c);
-      border: none; color: #fff; font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      border: 1px solid rgba(234, 88, 12, 0.4);
+      color: #ffffff;
       cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
-      box-shadow: 0 2px 6px rgba(234,88,12,0.3);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);
+      padding: 0;
     }
-    .btn-dl:hover { transform: scale(1.12); box-shadow: 0 4px 12px rgba(234,88,12,0.45); }
-    .btn-dl:active { transform: scale(0.95); }
+    .btn-dl:hover {
+      transform: translateY(-2px) scale(1.08);
+      box-shadow: 0 6px 16px rgba(234, 88, 12, 0.5);
+    }
+    .btn-dl:active {
+      transform: scale(0.94);
+    }
+    .btn-dl svg {
+      width: 18px;
+      height: 18px;
+      stroke: #ffffff;
+      stroke-width: 2.3;
+      fill: none;
+      display: block;
+    }
 
     /* ── Remarks / Review column ─────────────────────────────────────── */
     .col-review {
@@ -1105,7 +1155,7 @@
           <td><span class="gender-badge gender-${r.gender || 'X'}">${r.gender || '—'}</span></td>
           <td class="col-epic">${r.epic_no || '—'}</td>
           <td class="col-review">${renderReview(r.review || r.remarks || '', part, r.sr_no)}</td>
-          <td><button class="btn-dl" title="Download Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})">📥</button></td>
+          <td><button class="btn-dl" title="Download Voter Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button></td>
         </tr>`;
       }
     }
@@ -1137,11 +1187,6 @@
   }
 
   /* ── Download Slip ──────────────────────────────────────────── */
-  let _slipSlides = ['images/slide1.jpg','images/slide2.jpg','images/slide3.jpg','icon.png'];
-  let _slipCandidateName = 'मा. श्री. सुनीलभाऊ जगताप';
-  let _slipConstituency  = 'पुणे शिक्षक मतदारसंघ निवडणूक २०२६';
-  let _slipPreference    = 'पसंती क्र. १';
-
   async function downloadSlip(partNo, srNo) {
     const r = _pageData.find(e => e.part_no == partNo && e.sr_no == srNo);
     if (!r) { alert('Data not found'); return; }
@@ -1164,52 +1209,47 @@
 
     slipDiv.innerHTML = `
       <div style="width:800px;font-family:Inter,Arial,sans-serif;background:#fff;padding:0;">
-        <!-- Campaign Images Row -->
-        <div style="display:flex;gap:0;background:#0f172a;">
-          ${_slipSlides.map(s => `<img src="${s}" crossorigin="anonymous" style="width:${100/_slipSlides.length}%;height:175px;object-fit:cover;" onerror="this.style.display='none'" />`).join('')}
-        </div>
-
-        <!-- Candidate Header -->
-        <div style="background:linear-gradient(135deg,#ea580c,#991b1b);color:#fff;padding:14px 24px;text-align:center;">
-          <div style="font-size:13px;opacity:0.9;letter-spacing:0.5px;">${esc(_slipConstituency)}</div>
-          <div style="font-size:22px;font-weight:800;margin:4px 0;letter-spacing:0.3px;">${esc(_slipCandidateName)}</div>
-          <div style="font-size:15px;font-weight:700;">${esc(_slipPreference)}</div>
+        <!-- Full Candidate Campaign Banner (imp.jpeg) -->
+        <div style="width:800px;background:#fff;line-height:0;margin:0;padding:0;">
+          <img src="images/imp.jpeg" crossorigin="anonymous" style="width:800px;height:auto;display:block;" onerror="this.src='icon.png'" />
         </div>
 
         <!-- Elector Card -->
-        <div style="margin:16px 20px;border:2px solid #1a295c;border-radius:12px;overflow:hidden;">
-          <div style="background:#1a295c;color:#fff;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-weight:700;font-size:15px;">PT ${r.part_no} &nbsp;|&nbsp; SR ${r.sr_no}</span>
-            <span style="font-size:12px;opacity:0.8;">Electoral Roll 2026</span>
+        <div style="margin:16px 20px;border:2px solid #0f172a;border-radius:12px;overflow:hidden;background:#ffffff;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+          <div style="background:#0f172a;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-weight:800;font-size:16px;letter-spacing:0.5px;">भाग क्र. ${r.part_no} (PT ${r.part_no}) &nbsp;|&nbsp; अनु. क्र. ${r.sr_no} (SR ${r.sr_no})</span>
+            <span style="font-size:12px;font-weight:600;opacity:0.9;background:rgba(255,255,255,0.18);padding:3px 12px;border-radius:20px;">मतदार यादी २०२६</span>
           </div>
-          <div style="padding:18px 20px;">
-            <div style="font-size:19px;font-weight:800;color:#0f172a;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.3px;">${esc(r.elector_name)}</div>
+          <div style="padding:20px 22px;">
+            <div style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.3px;">${esc(r.elector_name)}</div>
 
-            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
-              <div style="flex:1;min-width:180px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Relative Name</span><div style="font-weight:600;font-size:14px;margin-top:2px;">${esc(r.relative_name || '—')}</div></div>
-              <div style="width:80px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Age</span><div style="font-weight:700;font-size:18px;color:#ea580c;margin-top:2px;">${r.age || '—'}</div></div>
-              <div style="width:100px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">Gender</span><div style="font-weight:600;font-size:14px;margin-top:2px;">${genderTxt}</div></div>
-              <div style="width:130px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">EPIC No</span><div style="font-weight:600;font-size:13px;font-family:monospace;margin-top:2px;">${esc(r.epic_no || '—')}</div></div>
+            <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;background:#f8fafc;padding:12px 16px;border-radius:8px;border:1px solid #e2e8f0;">
+              <div style="flex:1;min-width:180px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Relative Name / नातेवाईकाचे नाव</span><div style="font-weight:700;font-size:15px;color:#1e293b;margin-top:3px;">${esc(r.relative_name || '—')}</div></div>
+              <div style="width:70px;text-align:center;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Age / वय</span><div style="font-weight:800;font-size:20px;color:#ea580c;margin-top:2px;">${r.age || '—'}</div></div>
+              <div style="width:110px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Gender / लिंग</span><div style="font-weight:700;font-size:15px;color:#1e293b;margin-top:3px;">${genderTxt}</div></div>
+              <div style="width:130px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">EPIC No</span><div style="font-weight:700;font-size:14px;font-family:monospace;color:#1e293b;margin-top:3px;">${esc(r.epic_no || '—')}</div></div>
             </div>
 
             <div style="border-top:1px solid #e2e8f0;padding-top:12px;">
-              <div style="margin-bottom:10px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">📍 Address</span><div style="font-weight:500;font-size:13px;margin-top:3px;color:#334155;">${esc(r.address || '—')}</div></div>
-              <div style="margin-bottom:10px;"><span style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;">🎓 Institute</span><div style="font-weight:500;font-size:13px;margin-top:3px;color:#334155;">${esc(r.institute || '—')}</div></div>
+              <div style="margin-bottom:10px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">📍 Address / पत्ता</span><div style="font-weight:600;font-size:14px;margin-top:3px;color:#334155;line-height:1.45;">${esc(r.address || '—')}</div></div>
+              <div style="margin-bottom:12px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">🎓 Institute / संस्था</span><div style="font-weight:600;font-size:14px;margin-top:3px;color:#334155;line-height:1.45;">${esc(r.institute || '—')}</div></div>
             </div>
 
             <!-- Polling Station -->
-            <div style="background:#f0fdf4;padding:12px 16px;border-radius:8px;border:1px solid #86efac;margin-top:6px;">
-              <span style="color:#15803d;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;font-weight:700;">🏛️ Polling Station (Booth)</span>
-              <div style="font-weight:600;font-size:13px;color:#166534;margin-top:4px;line-height:1.5;">${esc(r.building || '—')}</div>
+            <div style="background:#f0fdf4;padding:14px 18px;border-radius:8px;border:1.5px solid #86efac;margin-top:8px;">
+              <div style="display:flex;align-items:center;gap:6px;color:#15803d;font-size:12px;text-transform:uppercase;letter-spacing:0.6px;font-weight:800;">
+                <span>🏛️</span><span>POLLING STATION (मतदान केंद्र / इमारत)</span>
+              </div>
+              <div style="font-weight:700;font-size:14px;color:#166534;margin-top:6px;line-height:1.55;">${esc(r.building || '—')}</div>
             </div>
           </div>
         </div>
 
-        <!-- Footer -->
-        <div style="margin:0 20px 12px;text-align:center;padding:10px;background:#fef3c7;border-radius:8px;border:1px solid #fcd34d;">
-          <div style="font-weight:700;color:#92400e;font-size:13px;">मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ &nbsp;|&nbsp; वेळ: सकाळी ०८ ते दुपारी ०४ वा.</div>
+        <!-- Footer Notice -->
+        <div style="margin:0 20px 14px;text-align:center;padding:12px;background:linear-gradient(135deg, #fef3c7, #fde68a);border-radius:8px;border:1px solid #fcd34d;">
+          <div style="font-weight:800;color:#92400e;font-size:14px;letter-spacing:0.3px;">मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ &nbsp;|&nbsp; वेळ: सकाळी ०८:०० ते दुपारी ०४:०० वा.</div>
         </div>
-        <div style="text-align:center;padding-bottom:10px;font-size:9px;color:#94a3b8;">Designed & Developed by Veagle Space Technology Pvt. Ltd.</div>
+        <div style="text-align:center;padding-bottom:12px;font-size:10px;color:#94a3b8;font-weight:500;">Designed & Developed by Veagle Space Technology Pvt. Ltd.</div>
       </div>
     `;
     document.body.appendChild(slipDiv);

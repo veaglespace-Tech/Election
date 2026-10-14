@@ -74,55 +74,77 @@ try {
         // defaults are all false
     }
 
+    // Check if polling_stations table exists
+    $hasPsTable = false;
+    try {
+        $checkPs = $db->query("SHOW TABLES LIKE 'polling_stations'")->fetchAll();
+        $hasPsTable = count($checkPs) > 0;
+    } catch (Exception $e) {
+        $hasPsTable = false;
+    }
+
     // ── Build WHERE ───────────────────────────────────────────────────────────
     $where = [];
     $params = [];
 
     if ($hasStatus && $status !== '' && $status !== 'ALL') {
-        $where[] = 'status = :status';
+        $where[] = 'e.status = :status';
         $params[':status'] = $status;
     }
 
     if ($name !== '') {
-        $where[] = 'elector_name LIKE :name';
+        $where[] = 'e.elector_name LIKE :name';
         $params[':name'] = "%$name%";
     }
     if ($address !== '') {
-        $where[] = 'address LIKE :address';
+        $where[] = 'e.address LIKE :address';
         $params[':address'] = "%$address%";
     }
     if ($institute !== '') {
-        $where[] = 'institute LIKE :inst';
+        $where[] = 'e.institute LIKE :inst';
         $params[':inst'] = "%$institute%";
     }
     if ($part_no !== '') {
-        $where[] = 'part_no = :part_no';
+        $where[] = 'e.part_no = :part_no';
         $params[':part_no'] = $part_no;
     }
     if ($gender !== '') {
-        $where[] = 'gender = :gender';
+        $where[] = 'e.gender = :gender';
         $params[':gender'] = $gender;
     }
 
     $whereSQL = count($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
     // Count
-    $countStmt = $db->prepare("SELECT COUNT(*) FROM electors $whereSQL");
+    $countStmt = $db->prepare("SELECT COUNT(*) FROM electors e $whereSQL");
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
-    // Dynamic column selection
-    $idSel       = $hasId       ? 'id, '        : '';
-    $buildingSel = $hasBuilding ? ', building'   : ", '' AS building";
-    $statusSel   = $hasStatus   ? ', status'     : ", 'ACTIVE' AS status";
-    $reviewSel   = $hasReview   ? ', review'     : ", '' AS review";
+    // Dynamic column selection & table join
+    $idSel     = $hasId     ? 'e.id, '       : '';
+    $statusSel = $hasStatus ? ', e.status'   : ", 'ACTIVE' AS status";
+    $reviewSel = $hasReview ? ', e.review'   : ", '' AS review";
+
+    if ($hasBuilding && $hasPsTable) {
+        $buildingSel = ", COALESCE(NULLIF(e.building, ''), ps.building, '') AS building";
+        $fromSQL = "FROM electors e LEFT JOIN polling_stations ps ON ps.station_no = e.part_no";
+    } elseif ($hasPsTable) {
+        $buildingSel = ", COALESCE(ps.building, '') AS building";
+        $fromSQL = "FROM electors e LEFT JOIN polling_stations ps ON ps.station_no = e.part_no";
+    } elseif ($hasBuilding) {
+        $buildingSel = ", e.building";
+        $fromSQL = "FROM electors e";
+    } else {
+        $buildingSel = ", '' AS building";
+        $fromSQL = "FROM electors e";
+    }
 
     // Data — ordered by part_no, sr_no
     $dataStmt = $db->prepare(
-        "SELECT {$idSel}part_no, sr_no, elector_name, relative_name, address, institute, age, gender, epic_no{$buildingSel}{$statusSel}{$reviewSel}
-         FROM electors
+        "SELECT {$idSel}e.part_no, e.sr_no, e.elector_name, e.relative_name, e.address, e.institute, e.age, e.gender, e.epic_no{$buildingSel}{$statusSel}{$reviewSel}
+         $fromSQL
          $whereSQL
-         ORDER BY part_no ASC, sr_no ASC
+         ORDER BY e.part_no ASC, e.sr_no ASC
          LIMIT :limit OFFSET :offset"
     );
     foreach ($params as $k => $v)
