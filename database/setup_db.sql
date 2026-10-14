@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `electors` (
   `relative_name` VARCHAR(300) DEFAULT '',
   `address`       TEXT,
   `institute`     VARCHAR(500) DEFAULT '',
-  `building`      TEXT DEFAULT '',
+  `building`      TEXT,
   `age`           TINYINT UNSIGNED DEFAULT NULL,
   `gender`        CHAR(1) DEFAULT '',
   `epic_no`       VARCHAR(20) DEFAULT '',
