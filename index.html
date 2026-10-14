@@ -107,45 +107,49 @@
     }
 
     /* ── Ticker / Info Scroller ─────────────────────────────────────── */
-    .ticker-wrap {
-      background: linear-gradient(90deg, #1a295c 0%, #2d4a8a 40%, #1a295c 100%);
-      border-bottom: 3px solid #facc15;
-      overflow: hidden;
-      position: relative;
-      z-index: 99;
-    }
-    .ticker-label {
-      background: #facc15;
-      color: #1a295c;
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      white-space: nowrap;
-      flex-shrink: 0;
-      height: 38px;
-    }
-    .ticker-inner {
-      display: flex;
-      align-items: center;
-      height: 38px;
-      overflow: hidden;
-    }
+
+.ticker-wrap {
+  background: linear-gradient(90deg, #1a295c 0%, #2d4a8a 40%, #1a295c 100%);
+  border-bottom: 3px solid #facc15;
+  overflow: hidden;
+  position: relative;
+  z-index: 99;
+}
+
+.ticker-label {
+  background: #facc15;
+  color: #1a295c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: 38px;
+}
+
+.ticker-inner {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  overflow: hidden;
+}
 
 .ticker-track {
   display: flex;
   align-items: center;
-  animation: tickerScroll 15s linear infinite;
+  width: max-content;
   white-space: nowrap;
   will-change: transform;
+  animation: tickerScroll 8s linear infinite !important;
 }
 
 .ticker-track:hover {
-  animation-play-state: paused;
+  animation-play-state: paused !important;
 }
 
 @keyframes tickerScroll {
@@ -190,6 +194,7 @@
 .ticker-item.highlight {
   color: #fde68a;
 }
+
 
 .campaign-text {
   text-align: center;
