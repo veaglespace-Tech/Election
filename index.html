@@ -574,6 +574,31 @@
       border-top: 1px solid var(--border);
     }
 
+    /* ── Quick Nav Bar ────────────────────────────────────────────────── */
+    .quick-nav {
+      max-width: 1400px; margin: 1.5rem auto 0;
+      padding: 0 2rem;
+      display: flex; gap: 0.875rem; flex-wrap: wrap;
+    }
+    .nav-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 50px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem; font-weight: 700;
+      cursor: pointer; text-decoration: none;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    }
+    .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.18); filter: brightness(1.08); }
+    .nav-btn:active { transform: translateY(0); }
+    .nav-btn.primary { background: linear-gradient(135deg, #1a295c 0%, #2d4a8a 100%); color: #fff; }
+    .nav-btn.accent  { background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%); color: #fff; }
+    .nav-btn .btn-icon { font-size: 1.1rem; }
+    .nav-btn .btn-badge { background: rgba(255,255,255,0.22); font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 10px; letter-spacing: 0.04em; }
+    @media(max-width:500px) { .quick-nav { padding: 0 1rem; } .nav-btn { font-size: 0.8rem; padding: 0.6rem 1.1rem; } }
+
     /* ── Scroll to top ────────────────────────────────────────────────── */
     #scrollTop {
       position: fixed; bottom: 2rem; right: 2rem;
@@ -895,6 +920,15 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- ── Quick Navigation Buttons ─────────────────────────────────────── -->
+<div class="quick-nav">
+  <a href="polling-stations.html" class="nav-btn accent" id="btnPollingStations">
+    <span class="btn-icon">🏛️</span>
+    Polling Stations – मतदान केंद्रे
+    <span class="btn-badge">310 Stations</span>
+  </a>
 </div>
 
 <!-- ── Main ───────────────────────────────────────────────────────────── -->
