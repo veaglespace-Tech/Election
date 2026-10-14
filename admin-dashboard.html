@@ -443,6 +443,57 @@
     .data-table tr { animation: rowIn 0.4s ease both; }
     @keyframes rowIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
+    .col-dl   { min-width: 52px; width: 52px; text-align: center; padding: 0.5rem 0.4rem !important; }
+    .btn-dl {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      border: 1px solid rgba(234, 88, 12, 0.4);
+      color: #ffffff;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+      box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);
+      padding: 0;
+    }
+    .btn-dl:hover {
+      transform: translateY(-2px) scale(1.08);
+      box-shadow: 0 6px 16px rgba(234, 88, 12, 0.5);
+    }
+    .btn-dl:active { transform: scale(0.94); }
+    .btn-dl svg {
+      width: 18px;
+      height: 18px;
+      stroke: #ffffff;
+      stroke-width: 2.3;
+      fill: none;
+      display: block;
+    }
+
+    .col-building {
+      color: var(--green);
+      font-size: 0.74rem;
+      min-width: 240px;
+      max-width: 380px;
+      line-height: 1.4;
+    }
+    .col-building .building-text {
+      display: block;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 6px;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      line-height: 1.4;
+      white-space: normal;
+      word-break: break-word;
+    }
+
     .col-sr   { font-family:'JetBrains Mono',monospace; font-size:0.72rem; color:var(--text3); font-weight:600; }
     .col-name { font-weight:700; color:var(--text); }
     .col-rel  { color:var(--text2); font-weight:500; }
@@ -520,10 +571,46 @@
     .state-sub { color: var(--text3); font-size: 0.8rem; margin-top: 0.5rem; }
 
     /* ── Table scroll wrapper ─────────────────────────────────────────── */
-    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-scroll {
+      overflow-x: auto;
+      max-height: 72vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .table-scroll::-webkit-scrollbar { width: 8px; height: 10px; }
+    .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 5px; }
+    .table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 5px; }
+    .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
     /* Admin sticky thead */
     .table-card .data-table thead { position: sticky; top: 0; z-index: 5; }
     .table-card .data-table th { box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
+    .data-table { min-width: 1450px; }
+
+    /* ── Batch Slip Modal ─────────────────────────────────────────────── */
+    .batch-modal {
+      position: fixed; inset: 0; z-index: 99999;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .batch-modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+    }
+    .batch-modal-content {
+      position: relative; z-index: 1;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+      width: 100%; max-width: 480px;
+      padding: 1.6rem;
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
 
     /* ── Overview / Home ─────────────────────────────────────────────── */
     .overview-grid {
@@ -791,6 +878,7 @@
       <div class="action-bar">
         <button class="btn btn-success" onclick="downloadCSV()">⬇️ Download CSV</button>
         <button class="btn btn-warning" onclick="downloadFilteredCSV()">📋 Export Filtered CSV</button>
+        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;" onclick="downloadAllSlips()">📦 Download All Slips (ZIP)</button>
         <!-- <button class="btn btn-ghost"   onclick="triggerPrint()">🖨️ Print</button> -->
         <span class="result-info" id="resultInfo">Loading…</span>
       </div>
@@ -806,11 +894,13 @@
           <table class="data-table">
             <thead>
               <tr>
+                <th class="col-dl">Slip</th>
                 <th>Sr No</th>
                 <th>Elector Name</th>
                 <th>Relative Name</th>
                 <th>Address</th>
                 <th>Institute</th>
+                <th>Polling Stations</th>
                 <th>Age</th>
                 <th>Gender</th>
                 <th>EPIC No</th>
@@ -1138,6 +1228,8 @@ async function loadGenderStats() {
   } catch(e) {}
 }
 
+let _currentTableData = [];
+
 // ── Load Elector Data ────────────────────────────────────────────────────────
 async function loadData() {
   showTableLoading();
@@ -1152,17 +1244,18 @@ async function loadData() {
     renderTable(j);
   } catch(e) {
     document.getElementById('dataTableBody').innerHTML =
-      `<tr><td colspan="9"><div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg">Error loading data</div><div class="state-sub">${e.message}</div></div></td></tr>`;
+      `<tr><td colspan="11"><div class="state-box"><div class="state-icon">⚠️</div><div class="state-msg">Error loading data</div><div class="state-sub">${e.message}</div></div></td></tr>`;
   }
 }
 
 function renderTable(j) {
+  _currentTableData = j.data || [];
   document.getElementById('resultInfo').innerHTML = `Showing <strong>${j.data.length}</strong> of <strong>${j.total.toLocaleString('en-IN')}</strong> electors`;
   document.getElementById('tableBadge').innerHTML = `Page ${j.page}/${j.total_pages} &bull; ${j.total.toLocaleString('en-IN')} records`;
 
   if (!j.data.length) {
     document.getElementById('dataTableBody').innerHTML =
-      `<tr><td colspan="9"><div class="state-box"><div class="state-icon">🔍</div><div class="state-msg">No records found</div><div class="state-sub">Try adjusting your search filters</div></div></td></tr>`;
+      `<tr><td colspan="11"><div class="state-box"><div class="state-icon">🔍</div><div class="state-msg">No records found</div><div class="state-sub">Try adjusting your search filters</div></div></td></tr>`;
     document.getElementById('paginationBar').style.display = 'none';
     return;
   }
@@ -1171,11 +1264,13 @@ function renderTable(j) {
   let delay = 0;
   for (const r of j.data) {
     html += `<tr style="animation-delay:${delay}s">
+      <td class="col-dl"><button class="btn-dl" title="Download Voter Slip" onclick="downloadSlip(${r.part_no},${r.sr_no})"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></button></td>
       <td class="col-sr">${r.sr_no}</td>
       <td class="col-name">${hl(r.elector_name, state.name)}</td>
       <td class="col-rel">${esc(r.relative_name)}</td>
       <td class="col-addr">${hl(r.address, state.address)}</td>
       <td class="col-inst">${hl(r.institute, state.institute)}</td>
+      <td class="col-building">${r.building ? '<span class="building-text">🏛️ '+esc(r.building)+'</span>' : '<span style="color:var(--text3);font-size:0.75rem;">—</span>'}</td>
       <td class="col-age">${r.age || '—'}</td>
       <td><span class="gender-badge gender-${r.gender||'X'}">${r.gender||'—'}</span></td>
       <td class="col-epic">${r.epic_no || '—'}</td>
@@ -1191,11 +1286,13 @@ function showTableLoading() {
   let skel = '';
   for (let i=0; i<12; i++) {
     skel += `<tr>
+      <td><div class="skeleton sk-line" style="width:34px;height:34px;border-radius:9px;"></div></td>
       <td><div class="skeleton sk-line" style="width:30px"></div></td>
       <td><div class="skeleton sk-line" style="width:130px"></div></td>
       <td><div class="skeleton sk-line" style="width:110px"></div></td>
       <td><div class="skeleton sk-line" style="width:170px"></div></td>
       <td><div class="skeleton sk-line" style="width:120px"></div></td>
+      <td><div class="skeleton sk-line" style="width:140px"></div></td>
       <td><div class="skeleton sk-line" style="width:25px"></div></td>
       <td><div class="skeleton sk-line" style="width:22px;height:22px;border-radius:50%"></div></td>
       <td><div class="skeleton sk-line" style="width:80px"></div></td>
@@ -1297,13 +1394,14 @@ async function downloadFilteredCSV() {
 
 function buildAndDownloadCSV(rows, filename) {
   const BOM = '\uFEFF';
-  const headers = ['Part No','Sr No','Elector Name','Relative Name','Address','Institute','Age','Gender','EPIC No'];
+  const headers = ['Part No','Sr No','Elector Name','Relative Name','Address','Institute','Polling Station','Age','Gender','EPIC No'];
   const csvRows = [headers.map(csvEsc).join(',')];
   for (const r of rows) {
     csvRows.push([
       r.part_no, r.sr_no,
       csvEsc(r.elector_name), csvEsc(r.relative_name),
       csvEsc(r.address), csvEsc(r.institute),
+      csvEsc(r.building),
       r.age||'', r.gender||'', r.epic_no||''
     ].join(','));
   }
@@ -1487,6 +1585,218 @@ window.showSection = function(id) {
   if (id === 'settings') loadSettings();
 };
 
+// ── Voter Slip Generator & Batch Downloader ───────────────────────────
+function createSlipElement(r) {
+  const slipDiv = document.createElement('div');
+  slipDiv.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;z-index:-1;background:#fff;';
+  const genderTxt = r.gender === 'M' ? 'Male (पुरुष)' : r.gender === 'F' ? 'Female (स्त्री)' : r.gender || '—';
+
+  slipDiv.innerHTML = `
+    <div style="width:800px;font-family:Inter,Arial,sans-serif;background:#fff;padding:0;">
+      <!-- Full Candidate Campaign Banner (imp.jpeg) -->
+      <div style="width:800px;background:#fff;line-height:0;margin:0;padding:0;">
+        <img src="images/imp.jpeg" crossorigin="anonymous" style="width:800px;height:auto;display:block;" onerror="this.src='icon.png'" />
+      </div>
+
+      <!-- Elector Card -->
+      <div style="margin:16px 20px;border:2px solid #0f172a;border-radius:12px;overflow:hidden;background:#ffffff;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+        <div style="background:#0f172a;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:800;font-size:16px;letter-spacing:0.5px;">भाग क्र. ${r.part_no} (PT ${r.part_no}) &nbsp;|&nbsp; अनु. क्र. ${r.sr_no} (SR ${r.sr_no})</span>
+          <span style="font-size:12px;font-weight:600;opacity:0.9;background:rgba(255,255,255,0.18);padding:3px 12px;border-radius:20px;">मतदार यादी २०२६</span>
+        </div>
+        <div style="padding:20px 22px;">
+          <div style="font-size:22px;font-weight:800;color:#0f172a;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.3px;">${esc(r.elector_name)}</div>
+
+          <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px;background:#f8fafc;padding:12px 16px;border-radius:8px;border:1px solid #e2e8f0;">
+            <div style="flex:1;min-width:180px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Relative Name / नातेवाईकाचे नाव</span><div style="font-weight:700;font-size:15px;color:#1e293b;margin-top:3px;">${esc(r.relative_name || '—')}</div></div>
+            <div style="width:70px;text-align:center;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Age / वय</span><div style="font-weight:800;font-size:20px;color:#ea580c;margin-top:2px;">${r.age || '—'}</div></div>
+            <div style="width:110px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Gender / लिंग</span><div style="font-weight:700;font-size:15px;color:#1e293b;margin-top:3px;">${genderTxt}</div></div>
+            <div style="width:130px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">EPIC No</span><div style="font-weight:700;font-size:14px;font-family:monospace;color:#1e293b;margin-top:3px;">${esc(r.epic_no || '—')}</div></div>
+          </div>
+
+          <div style="border-top:1px solid #e2e8f0;padding-top:12px;">
+            <div style="margin-bottom:10px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">📍 Address / पत्ता</span><div style="font-weight:600;font-size:14px;margin-top:3px;color:#334155;line-height:1.45;">${esc(r.address || '—')}</div></div>
+            <div style="margin-bottom:12px;"><span style="color:#64748b;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">🎓 Institute / संस्था</span><div style="font-weight:600;font-size:14px;margin-top:3px;color:#334155;line-height:1.45;">${esc(r.institute || '—')}</div></div>
+          </div>
+
+          <!-- Polling Station -->
+          <div style="background:#f0fdf4;padding:14px 18px;border-radius:8px;border:1.5px solid #86efac;margin-top:8px;">
+            <div style="display:flex;align-items:center;gap:6px;color:#15803d;font-size:12px;text-transform:uppercase;letter-spacing:0.6px;font-weight:800;">
+              <span>🏛️</span><span>POLLING STATION (मतदान केंद्र / इमारत)</span>
+            </div>
+            <div style="font-weight:700;font-size:14px;color:#166534;margin-top:6px;line-height:1.55;">${esc(r.building || '—')}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Notice -->
+      <div style="margin:0 20px 14px;text-align:center;padding:12px;background:linear-gradient(135deg, #fef3c7, #fde68a);border-radius:8px;border:1px solid #fcd34d;">
+        <div style="font-weight:800;color:#92400e;font-size:14px;letter-spacing:0.3px;">मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ &nbsp;|&nbsp; वेळ: सकाळी ०८:०० ते दुपारी ०४:०० वा.</div>
+      </div>
+      <div style="text-align:center;padding-bottom:12px;font-size:10px;color:#94a3b8;font-weight:500;">Designed & Developed by Veagle Space Technology Pvt. Ltd.</div>
+    </div>
+  `;
+  return slipDiv;
+}
+
+async function ensureLibs() {
+  if (!window.html2canvas) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+}
+
+async function downloadSlip(partNo, srNo) {
+  const r = _currentTableData.find(e => e.part_no == partNo && e.sr_no == srNo);
+  if (!r) { alert('Data not found'); return; }
+
+  try {
+    await ensureLibs();
+  } catch(e) { alert('Could not load html2canvas. Check internet.'); return; }
+
+  const slipDiv = createSlipElement(r);
+  document.body.appendChild(slipDiv);
+
+  // Wait for images
+  const imgs = slipDiv.querySelectorAll('img');
+  await Promise.all([...imgs].map(img => new Promise(res => {
+    if (img.complete) res(); else { img.onload = res; img.onerror = res; }
+  })));
+
+  try {
+    const canvas = await html2canvas(slipDiv.firstElementChild, {
+      scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff'
+    });
+    canvas.toBlob(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `Slip_PT${r.part_no}_SR${r.sr_no}_${(r.elector_name||'').replace(/\s+/g,'_').substring(0,25)}.png`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { a.remove(); URL.revokeObjectURL(a.href); }, 1000);
+    }, 'image/png');
+  } catch(e) {
+    console.error('Slip generation failed:', e);
+    alert('Slip download failed. Please try again.');
+  }
+  document.body.removeChild(slipDiv);
+}
+
+let _batchCancelled = false;
+function cancelBatchSlips() {
+  _batchCancelled = true;
+  document.getElementById('batchSlipModal').style.display = 'none';
+}
+
+async function downloadAllSlips() {
+  if (!_currentTableData || !_currentTableData.length) {
+    alert('No elector records to download. Please load records first.');
+    return;
+  }
+
+  const total = _currentTableData.length;
+  if (!confirm(`Generate and download voter slips for all ${total} electors on this page as a ZIP file?`)) {
+    return;
+  }
+
+  try {
+    await ensureLibs();
+    if (!window.JSZip) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+  } catch(e) {
+    alert('Could not load required generator libraries. Check internet connection.');
+    return;
+  }
+
+  _batchCancelled = false;
+  const modal = document.getElementById('batchSlipModal');
+  const countEl = document.getElementById('batchProgressCount');
+  const percentEl = document.getElementById('batchProgressPercent');
+  const barEl = document.getElementById('batchProgressBar');
+  const statusEl = document.getElementById('batchStatusText');
+
+  modal.style.display = 'flex';
+  barEl.style.width = '0%';
+  percentEl.textContent = '0%';
+  countEl.textContent = `0 / ${total}`;
+  statusEl.textContent = 'Preparing campaign banner...';
+
+  const zip = new JSZip();
+
+  // Pre-cache banner image
+  const banner = new Image();
+  banner.crossOrigin = 'anonymous';
+  banner.src = 'images/imp.jpeg';
+  await new Promise(r => {
+    if (banner.complete) r(); else { banner.onload = r; banner.onerror = r; }
+  });
+
+  for (let i = 0; i < total; i++) {
+    if (_batchCancelled) break;
+
+    const r = _currentTableData[i];
+    const pct = Math.round(((i + 1) / total) * 100);
+    countEl.textContent = `${i + 1} / ${total}`;
+    percentEl.textContent = `${pct}%`;
+    barEl.style.width = `${pct}%`;
+    statusEl.textContent = `Rendering: PT ${r.part_no} | SR ${r.sr_no} - ${r.elector_name || ''}`;
+
+    const slipDiv = createSlipElement(r);
+    document.body.appendChild(slipDiv);
+
+    try {
+      const canvas = await html2canvas(slipDiv.firstElementChild, {
+        scale: 1.5, useCORS: true, logging: false, backgroundColor: '#ffffff'
+      });
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+      if (blob) {
+        const cleanName = (r.elector_name || 'elector').replace(/[^a-zA-Z0-9_\u0900-\u097F]/g, '_').substring(0, 25);
+        zip.file(`Slip_PT${r.part_no}_SR${r.sr_no}_${cleanName}.png`, blob);
+      }
+    } catch(err) {
+      console.warn(`Failed rendering slip for SR ${r.sr_no}:`, err);
+    } finally {
+      if (slipDiv.parentNode) document.body.removeChild(slipDiv);
+    }
+
+    // Brief break to yield UI
+    await new Promise(res => setTimeout(res, 15));
+  }
+
+  if (_batchCancelled) {
+    modal.style.display = 'none';
+    alert('Batch slip download cancelled.');
+    return;
+  }
+
+  statusEl.textContent = 'Compressing into ZIP archive...';
+  const zipBlob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+    statusEl.textContent = `Compressing: ${Math.round(meta.percent)}%`;
+  });
+
+  const url = URL.createObjectURL(zipBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  const pno = state.part_no ? `_Part_${state.part_no}` : '';
+  a.download = `Voter_Slips_Page_${state.page}${pno}_${new Date().toISOString().slice(0,10)}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1000);
+
+  modal.style.display = 'none';
+  alert(`✅ Successfully generated and downloaded ${total} voter slips in ZIP!`);
+}
+
 // ── Init ─────────────────────────────────────────────────────────────────────
 setupFilters();
 loadOverview();
@@ -1497,5 +1807,33 @@ loadData();
 const _origApiFetch = apiFetch;
 
 </script>
+
+<!-- Modal for Batch Slip Download Progress -->
+<div id="batchSlipModal" class="batch-modal" style="display:none;">
+  <div class="batch-modal-backdrop" onclick="cancelBatchSlips()"></div>
+  <div class="batch-modal-content">
+    <div style="display:flex;align-items:center;gap:0.85rem;">
+      <div style="font-size:1.8rem;">📦</div>
+      <div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:var(--text);margin:0;">Generating Voter Slips (ZIP)</h3>
+        <p style="font-size:0.75rem;color:var(--text3);margin:2px 0 0;">Rendering campaign slips for electors...</p>
+      </div>
+    </div>
+    <div style="margin:1.35rem 0;">
+      <div style="display:flex;justify-content:space-between;font-size:0.78rem;font-weight:700;color:var(--text2);margin-bottom:6px;">
+        <span id="batchProgressCount">Preparing...</span>
+        <span id="batchProgressPercent">0%</span>
+      </div>
+      <div style="background:#e2e8f0;border-radius:8px;height:12px;overflow:hidden;position:relative;">
+        <div id="batchProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg, #f97316, #ea580c);border-radius:8px;transition:width 0.15s ease;"></div>
+      </div>
+      <div id="batchStatusText" style="font-size:0.72rem;color:var(--text3);margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Initializing...</div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.25rem;">
+      <button class="btn btn-ghost" onclick="cancelBatchSlips()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
