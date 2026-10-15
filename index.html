@@ -53,11 +53,11 @@
 
     /* ── Campaign Header ────────────────────────────────────────────── */
     .campaign-header {
-      background: linear-gradient(135deg, #ea580c 0%, #991b1b 100%);
+      background: linear-gradient(135deg, #c2410c 0%, #ea580c 40%, #991b1b 100%);
       border-bottom: 4px solid #facc15;
       position: relative;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-      padding: 1.8rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      padding: 1.8rem 0 1.5rem;
       z-index: 100;
       color: #fff;
       overflow: hidden;
@@ -68,9 +68,9 @@
       position: absolute;
       inset: 0;
       background-image:
-        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.07) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,200,0,0.08) 0%, transparent 40%),
-        radial-gradient(circle at 60% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+        radial-gradient(circle at 50% 50%, rgba(254, 240, 138, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 15% 50%, rgba(255,255,255,0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 50%, rgba(255,200,0,0.1) 0%, transparent 45%);
       pointer-events: none;
       z-index: 0;
     }
@@ -79,8 +79,8 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 210px; height: 210px;
-      opacity: 0.08;
+      width: 260px; height: 260px;
+      opacity: 0.07;
       pointer-events: none;
       z-index: 0;
     }
@@ -96,14 +96,22 @@
       position: relative; z-index: 1;
     }
     .campaign-img {
-      width: 220px; height: 220px;
+      width: 185px; height: 185px;
       flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4));
+      filter: drop-shadow(0 12px 25px rgba(0,0,0,0.45));
+      transition: transform 0.25s ease;
+    }
+    .campaign-img:hover {
+      transform: scale(1.03);
     }
     .campaign-img img {
       width: 100%; height: 100%; object-fit: contain;
       clip-path: circle(43.5% at 50.5% 52.5%);
+    }
+    @media (max-width: 1100px) {
+      .campaign-img { width: 140px; height: 140px; }
+      .ballot-table-wrap { max-width: 550px; }
     }
 
     /* ── Ticker / Info Scroller ─────────────────────────────────────── */
@@ -211,43 +219,57 @@
   justify-content: center;
 }
 
+    /* ── Official Ballot Voting Box & Campaign Elements ──────────── */
     .ballot-table-wrap {
       width: 100%;
-      max-width: 580px;
-      margin: 0.2rem auto 0.6rem;
+      max-width: 620px;
+      margin: 0.35rem auto 0.55rem;
       background: #ffffff;
-      border: 2px solid #0f172a;
-      border-radius: 8px;
+      border: 2.5px solid #0f172a;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.45),
+                  0 0 0 1px rgba(255, 255, 255, 0.4),
+                  0 0 30px rgba(245, 158, 11, 0.28);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .ballot-table-wrap:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 42px -6px rgba(0, 0, 0, 0.52),
+                  0 0 0 1px rgba(255, 255, 255, 0.55),
+                  0 0 35px rgba(245, 158, 11, 0.4);
     }
     .ballot-table {
       width: 100%;
       border-collapse: collapse;
       text-align: center;
+      background: #ffffff;
     }
     .ballot-table th {
-      background: #f8fafc;
+      background: linear-gradient(180deg, #f8fafc 0%, #edf2f7 100%);
       color: #0f172a;
-      font-size: 0.75rem;
-      font-weight: 800;
-      padding: 0.35rem 0.5rem;
-      border-bottom: 1.5px solid #0f172a;
+      font-size: 0.8rem;
+      font-weight: 900;
+      padding: 0.45rem 0.55rem;
+      border-bottom: 2px solid #0f172a;
       border-right: 1.5px solid #0f172a;
-      line-height: 1.25;
+      line-height: 1.2;
       text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
     .ballot-table th:last-child {
       border-right: none;
     }
     .ballot-table th span {
       display: block;
-      font-size: 0.62rem;
+      font-size: 0.63rem;
       font-weight: 700;
-      color: #64748b;
+      color: #475569;
+      letter-spacing: 0.04em;
+      margin-top: 2px;
     }
     .ballot-table td {
-      padding: 0.45rem 0.5rem;
+      padding: 0.45rem 0.6rem;
       border-right: 1.5px solid #0f172a;
       vertical-align: middle;
       background: #ffffff;
@@ -256,80 +278,170 @@
       border-right: none;
     }
     .ballot-sr {
-      font-family: 'Times New Roman', serif;
-      font-size: 2.2rem;
+      font-family: 'Times New Roman', Georgia, serif;
+      font-size: 2.6rem;
       font-weight: 900;
       color: #0f172a;
       line-height: 1;
-      width: 75px;
+      width: 80px;
     }
     .ballot-cand {
       text-align: left;
-      padding-left: 0.85rem !important;
+      padding-left: 1rem !important;
     }
     .ballot-cand-mr {
-      font-size: 1.45rem;
+      font-size: 1.55rem;
       font-weight: 900;
       color: #0f172a;
       line-height: 1.15;
       letter-spacing: 0.01em;
     }
     .ballot-cand-en {
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 800;
       color: #334155;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       margin-top: 2px;
     }
+    .ballot-cand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #047857;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      margin-top: 4px;
+      letter-spacing: 0.02em;
+    }
     .ballot-photo-cell {
-      width: 65px;
+      width: 72px;
       text-align: center;
+      padding: 0.35rem 0.4rem !important;
     }
     .ballot-cand-photo {
-      width: 48px;
-      height: 54px;
+      width: 52px;
+      height: 60px;
       object-fit: cover;
-      border: 1px solid #94a3b8;
+      object-position: top center;
+      border: 1.5px solid #0f172a;
       border-radius: 4px;
       display: inline-block;
       vertical-align: middle;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      background: #f8fafc;
     }
     .ballot-vote {
-      width: 80px;
-      font-size: 2.3rem;
-      font-weight: 900;
-      color: #a855f7;
-      font-family: 'Times New Roman', serif;
-      line-height: 1;
-      text-shadow: 0 1px 2px rgba(168,85,247,0.3);
+      width: 85px;
+      text-align: center;
+      position: relative;
     }
+    .ballot-vote-num {
+      font-size: 2.85rem;
+      font-weight: 900;
+      color: #6d28d9;
+      font-family: 'Times New Roman', Georgia, serif;
+      line-height: 1;
+      display: inline-block;
+      text-shadow: 0 1px 3px rgba(109, 40, 217, 0.35);
+    }
+    
+    /* Top title badge */
+    .ballot-election-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(250, 204, 21, 0.65);
+      border-radius: 50px;
+      padding: 0.35rem 1.4rem;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+      margin-bottom: 0.5rem;
+    }
+    .ballot-election-badge .badge-icon {
+      font-size: 1.1rem;
+    }
+    
+    /* Appeal text */
     .ballot-appeal {
       color: #ffffff;
-      font-size: 1.05rem;
-      font-weight: 800;
-      text-shadow: 0 2px 5px rgba(0,0,0,0.4);
-      margin-top: 0.35rem;
+      font-size: 1.25rem;
+      font-weight: 900;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+      margin-top: 0.55rem;
       line-height: 1.35;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
     }
-    .ballot-date {
+    .ballot-pref-badge {
+      background: linear-gradient(135deg, #fef08a 0%, #facc15 100%);
+      color: #78350f;
+      padding: 0.15rem 0.65rem;
+      border-radius: 6px;
+      font-weight: 900;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      display: inline-block;
+      letter-spacing: normal;
+    }
+    
+    /* Date Pill */
+    .ballot-date-pill {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid rgba(250, 204, 21, 0.75);
+      border-radius: 40px;
+      padding: 0.45rem 1.4rem;
       color: #fef08a;
-      font-size: 0.88rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
-      margin-top: 0.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.55rem;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .ballot-date-pill strong {
+      color: #ffffff;
+    }
+    .ballot-date-divider {
+      color: #facc15;
+      opacity: 0.7;
+      font-weight: 900;
     }
     @media (max-width: 768px) {
-      .ballot-table-wrap { max-width: 95%; }
-      .ballot-sr { font-size: 1.7rem; width: 55px; }
-      .ballot-cand-mr { font-size: 1.15rem; }
-      .ballot-cand-en { font-size: 0.72rem; }
-      .ballot-cand-photo { width: 40px; height: 46px; }
-      .ballot-vote { font-size: 1.8rem; width: 60px; }
-      .ballot-appeal { font-size: 0.85rem; }
-      .ballot-date { font-size: 0.75rem; }
-      .campaign-inner { flex-direction: column; gap: 1rem; padding: 0 1rem; }
-      .campaign-img { width: 140px; height: 140px; }
+      .ballot-table-wrap { max-width: 98%; margin: 0.2rem auto 0.4rem; }
+      .ballot-sr { font-size: 1.9rem; width: 55px; }
+      .ballot-cand { padding-left: 0.6rem !important; }
+      .ballot-cand-mr { font-size: 1.22rem; }
+      .ballot-cand-en { font-size: 0.74rem; }
+      .ballot-cand-badge { font-size: 0.6rem; padding: 0.05rem 0.35rem; }
+      .ballot-photo-cell { width: 50px; }
+      .ballot-cand-photo { width: 44px; height: 50px; }
+      .ballot-vote { width: 55px; }
+      .ballot-vote-num { font-size: 2.1rem; }
+      .ballot-election-badge { font-size: 0.95rem; padding: 0.3rem 1rem; }
+      .ballot-appeal { font-size: 0.95rem; }
+      .ballot-pref-badge { font-size: 0.9rem; }
+      .ballot-date-pill { font-size: 0.78rem; padding: 0.35rem 0.9rem; gap: 0.4rem; }
+      .campaign-inner { flex-direction: column; gap: 0.85rem; padding: 0 0.75rem; }
+      .campaign-img { width: 120px; height: 120px; }
+      .floating-visitor-pill { bottom: 16px; left: 16px; font-size: 0.76rem; padding: 0.35rem 0.85rem; }
     }
 
 
@@ -497,28 +609,41 @@
       position: fixed;
       bottom: 24px;
       left: 24px;
-      background: #ffffff;
-      border: 1.5px solid #facc15;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid rgba(250, 204, 21, 0.7);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3), 0 0 15px rgba(250, 204, 21, 0.15);
       border-radius: 30px;
-      padding: 0.45rem 1rem;
+      padding: 0.45rem 1.15rem;
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.65rem;
       z-index: 999;
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       font-weight: 700;
-      color: #1e293b;
+      color: #f1f5f9;
       animation: pillFadeIn 0.4s ease;
-      backdrop-filter: blur(8px);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: default;
+    }
+    .floating-visitor-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.4), 0 0 20px rgba(250, 204, 21, 0.25);
     }
     .floating-visitor-pill .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #22c55e;
-      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      box-shadow: 0 0 8px #22c55e;
       animation: pulseGreen 1.8s infinite;
+      flex-shrink: 0;
+    }
+    .floating-visitor-pill strong {
+      color: #facc15;
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
     }
     @keyframes pulseGreen {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
@@ -1097,9 +1222,10 @@
            onerror="if(!this.dataset.fallback && this.src.includes('uploads/')){this.dataset.fallback='1';this.src='settings_api.php?action=image&name='+encodeURIComponent(this.src.split('uploads/')[1].split('?')[0]);}else{this.style.display='none';}" />
     </div>
     <div class="campaign-text">
-      <!-- Election Title -->
-      <div id="headerConstituency" style="font-size:1.15rem;font-weight:800;color:#ffffff;letter-spacing:0.04em;text-shadow:0 2px 4px rgba(0,0,0,0.3);margin-bottom:0.4rem;">
-        पुणे शिक्षक मतदारसंघ निवडणूक २०२६
+      <!-- Election Title Badge -->
+      <div class="ballot-election-badge">
+        <span class="badge-icon">🗳️</span>
+        <span id="headerConstituency">पुणे शिक्षक मतदारसंघ निवडणूक २०२६</span>
       </div>
 
       <!-- Official Ballot Voting Box -->
@@ -1107,10 +1233,10 @@
         <table class="ballot-table">
           <thead>
             <tr>
-              <th style="width:75px;">अनु. क्र.<span>SR.NO.</span></th>
+              <th style="width:80px;">अनु. क्र.<span>SR.NO.</span></th>
               <th>उमेदवाराचे नाव<span>NAME OF CANDIDATE</span></th>
-              <th style="width:65px;">फोटो<span>PHOTO</span></th>
-              <th style="width:80px;">पसंती क्र.<span>CHOICE NO.</span></th>
+              <th style="width:72px;">फोटो<span>PHOTO</span></th>
+              <th style="width:85px;">पसंती क्र.<span>CHOICE NO.</span></th>
             </tr>
           </thead>
           <tbody>
@@ -1119,11 +1245,14 @@
               <td class="ballot-cand">
                 <div class="ballot-cand-mr" id="headerCandidateName">सुनीलभाऊ जगताप</div>
                 <div class="ballot-cand-en">SUNILBHAU JAGTAP</div>
+                <span class="ballot-cand-badge"><i class="fa-solid fa-award"></i> अधिकृत उमेदवार</span>
               </td>
               <td class="ballot-photo-cell">
-                <img class="ballot-cand-photo" src="icon.png" alt="Photo" onerror="this.src='icon1.png'" />
+                <img class="ballot-cand-photo" src="images/candidate_photo.png" alt="सुनीलभाऊ जगताप" onerror="this.src='icon.png'" />
               </td>
-              <td class="ballot-vote" id="headerPreference">1</td>
+              <td class="ballot-vote">
+                <span class="ballot-vote-num" id="headerPreference">1</span>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -1131,10 +1260,12 @@
 
       <!-- Voting Appeal -->
       <div class="ballot-appeal">
-        यांना पसंती क्रमांक 1 चे मत देऊन प्रचंड बहुमताने विजयी करा
+        यांना <span class="ballot-pref-badge">पसंती क्रमांक १</span> चे मत देऊन प्रचंड बहुमताने विजयी करा!
       </div>
-      <div class="ballot-date">
-        मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ | वेळ: सकाळी ०८ ते दुपारी ०४ वा.
+      <div class="ballot-date-pill">
+        <span class="ballot-date-part"><i class="fa-regular fa-calendar-check"></i> <strong>मतदान:</strong> शुक्रवार दि. २३ ऑक्टोबर २०२६</span>
+        <span class="ballot-date-divider">•</span>
+        <span class="ballot-date-part"><i class="fa-regular fa-clock"></i> <strong>वेळ:</strong> सकाळी ०८ ते दुपारी ०४ वा.</span>
       </div>
     </div>
     <div class="campaign-img right-img">
@@ -1298,7 +1429,7 @@
 <!-- Floating Live Visitor Pill -->
 <div class="floating-visitor-pill" id="floatingVisitorPill" title="Live Site Visits Count">
   <div class="pulse-dot"></div>
-  <span>Live Visitors: <strong id="floatingVisitors">1</strong></span>
+  <span>थेट भेटी (Visits): <strong id="floatingVisitors">1</strong></span>
 </div>
 
 <footer>
