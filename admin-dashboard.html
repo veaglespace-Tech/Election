@@ -1804,15 +1804,55 @@ function cancelBatchSlips() {
   document.getElementById('batchSlipModal').style.display = 'none';
 }
 
-async function downloadAllSlips() {
-  if (!_currentTableData || !_currentTableData.length) {
-    alert('No elector records to download. Please load records first.');
-    return;
+async function downloadAllSlips(scope = 'prompt') {
+  let targetTotal = state.totalAll || 62099;
+  let mode = 'page'; // 'page', 'filtered', 'all'
+
+  if (scope === 'prompt') {
+    const choice = prompt(
+      `📦 Voter Slips ZIP Download:\n\n` +
+      `१) Type "1" किंवा "page" -> फक्त सध्याचे ५०० रेकॉर्ड्स (Fast)\n` +
+      `२) Type "2" किंवा "filter" -> सध्या फिल्टर केलेले सर्व रेकॉर्ड्स\n` +
+      `३) Type "3" किंवा "all" -> संपूर्ण डेटाबेसमधील सर्व (${targetTotal.toLocaleString()}) स्लिप्स\n\n` +
+      `कृपया 1, 2 किंवा 3 टाईप करा:`,
+      '1'
+    );
+    if (!choice) return;
+    const clean = choice.trim().toLowerCase();
+    if (clean === '3' || clean === 'all') mode = 'all';
+    else if (clean === '2' || clean === 'filter') mode = 'filtered';
+    else mode = 'page';
+  } else {
+    mode = scope;
   }
 
-  const total = _currentTableData.length;
-  if (!confirm(`Generate and download voter slips for all ${total} electors on this page as a ZIP file?`)) {
-    return;
+  let rowsToProcess = [];
+
+  if (mode === 'page') {
+    if (!_currentTableData || !_currentTableData.length) {
+      alert('No elector records to download. Please load records first.');
+      return;
+    }
+    rowsToProcess = _currentTableData;
+  } else {
+    // Fetch all or filtered data from server
+    const filterParams = mode === 'filtered' 
+      ? { name: state.name, address: state.address, institute: state.institute, part_no: state.part_no }
+      : { name: '', address: '', institute: '', part_no: '' };
+
+    const firstCheck = await apiFetch({ page: 1, limit: 500, ...filterParams });
+    const countTotal = firstCheck.total || 0;
+    if (countTotal === 0) {
+      alert('कोणतेही मतदार रेकॉर्ड सापडले नाहीत.');
+      return;
+    }
+
+    if (!confirm(`तुम्ही ${countTotal.toLocaleString()} मतदारांच्या स्लिप्स (ZIP) डाऊनलोड करत आहात.\n\nब्राउझर क्रॅश होऊ नये म्हणून या ५००-५०० च्या बॅचमध्ये डाऊनलोड होतील. पुढे सुरू ठेवायचे का?`)) {
+      return;
+    }
+
+    rowsToProcess = 'STREAM_API';
+    targetTotal = countTotal;
   }
 
   try {
@@ -1840,10 +1880,8 @@ async function downloadAllSlips() {
   modal.style.display = 'flex';
   barEl.style.width = '0%';
   percentEl.textContent = '0%';
-  countEl.textContent = `0 / ${total}`;
+  countEl.textContent = `0 / ${targetTotal}`;
   statusEl.textContent = 'Preparing campaign banner...';
-
-  const zip = new JSZip();
 
   // Pre-cache banner image
   const banner = new Image();
@@ -1853,12 +1891,67 @@ async function downloadAllSlips() {
     if (banner.complete) r(); else { banner.onload = r; banner.onerror = r; }
   });
 
-  for (let i = 0; i < total; i++) {
-    if (_batchCancelled) break;
+  if (mode === 'page') {
+    await renderAndZipRows(rowsToProcess, `Voter_Slips_Page_${state.page}`, 0, rowsToProcess.length, targetTotal, modal, countEl, percentEl, barEl, statusEl);
+  } else {
+    // Process in clean packages of 500 to avoid browser memory crash
+    const filterParams = mode === 'filtered' 
+      ? { name: state.name, address: state.address, institute: state.institute, part_no: state.part_no }
+      : { name: '', address: '', institute: '', part_no: '' };
 
-    const r = _currentTableData[i];
-    const pct = Math.round(((i + 1) / total) * 100);
-    countEl.textContent = `${i + 1} / ${total}`;
+    const limit = 500;
+    const totalPages = Math.ceil(targetTotal / limit);
+    let processedTotal = 0;
+
+    for (let p = 1; p <= totalPages; p++) {
+      if (_batchCancelled) break;
+      statusEl.textContent = `Fetching records page ${p} of ${totalPages} from database...`;
+      const pageData = await apiFetch({ page: p, limit, ...filterParams });
+      const currentRows = pageData.data || [];
+      if (!currentRows.length) break;
+
+      const zipName = mode === 'filtered'
+        ? `Voter_Slips_Filtered_Part${p}_of_${totalPages}`
+        : `Voter_Slips_All_Batch${p}_of_${totalPages}`;
+
+      const continueNext = await renderAndZipRows(
+        currentRows,
+        zipName,
+        processedTotal,
+        currentRows.length,
+        targetTotal,
+        modal,
+        countEl,
+        percentEl,
+        barEl,
+        statusEl
+      );
+
+      processedTotal += currentRows.length;
+      if (!continueNext || _batchCancelled) break;
+    }
+  }
+
+  if (_batchCancelled) {
+    modal.style.display = 'none';
+    alert('Batch slip download cancelled.');
+    return;
+  }
+
+  modal.style.display = 'none';
+  alert(`✅ सर्व ${targetTotal.toLocaleString()} स्लिप्स यशस्वीरित्या तयार होऊन डाऊनलोड झाल्या!`);
+}
+
+async function renderAndZipRows(rows, zipFilename, startIndex, batchCount, grandTotal, modal, countEl, percentEl, barEl, statusEl) {
+  const zip = new JSZip();
+
+  for (let i = 0; i < rows.length; i++) {
+    if (_batchCancelled) return false;
+
+    const r = rows[i];
+    const overallIdx = startIndex + i + 1;
+    const pct = Math.round((overallIdx / grandTotal) * 100);
+    countEl.textContent = `${overallIdx.toLocaleString()} / ${grandTotal.toLocaleString()}`;
     percentEl.textContent = `${pct}%`;
     barEl.style.width = `${pct}%`;
     statusEl.textContent = `Rendering: PT ${r.part_no} | SR ${r.sr_no} - ${r.elector_name || ''}`;
@@ -1881,32 +1974,23 @@ async function downloadAllSlips() {
       if (slipDiv.parentNode) document.body.removeChild(slipDiv);
     }
 
-    // Brief break to yield UI
-    await new Promise(res => setTimeout(res, 15));
+    await new Promise(res => setTimeout(res, 12));
   }
 
-  if (_batchCancelled) {
-    modal.style.display = 'none';
-    alert('Batch slip download cancelled.');
-    return;
-  }
-
-  statusEl.textContent = 'Compressing into ZIP archive...';
+  statusEl.textContent = `Compressing ${rows.length} slips into ZIP (${zipFilename})...`;
   const zipBlob = await zip.generateAsync({ type: 'blob' }, (meta) => {
-    statusEl.textContent = `Compressing: ${Math.round(meta.percent)}%`;
+    statusEl.textContent = `Compressing ${zipFilename}: ${Math.round(meta.percent)}%`;
   });
 
   const url = URL.createObjectURL(zipBlob);
   const a = document.createElement('a');
   a.href = url;
-  const pno = state.part_no ? `_Part_${state.part_no}` : '';
-  a.download = `Voter_Slips_Page_${state.page}${pno}_${new Date().toISOString().slice(0,10)}.zip`;
+  a.download = `${zipFilename}_${new Date().toISOString().slice(0,10)}.zip`;
   document.body.appendChild(a);
   a.click();
-  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1000);
+  setTimeout(() => { a.remove(); URL.revokeObjectURL(url); }, 1500);
 
-  modal.style.display = 'none';
-  alert(`✅ Successfully generated and downloaded ${total} voter slips in ZIP!`);
+  return true;
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
