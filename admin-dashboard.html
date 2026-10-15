@@ -874,8 +874,13 @@
             <input type="text" id="d-institute" placeholder="Search by institute…" autocomplete="off" />
           </div>
           <div class="field">
-            <label for="d-part">Part No</label>
-            <input type="text" id="d-part" placeholder="e.g. 5" autocomplete="off" />
+            <label for="d-part">Part No (Booth)</label>
+            <div style="display:flex;gap:4px;">
+              <select id="d-part-select" style="flex:1;min-width:0;" onchange="onPartSelectChange(this.value)">
+                <option value="">All Parts</option>
+              </select>
+              <input type="text" id="d-part" placeholder="Part #" style="width:70px;text-align:center;" autocomplete="off" />
+            </div>
           </div>
         </div>
       </div>
@@ -886,12 +891,12 @@
         <button class="btn btn-warning" onclick="downloadFilteredCSV()">📋 Export Filtered CSV</button>
         
         <!-- Part-wise Slip Download Button -->
-        <button class="btn" style="background:#2563eb;color:#fff;border-color:#1d4ed8;display:inline-flex;align-items:center;gap:0.4rem;" onclick="downloadPartSlips()">
-          <span>📄 Download Part Slips (Print/PDF)</span>
+        <button class="btn" id="btnPartSlips" style="background:#2563eb;color:#fff;border-color:#1d4ed8;display:inline-flex;align-items:center;gap:0.4rem;" onclick="downloadPartSlips()">
+          <span>⚡ Download Part Slips (Print/PDF)</span>
         </button>
 
         <!-- All Slips Server ZIP Button -->
-        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="triggerServerBatchZip()">
+        <button class="btn" id="btnAllSlips" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="triggerServerBatchZip()">
           <span>📦 Download All Slips (Server ZIP)</span>
         </button>
 
@@ -1202,11 +1207,29 @@ async function loadOverview() {
     const avgPart = state.partsAll.length ? Math.round(j.total / state.partsAll.length) : '—';
     document.getElementById('ov-avgpart').textContent = avgPart.toLocaleString ? avgPart.toLocaleString('en-IN') : avgPart;
 
+    // Populate Part No filter select dropdown
+    const partSelect = document.getElementById('d-part-select');
+    if (partSelect && state.partsAll && state.partsAll.length) {
+      let h = '<option value="">All Parts (' + state.partsAll.length + ')</option>';
+      for (const p of state.partsAll) {
+        h += `<option value="${p}">Part No ${p}</option>`;
+      }
+      partSelect.innerHTML = h;
+    }
+
     // Gender stats
     loadGenderStats();
   } catch(e) {
     console.error('Overview load error:', e);
   }
+}
+
+function onPartSelectChange(val) {
+  const inputEl = document.getElementById('d-part');
+  if (inputEl) inputEl.value = val;
+  state.part_no = val;
+  state.page = 1;
+  loadData();
 }
 
 async function loadGenderStats() {
@@ -1347,6 +1370,10 @@ function setupFilters() {
     document.getElementById(id).addEventListener('input', function() {
       state[key] = this.value.trim();
       state.page = 1;
+      if (id === 'd-part') {
+        const ps = document.getElementById('d-part-select');
+        if (ps) ps.value = state.part_no;
+      }
       debounce(loadData);
     });
   }
@@ -1354,6 +1381,8 @@ function setupFilters() {
 
 function resetFilters() {
   ['d-name','d-address','d-institute','d-part'].forEach(id => { document.getElementById(id).value=''; });
+  const ps = document.getElementById('d-part-select');
+  if (ps) ps.value = '';
   state.name=''; state.address=''; state.institute=''; state.part_no=''; state.page=1;
   loadData();
 }
@@ -1815,11 +1844,17 @@ function cancelBatchSlips() {
 
 // ── Part-wise & All Slips (Server-Side + Local Batch) ──────────────────────
 async function downloadPartSlips() {
-  // If user entered part_no in filter, prioritize it
-  let partNo = (document.getElementById('d-part')?.value || state.part_no || '').trim();
+  // If user entered part_no in filter, directly open high-speed server slips for that part!
+  let partNo = (document.getElementById('d-part')?.value || document.getElementById('d-part-select')?.value || state.part_no || '').trim();
+
+  if (partNo) {
+    const url = `slips_api.php?action=print_part_slips&part_no=${encodeURIComponent(partNo)}`;
+    window.open(url, '_blank');
+    return;
+  }
 
   // If no part no entered, load parts and open quick selection modal
-  openSlipDownloadModal(partNo);
+  openSlipDownloadModal('');
 }
 
 let _serverJobTimer = null;
@@ -2086,47 +2121,54 @@ const _origApiFetch = apiFetch;
 <!-- Dedicated Slip Download Options Modal -->
 <div id="slipDownloadOptionsModal" class="batch-modal" style="display:none;align-items:center;justify-content:center;">
   <div class="batch-modal-backdrop" onclick="closeSlipDownloadModal()"></div>
-  <div class="batch-modal-content" style="max-width:520px;width:92%;padding:1.5rem;border-radius:14px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
-      <div style="display:flex;align-items:center;gap:0.6rem;">
-        <span style="font-size:1.6rem;">🗳️</span>
+  <div class="batch-modal-content" style="max-width:540px;width:92%;padding:1.6rem;border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.35rem;border-bottom:1px solid #f1f5f9;padding-bottom:0.85rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span style="font-size:1.8rem;">📦</span>
         <div>
-          <h3 style="font-size:1.1rem;font-weight:800;color:var(--text);margin:0;">Voter Slip Export Options</h3>
-          <p style="font-size:0.75rem;color:var(--text3);margin:2px 0 0;">Choose your preferred download method</p>
+          <h3 style="font-size:1.15rem;font-weight:800;color:var(--text);margin:0;">Voter Slip Export Options</h3>
+          <p style="font-size:0.75rem;color:var(--text3);margin:2px 0 0;">Select your preferred high-speed download method</p>
         </div>
       </div>
-      <button onclick="closeSlipDownloadModal()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text3);">&times;</button>
+      <button onclick="closeSlipDownloadModal()" style="background:#f1f5f9;border:none;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;cursor:pointer;color:var(--text2);">&times;</button>
     </div>
 
-    <!-- Option 1: Part-wise Instant Print / PDF (Fastest) -->
-    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:1rem;margin-bottom:1rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-        <span style="font-weight:800;font-size:0.92rem;color:#166534;">१) Part-wise Instant Slips (Recommended)</span>
-        <span style="background:#dcfce7;color:#15803d;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:10px;">⚡ Instant 2 Sec</span>
+    <!-- Option 1: Part-wise Instant Print / PDF -->
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:1.1rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <span style="font-weight:800;font-size:0.95rem;color:#166534;">1. Part-wise Slips (Instant 2 Sec)</span>
+        </div>
+        <span style="background:#dcfce7;color:#15803d;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:12px;">⚡ FASTEST</span>
       </div>
-      <p style="font-size:0.75rem;color:#166534;margin:0 0 0.75rem;line-height:1.4;">
-        Generates clean, printable campaign slips for electors in this booth (Part). Perfect for printing and WhatsApp sharing.
+      <p style="font-size:0.75rem;color:#166534;margin:0 0 0.85rem;line-height:1.45;">
+        Generates formatted campaign slips for electors in the selected booth (Part). Ready for direct A4 printing, WhatsApp sharing, or saving as PDF.
       </p>
       <div style="display:flex;gap:0.5rem;align-items:center;">
-        <select id="modalPartSelect" style="flex:1;padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid #bbf7d0;border-radius:6px;background:#fff;outline:none;">
+        <select id="modalPartSelect" style="flex:1;padding:0.55rem 0.65rem;font-size:0.82rem;border:1.5px solid #86efac;border-radius:8px;background:#fff;outline:none;font-weight:600;">
           <option value="">Select Part No...</option>
         </select>
-        <input type="text" id="modalCustomPart" placeholder="Or type Part No" style="width:120px;padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid #bbf7d0;border-radius:6px;background:#fff;outline:none;" />
-        <button class="btn" style="background:#16a34a;color:#fff;border:none;padding:0.45rem 0.85rem;font-size:0.82rem;font-weight:700;" onclick="triggerModalPartDownload()">
+        <input type="text" id="modalCustomPart" placeholder="Part #" style="width:85px;padding:0.55rem 0.65rem;font-size:0.82rem;border:1.5px solid #86efac;border-radius:8px;background:#fff;outline:none;text-align:center;font-weight:600;" />
+        <button class="btn" style="background:#16a34a;color:#fff;border:none;padding:0.55rem 1rem;font-size:0.82rem;font-weight:700;border-radius:8px;box-shadow:0 2px 6px rgba(22,163,74,0.3);" onclick="triggerModalPartDownload()">
           Open Slips 🖨️
         </button>
       </div>
     </div>
 
-    <!-- Option 2: Browser Batch PNGs -->
-    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:0.85rem;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-          <span style="font-weight:700;font-size:0.85rem;color:var(--text);">२) Browser Individual PNGs Batch</span>
-          <p style="font-size:0.72rem;color:var(--text3);margin:2px 0 0;">Generates separate high-res PNG images in 500-batch ZIPs via browser.</p>
+    <!-- Option 2: All 62,099 Slips Server ZIP -->
+    <div style="background:#fff7ed;border:1.5px solid #fdba74;border-radius:12px;padding:1.1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+        <div style="display:flex;align-items:center;gap:0.4rem;">
+          <span style="font-weight:800;font-size:0.95rem;color:#c2410c;">2. All Slips Full Database (Server ZIP)</span>
         </div>
-        <button class="btn btn-ghost" style="font-size:0.78rem;" onclick="closeSlipDownloadModal(); downloadAllSlips();">
-          Start Batch
+        <span style="background:#ffedd5;color:#c2410c;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:12px;">📦 62,099 Records</span>
+      </div>
+      <p style="font-size:0.75rem;color:#9a3412;margin:0 0 0.85rem;line-height:1.45;">
+        Packages all voter slips across all parts directly on the server into a single consolidated ZIP file without freezing your browser.
+      </p>
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn" style="background:#ea580c;color:#fff;border:none;padding:0.55rem 1.1rem;font-size:0.82rem;font-weight:700;border-radius:8px;box-shadow:0 2px 6px rgba(234,88,12,0.3);" onclick="triggerServerBatchZip()">
+          Start Server ZIP Export 📦
         </button>
       </div>
     </div>
