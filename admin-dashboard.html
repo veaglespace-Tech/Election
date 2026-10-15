@@ -1531,6 +1531,56 @@ async function saveSettings() {
   } catch(e) { showToast('&#10007; Save failed: ' + e.message, 'error'); }
 }
 
+async function prepareImageFile(file) {
+  // If file is already small (<= 1.5MB) and is jpg/png/webp, send as-is
+  const validExt = /\.(jpe?g|png|webp)$/i.test(file.name);
+  if (file.size <= 1.5 * 1024 * 1024 && validExt) {
+    return file;
+  }
+  // Otherwise resize & compress to JPEG with canvas
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const maxDim = 1920;
+      let w = img.width;
+      let h = img.height;
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const cleanName = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+            resolve(new File([blob], cleanName, { type: 'image/jpeg' }));
+          } else {
+            resolve(file);
+          }
+        },
+        'image/jpeg',
+        0.85
+      );
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(file);
+    };
+    img.src = url;
+  });
+}
+
 async function handleHeaderUpload(side) {
   const fileInput = document.getElementById('upload-' + side);
   const file = fileInput.files[0];
@@ -1540,13 +1590,18 @@ async function handleHeaderUpload(side) {
   const previewEl = document.getElementById('preview-' + side);
   if (previewEl) previewEl.src = localPreview;
 
-  showToast('Uploading image...', 'info');
-  const fd = new FormData();
-  fd.append('image', file);
+  showToast('Optimizing & uploading image...', 'info');
   try {
+    const uploadFile = await prepareImageFile(file);
+    const fd = new FormData();
+    fd.append('image', uploadFile);
+
     const r = await fetch('settings_api.php?action=upload', { method:'POST', body:fd });
-    const j = await r.json();
-    if (!j.success) throw new Error(j.error);
+    let j = null;
+    try { j = await r.json(); } catch(err) {}
+    if (!r.ok || !j || !j.success) {
+      throw new Error((j && j.error) ? j.error : ('Server returned ' + r.status));
+    }
     if (side === 'left') {
       _settingsCache.header_left_image = j.url;
     } else {
@@ -1571,13 +1626,18 @@ async function addCarouselSlide() {
   _settingsCache.carousel_slides.push(slideItem);
   renderSlides(_settingsCache.carousel_slides);
 
-  showToast('Uploading slide...', 'info');
-  const fd = new FormData();
-  fd.append('image', file);
+  showToast('Optimizing & uploading slide...', 'info');
   try {
+    const uploadFile = await prepareImageFile(file);
+    const fd = new FormData();
+    fd.append('image', uploadFile);
+
     const r = await fetch('settings_api.php?action=upload', { method:'POST', body:fd });
-    const j = await r.json();
-    if (!j.success) throw new Error(j.error);
+    let j = null;
+    try { j = await r.json(); } catch(err) {}
+    if (!r.ok || !j || !j.success) {
+      throw new Error((j && j.error) ? j.error : ('Server returned ' + r.status));
+    }
     slideItem.src = j.url;
     if (j.fallback_url) slideItem._fallback = j.fallback_url;
     delete slideItem._pending;

@@ -122,15 +122,37 @@ try {
     }
 
     elseif ($action === 'upload') {
-        if (!isset($_FILES['image'])) err('No image uploaded');
+        @ini_set('memory_limit', '256M');
+
+        if (!isset($_FILES['image'])) {
+            if (empty($_FILES) && empty($_POST) && isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH'] > 0) {
+                err('File is too large for server configuration. Please select an image under 2MB.');
+            }
+            err('No image uploaded');
+        }
+
         $file = $_FILES['image'];
-        if ($file['error'] !== UPLOAD_ERR_OK) err('Upload error: '.$file['error']);
-        if ($file['size'] > 10*1024*1024)     err('Max file size is 10MB');
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $errMap = [
+                UPLOAD_ERR_INI_SIZE   => 'Image is too large (exceeds server upload limit). Please choose a smaller image.',
+                UPLOAD_ERR_FORM_SIZE  => 'Image exceeds form size limit.',
+                UPLOAD_ERR_PARTIAL    => 'Image upload was interrupted. Please try again.',
+                UPLOAD_ERR_NO_FILE    => 'No image file was received.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Server missing temporary folder.',
+                UPLOAD_ERR_CANT_WRITE => 'Failed to write image to disk.',
+                UPLOAD_ERR_EXTENSION  => 'A server extension stopped the upload.'
+            ];
+            err($errMap[$file['error']] ?? ('Upload error code: ' . $file['error']));
+        }
+
+        if ($file['size'] > 15*1024*1024) {
+            err('Max file size is 15MB');
+        }
 
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION) ?: 'jpg');
-        $allowedExts = ['jpg','jpeg','png','webp','gif'];
+        $allowedExts = ['jpg','jpeg','png','webp','gif','jfif','bmp','avif'];
         if (!in_array($ext, $allowedExts, true)) {
-            err('Only JPG, PNG, WEBP, GIF allowed');
+            err('Allowed image formats: JPG, PNG, WEBP, GIF, JFIF, BMP');
         }
 
         $filename = 'img_'.time().'_'.substr(md5(rand()),0,8).'.'.$ext;
@@ -161,18 +183,21 @@ try {
             }
         }
 
-        if (!$savedPath) err('Failed to save file');
+        if (!$savedPath) err('Failed to save file on server');
+
+        $servedUrl = 'settings_api.php?action=image&name=' . $filename;
 
         ok([
-            'url'          => UPLOAD_URL . $filename,
-            'fallback_url' => 'settings_api.php?action=image&name=' . $filename,
+            'url'          => $servedUrl,
+            'static_url'   => UPLOAD_URL . $filename,
+            'fallback_url' => $servedUrl,
             'filename'     => $filename
         ]);
     }
 
     elseif ($action === 'image') {
-        $file = basename($_GET['file'] ?? $_GET['name'] ?? '');
-        if (!$file) { http_response_code(400); exit; }
+        $file = basename($_GET['file'] ?? $_GET['name'] ?? $_GET['f'] ?? '');
+        if (!$file) { http_response_code(400); echo 'Missing filename'; exit; }
 
         $candidates = array_unique(array_filter([
             UPLOAD_DIR . $file,
