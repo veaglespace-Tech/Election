@@ -891,7 +891,7 @@
         </button>
 
         <!-- All Slips Server ZIP Button -->
-        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="openSlipDownloadModal()">
+        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="triggerServerBatchZip()">
           <span>📦 Download All Slips (Server ZIP)</span>
         </button>
 
@@ -2118,25 +2118,11 @@ const _origApiFetch = apiFetch;
       </div>
     </div>
 
-    <!-- Option 2: Full Database Server ZIP -->
-    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:1rem;margin-bottom:1rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-        <span style="font-weight:800;font-size:0.92rem;color:#9a3412;">२) All Database ZIP (Server-Side)</span>
-        <span style="background:#ffedd5;color:#c2410c;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:10px;">📦 Full DB</span>
-      </div>
-      <p style="font-size:0.75rem;color:#9a3412;margin:0 0 0.75rem;line-height:1.4;">
-        Packages all <strong id="modalAllTotal">62,099</strong> elector records organized by Parts into a single server-generated ZIP archive.
-      </p>
-      <button class="btn" style="background:#ea580c;color:#fff;border:none;width:100%;justify-content:center;font-weight:700;font-size:0.85rem;" onclick="triggerServerBatchZip()">
-        Download Complete Server ZIP 📦
-      </button>
-    </div>
-
-    <!-- Option 3: Browser Batch PNGs -->
+    <!-- Option 2: Browser Batch PNGs -->
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:0.85rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div>
-          <span style="font-weight:700;font-size:0.85rem;color:var(--text);">३) Browser Individual PNGs Batch</span>
+          <span style="font-weight:700;font-size:0.85rem;color:var(--text);">२) Browser Individual PNGs Batch</span>
           <p style="font-size:0.72rem;color:var(--text3);margin:2px 0 0;">Generates separate high-res PNG images in 500-batch ZIPs via browser.</p>
         </div>
         <button class="btn btn-ghost" style="font-size:0.78rem;" onclick="closeSlipDownloadModal(); downloadAllSlips();">
