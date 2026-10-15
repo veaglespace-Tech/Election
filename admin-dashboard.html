@@ -1705,9 +1705,9 @@ function createSlipElement(r) {
 
   slipDiv.innerHTML = `
     <div style="width:800px;font-family:Inter,Arial,sans-serif;background:#fff;padding:0;">
-      <!-- Full Candidate Campaign Banner (imp.jpeg) -->
+      <!-- Full Candidate Campaign Banner (img1) -->
       <div style="width:800px;background:#fff;line-height:0;margin:0;padding:0;">
-        <img src="images/imp.jpeg" crossorigin="anonymous" style="width:800px;height:auto;display:block;" onerror="this.src='icon.png'" />
+        <img src="images/img1_banner.jpg" crossorigin="anonymous" style="width:800px;height:auto;display:block;" onerror="this.src='images/img1.png'" />
       </div>
 
       <!-- Elector Card -->
@@ -1848,7 +1848,7 @@ async function downloadAllSlips() {
   // Pre-cache banner image
   const banner = new Image();
   banner.crossOrigin = 'anonymous';
-  banner.src = 'images/imp.jpeg';
+  banner.src = 'images/img1_banner.jpg';
   await new Promise(r => {
     if (banner.complete) r(); else { banner.onload = r; banner.onerror = r; }
   });
