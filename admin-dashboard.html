@@ -884,8 +884,33 @@
       <div class="action-bar">
         <button class="btn btn-success" onclick="downloadCSV()">⬇️ Download CSV</button>
         <button class="btn btn-warning" onclick="downloadFilteredCSV()">📋 Export Filtered CSV</button>
-        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;" onclick="downloadAllSlips()">📦 Download All Slips (ZIP)</button>
-        <!-- <button class="btn btn-ghost"   onclick="triggerPrint()">🖨️ Print</button> -->
+        
+        <!-- Dropdown for Download All Slips -->
+        <div class="dropdown-wrap" style="position:relative;display:inline-block;">
+          <button class="btn" id="btnSlipDropdown" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="toggleSlipDropdown(event)">
+            <span>📦 Download Slips (ZIP)</span>
+            <span style="font-size:0.7rem;">▼</span>
+          </button>
+          <div id="slipDropdownMenu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#ffffff;border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);min-width:280px;z-index:999;overflow:hidden;padding:0.35rem 0;">
+            <div style="padding:0.5rem 0.85rem;font-size:0.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #f1f5f9;">
+              स्लिप्स डाऊनलोड पर्याय निवडा
+            </div>
+            <button class="dropdown-item" onclick="triggerSlipDownload('page')" style="width:100%;text-align:left;padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:inherit;transition:background 0.15s;">
+              <span style="font-size:0.82rem;font-weight:700;color:var(--text);">📄 सध्याचे ५०० रेकॉर्ड्स</span>
+              <span style="font-size:0.7rem;color:var(--text3);">या पानावर दिसणारे चालू ५०० मतदार (Quick ZIP)</span>
+            </button>
+            <button class="dropdown-item" onclick="triggerSlipDownload('filtered')" style="width:100%;text-align:left;padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:inherit;transition:background 0.15s;border-top:1px solid #f8fafc;">
+              <span style="font-size:0.82rem;font-weight:700;color:var(--text);">🔍 फिल्टर केलेले सर्व रेकॉर्ड्स</span>
+              <span style="font-size:0.7rem;color:var(--text3);">शोध/फिल्टरनुसार आलेले सर्व मतदार</span>
+            </button>
+            <button class="dropdown-item" onclick="triggerSlipDownload('all')" style="width:100%;text-align:left;padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:inherit;transition:background 0.15s;border-top:1px solid #f8fafc;background:#fff7ed;">
+              <span style="font-size:0.82rem;font-weight:800;color:#c2410c;">📦 सर्व ६२,०९९ स्लिप्स (All Database)</span>
+              <span style="font-size:0.7rem;color:#ea580c;">संपूर्ण डेटाबेसमधील सर्व मतदार (५०० च्या बॅचमध्ये)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- <button class="btn btn-ghost" onclick="triggerPrint()">🖨️ Print</button> -->
         <span class="result-info" id="resultInfo">Loading…</span>
       </div>
 
@@ -1804,7 +1829,28 @@ function cancelBatchSlips() {
   document.getElementById('batchSlipModal').style.display = 'none';
 }
 
-async function downloadAllSlips(scope = 'prompt') {
+function toggleSlipDropdown(e) {
+  if (e) e.stopPropagation();
+  const m = document.getElementById('slipDropdownMenu');
+  if (!m) return;
+  m.style.display = (m.style.display === 'block') ? 'none' : 'block';
+}
+
+function triggerSlipDownload(scope) {
+  const m = document.getElementById('slipDropdownMenu');
+  if (m) m.style.display = 'none';
+  downloadAllSlips(scope);
+}
+
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.dropdown-wrap');
+  const m = document.getElementById('slipDropdownMenu');
+  if (m && wrap && !wrap.contains(e.target)) {
+    m.style.display = 'none';
+  }
+});
+
+async function downloadAllSlips(scope = 'page') {
   let targetTotal = state.totalAll || 62099;
   let mode = 'page'; // 'page', 'filtered', 'all'
 
