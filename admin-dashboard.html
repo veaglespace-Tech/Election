@@ -1876,8 +1876,11 @@ function openSlipDownloadModal(presetPart = '') {
     }
   }
 
-  // Pre-fill total records
-  document.getElementById('modalAllTotal').textContent = (state.totalAll || 62099).toLocaleString('en-IN');
+  // Pre-fill total records if element exists
+  const totalEl = document.getElementById('modalAllTotal');
+  if (totalEl) {
+    totalEl.textContent = (state.totalAll || 62099).toLocaleString('en-IN');
+  }
   m.style.display = 'flex';
 }
 
