@@ -885,30 +885,9 @@
         <button class="btn btn-success" onclick="downloadCSV()">⬇️ Download CSV</button>
         <button class="btn btn-warning" onclick="downloadFilteredCSV()">📋 Export Filtered CSV</button>
         
-        <!-- Dropdown for Download All Slips -->
-        <div class="dropdown-wrap" style="position:relative;display:inline-block;">
-          <button class="btn" id="btnSlipDropdown" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="toggleSlipDropdown(event)">
-            <span>📦 Download Slips (ZIP)</span>
-            <span style="font-size:0.7rem;">▼</span>
-          </button>
-          <div id="slipDropdownMenu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:#ffffff;border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);min-width:280px;z-index:999;overflow:hidden;padding:0.35rem 0;">
-            <div style="padding:0.5rem 0.85rem;font-size:0.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid #f1f5f9;">
-              स्लिप्स डाऊनलोड पर्याय निवडा
-            </div>
-            <button class="dropdown-item" onclick="triggerSlipDownload('page')" style="width:100%;text-align:left;padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:inherit;transition:background 0.15s;">
-              <span style="font-size:0.82rem;font-weight:700;color:var(--text);">📄 सध्याचे ५०० रेकॉर्ड्स</span>
-              <span style="font-size:0.7rem;color:var(--text3);">या पानावर दिसणारे चालू ५०० मतदार (Quick ZIP)</span>
-            </button>
-            <button class="dropdown-item" onclick="triggerSlipDownload('filtered')" style="width:100%;text-align:left;padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:inherit;transition:background 0.15s;border-top:1px solid #f8fafc;">
-              <span style="font-size:0.82rem;font-weight:700;color:var(--text);">🔍 फिल्टर केलेले सर्व रेकॉर्ड्स</span>
-              <span style="font-size:0.7rem;color:var(--text3);">शोध/फिल्टरनुसार आलेले सर्व मतदार</span>
-            </button>
-            <button class="dropdown-item" onclick="triggerSlipDownload('all')" style="width:100%;text-align:left;padding:0.65rem 0.85rem;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:inherit;transition:background 0.15s;border-top:1px solid #f8fafc;background:#fff7ed;">
-              <span style="font-size:0.82rem;font-weight:800;color:#c2410c;">📦 सर्व ६२,०९९ स्लिप्स (All Database)</span>
-              <span style="font-size:0.7rem;color:#ea580c;">संपूर्ण डेटाबेसमधील सर्व मतदार (५०० च्या बॅचमध्ये)</span>
-            </button>
-          </div>
-        </div>
+        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="downloadAllSlips('all')">
+          <span>📦 Download All Slips (ZIP)</span>
+        </button>
 
         <!-- <button class="btn btn-ghost" onclick="triggerPrint()">🖨️ Print</button> -->
         <span class="result-info" id="resultInfo">Loading…</span>
@@ -1829,77 +1808,31 @@ function cancelBatchSlips() {
   document.getElementById('batchSlipModal').style.display = 'none';
 }
 
-function toggleSlipDropdown(e) {
-  if (e) e.stopPropagation();
-  const m = document.getElementById('slipDropdownMenu');
-  if (!m) return;
-  m.style.display = (m.style.display === 'block') ? 'none' : 'block';
-}
-
-function triggerSlipDownload(scope) {
-  const m = document.getElementById('slipDropdownMenu');
-  if (m) m.style.display = 'none';
-  downloadAllSlips(scope);
-}
-
-document.addEventListener('click', (e) => {
-  const wrap = document.querySelector('.dropdown-wrap');
-  const m = document.getElementById('slipDropdownMenu');
-  if (m && wrap && !wrap.contains(e.target)) {
-    m.style.display = 'none';
-  }
-});
-
-async function downloadAllSlips(scope = 'page') {
+async function downloadAllSlips() {
   let targetTotal = state.totalAll || 62099;
-  let mode = 'page'; // 'page', 'filtered', 'all'
 
-  if (scope === 'prompt') {
-    const choice = prompt(
-      `📦 Voter Slips ZIP Download:\n\n` +
-      `१) Type "1" किंवा "page" -> फक्त सध्याचे ५०० रेकॉर्ड्स (Fast)\n` +
-      `२) Type "2" किंवा "filter" -> सध्या फिल्टर केलेले सर्व रेकॉर्ड्स\n` +
-      `३) Type "3" किंवा "all" -> संपूर्ण डेटाबेसमधील सर्व (${targetTotal.toLocaleString()}) स्लिप्स\n\n` +
-      `कृपया 1, 2 किंवा 3 टाईप करा:`,
-      '1'
-    );
-    if (!choice) return;
-    const clean = choice.trim().toLowerCase();
-    if (clean === '3' || clean === 'all') mode = 'all';
-    else if (clean === '2' || clean === 'filter') mode = 'filtered';
-    else mode = 'page';
-  } else {
-    mode = scope;
+  // If user has active search/filters applied, download matching records; otherwise download full database
+  const isFiltered = !!(state.name || state.address || state.institute || state.part_no);
+  const filterParams = isFiltered 
+    ? { name: state.name, address: state.address, institute: state.institute, part_no: state.part_no }
+    : { name: '', address: '', institute: '', part_no: '' };
+
+  const firstCheck = await apiFetch({ page: 1, limit: 500, ...filterParams });
+  const countTotal = firstCheck.total || 0;
+  if (countTotal === 0) {
+    alert('No elector records found to download.');
+    return;
   }
 
-  let rowsToProcess = [];
+  const msg = isFiltered
+    ? `You are about to download ${countTotal.toLocaleString()} filtered elector slips (ZIP).\n\nTo ensure browser stability, files will download in batches of 500.\n\nDo you want to proceed?`
+    : `You are about to download all ${countTotal.toLocaleString()} elector slips (ZIP).\n\nTo ensure browser stability, files will download in batches of 500.\n\nDo you want to proceed?`;
 
-  if (mode === 'page') {
-    if (!_currentTableData || !_currentTableData.length) {
-      alert('No elector records to download. Please load records first.');
-      return;
-    }
-    rowsToProcess = _currentTableData;
-  } else {
-    // Fetch all or filtered data from server
-    const filterParams = mode === 'filtered' 
-      ? { name: state.name, address: state.address, institute: state.institute, part_no: state.part_no }
-      : { name: '', address: '', institute: '', part_no: '' };
-
-    const firstCheck = await apiFetch({ page: 1, limit: 500, ...filterParams });
-    const countTotal = firstCheck.total || 0;
-    if (countTotal === 0) {
-      alert('कोणतेही मतदार रेकॉर्ड सापडले नाहीत.');
-      return;
-    }
-
-    if (!confirm(`तुम्ही ${countTotal.toLocaleString()} मतदारांच्या स्लिप्स (ZIP) डाऊनलोड करत आहात.\n\nब्राउझर क्रॅश होऊ नये म्हणून या ५००-५०० च्या बॅचमध्ये डाऊनलोड होतील. पुढे सुरू ठेवायचे का?`)) {
-      return;
-    }
-
-    rowsToProcess = 'STREAM_API';
-    targetTotal = countTotal;
+  if (!confirm(msg)) {
+    return;
   }
+
+  targetTotal = countTotal;
 
   try {
     await ensureLibs();
@@ -1926,7 +1859,7 @@ async function downloadAllSlips(scope = 'page') {
   modal.style.display = 'flex';
   barEl.style.width = '0%';
   percentEl.textContent = '0%';
-  countEl.textContent = `0 / ${targetTotal}`;
+  countEl.textContent = `0 / ${targetTotal.toLocaleString()}`;
   statusEl.textContent = 'Preparing campaign banner...';
 
   // Pre-cache banner image
@@ -1937,45 +1870,36 @@ async function downloadAllSlips(scope = 'page') {
     if (banner.complete) r(); else { banner.onload = r; banner.onerror = r; }
   });
 
-  if (mode === 'page') {
-    await renderAndZipRows(rowsToProcess, `Voter_Slips_Page_${state.page}`, 0, rowsToProcess.length, targetTotal, modal, countEl, percentEl, barEl, statusEl);
-  } else {
-    // Process in clean packages of 500 to avoid browser memory crash
-    const filterParams = mode === 'filtered' 
-      ? { name: state.name, address: state.address, institute: state.institute, part_no: state.part_no }
-      : { name: '', address: '', institute: '', part_no: '' };
+  const limit = 500;
+  const totalPages = Math.ceil(targetTotal / limit);
+  let processedTotal = 0;
 
-    const limit = 500;
-    const totalPages = Math.ceil(targetTotal / limit);
-    let processedTotal = 0;
+  for (let p = 1; p <= totalPages; p++) {
+    if (_batchCancelled) break;
+    statusEl.textContent = `Fetching records batch ${p} of ${totalPages} from database...`;
+    const pageData = await apiFetch({ page: p, limit, ...filterParams });
+    const currentRows = pageData.data || [];
+    if (!currentRows.length) break;
 
-    for (let p = 1; p <= totalPages; p++) {
-      if (_batchCancelled) break;
-      statusEl.textContent = `Fetching records page ${p} of ${totalPages} from database...`;
-      const pageData = await apiFetch({ page: p, limit, ...filterParams });
-      const currentRows = pageData.data || [];
-      if (!currentRows.length) break;
+    const zipName = isFiltered
+      ? `Voter_Slips_Filtered_Batch${p}_of_${totalPages}`
+      : `Voter_Slips_All_Batch${p}_of_${totalPages}`;
 
-      const zipName = mode === 'filtered'
-        ? `Voter_Slips_Filtered_Part${p}_of_${totalPages}`
-        : `Voter_Slips_All_Batch${p}_of_${totalPages}`;
+    const continueNext = await renderAndZipRows(
+      currentRows,
+      zipName,
+      processedTotal,
+      currentRows.length,
+      targetTotal,
+      modal,
+      countEl,
+      percentEl,
+      barEl,
+      statusEl
+    );
 
-      const continueNext = await renderAndZipRows(
-        currentRows,
-        zipName,
-        processedTotal,
-        currentRows.length,
-        targetTotal,
-        modal,
-        countEl,
-        percentEl,
-        barEl,
-        statusEl
-      );
-
-      processedTotal += currentRows.length;
-      if (!continueNext || _batchCancelled) break;
-    }
+    processedTotal += currentRows.length;
+    if (!continueNext || _batchCancelled) break;
   }
 
   if (_batchCancelled) {
@@ -1985,7 +1909,7 @@ async function downloadAllSlips(scope = 'page') {
   }
 
   modal.style.display = 'none';
-  alert(`✅ सर्व ${targetTotal.toLocaleString()} स्लिप्स यशस्वीरित्या तयार होऊन डाऊनलोड झाल्या!`);
+  alert(`✅ Successfully generated and downloaded all ${targetTotal.toLocaleString()} voter slips!`);
 }
 
 async function renderAndZipRows(rows, zipFilename, startIndex, batchCount, grandTotal, modal, countEl, percentEl, barEl, statusEl) {
