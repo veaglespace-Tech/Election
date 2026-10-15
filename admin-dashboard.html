@@ -880,16 +880,21 @@
         </div>
       </div>
 
-      <!-- Action bar -->
-      <div class="action-bar">
+      <!-- Action bar with Dedicated Slip Download Modes -->
+      <div class="action-bar" style="flex-wrap:wrap;gap:0.75rem;">
         <button class="btn btn-success" onclick="downloadCSV()">⬇️ Download CSV</button>
         <button class="btn btn-warning" onclick="downloadFilteredCSV()">📋 Export Filtered CSV</button>
         
-        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="downloadAllSlips('all')">
-          <span>📦 Download All Slips (ZIP)</span>
+        <!-- Part-wise Slip Download Button -->
+        <button class="btn" style="background:#2563eb;color:#fff;border-color:#1d4ed8;display:inline-flex;align-items:center;gap:0.4rem;" onclick="downloadPartSlips()">
+          <span>📄 Download Part Slips (Print/PDF)</span>
         </button>
 
-        <!-- <button class="btn btn-ghost" onclick="triggerPrint()">🖨️ Print</button> -->
+        <!-- All Slips Server ZIP Button -->
+        <button class="btn" style="background:#ea580c;color:#fff;border-color:#c2410c;display:inline-flex;align-items:center;gap:0.4rem;" onclick="openSlipDownloadModal()">
+          <span>📦 Download All Slips (Server ZIP)</span>
+        </button>
+
         <span class="result-info" id="resultInfo">Loading…</span>
       </div>
 
@@ -1808,6 +1813,110 @@ function cancelBatchSlips() {
   document.getElementById('batchSlipModal').style.display = 'none';
 }
 
+// ── Part-wise & All Slips (Server-Side + Local Batch) ──────────────────────
+async function downloadPartSlips() {
+  // If user entered part_no in filter, prioritize it
+  let partNo = (document.getElementById('d-part')?.value || state.part_no || '').trim();
+
+  // If no part no entered, load parts and open quick selection modal
+  openSlipDownloadModal(partNo);
+}
+
+let _serverJobTimer = null;
+
+function openSlipDownloadModal(presetPart = '') {
+  const m = document.getElementById('slipDownloadOptionsModal');
+  if (!m) return;
+
+  // Populate parts select dropdown
+  const partSelect = document.getElementById('modalPartSelect');
+  if (partSelect && state.partsAll && state.partsAll.length) {
+    let opts = '<option value="">-- Select Part Number --</option>';
+    for (const p of state.partsAll) {
+      opts += `<option value="${p}">Part No ${p}</option>`;
+    }
+    partSelect.innerHTML = opts;
+    if (presetPart) {
+      partSelect.value = presetPart;
+    }
+  }
+
+  // Pre-fill total records
+  document.getElementById('modalAllTotal').textContent = (state.totalAll || 62099).toLocaleString('en-IN');
+  m.style.display = 'flex';
+}
+
+function closeSlipDownloadModal() {
+  const m = document.getElementById('slipDownloadOptionsModal');
+  if (m) m.style.display = 'none';
+}
+
+function triggerModalPartDownload() {
+  const sel = document.getElementById('modalPartSelect');
+  const customPart = document.getElementById('modalCustomPart');
+  const partNo = (customPart?.value || sel?.value || '').trim();
+
+  if (!partNo) {
+    alert('Please enter or select a Part Number (e.g. 1, 2, 3...)');
+    return;
+  }
+
+  closeSlipDownloadModal();
+
+  // Open high-speed server rendered printable slips in a new window/tab
+  const url = `slips_api.php?action=print_part_slips&part_no=${encodeURIComponent(partNo)}`;
+  window.open(url, '_blank');
+}
+
+async function triggerServerBatchZip() {
+  closeSlipDownloadModal();
+
+  const modal = document.getElementById('batchSlipModal');
+  const countEl = document.getElementById('batchProgressCount');
+  const percentEl = document.getElementById('batchProgressPercent');
+  const barEl = document.getElementById('batchProgressBar');
+  const statusEl = document.getElementById('batchStatusText');
+
+  modal.style.display = 'flex';
+  barEl.style.width = '10%';
+  percentEl.textContent = '10%';
+  countEl.textContent = `Preparing...`;
+  statusEl.textContent = 'Requesting Server to package all 62,099 voter records...';
+
+  try {
+    const formData = new FormData();
+    formData.append('action', 'start_server_zip');
+    formData.append('scope', 'all');
+
+    const res = await fetch('slips_api.php', { method: 'POST', body: formData });
+    const data = await res.json();
+
+    if (!data.success) {
+      throw new Error(data.error || 'Server error generating batch ZIP');
+    }
+
+    const job = data.job;
+    barEl.style.width = '100%';
+    percentEl.textContent = '100%';
+    statusEl.textContent = 'ZIP package created successfully on server!';
+
+    setTimeout(() => {
+      modal.style.display = 'none';
+      if (job.file_url) {
+        window.location.href = job.file_url;
+      }
+      alert('✅ Server ZIP generated! Your download has started.');
+    }, 800);
+
+  } catch (err) {
+    console.warn('Server ZIP failed, falling back to local batch generator:', err);
+    statusEl.textContent = 'Switching to client-side batch generator...';
+    // Fallback to client browser batching
+    downloadAllSlips();
+  }
+}
+
+// ── Local browser batch downloader ──────────────────────────────────────────
 async function downloadAllSlips() {
   let targetTotal = state.totalAll || 62099;
 
@@ -1973,6 +2082,71 @@ loadData();
 const _origApiFetch = apiFetch;
 
 </script>
+
+<!-- Dedicated Slip Download Options Modal -->
+<div id="slipDownloadOptionsModal" class="batch-modal" style="display:none;align-items:center;justify-content:center;">
+  <div class="batch-modal-backdrop" onclick="closeSlipDownloadModal()"></div>
+  <div class="batch-modal-content" style="max-width:520px;width:92%;padding:1.5rem;border-radius:14px;box-shadow:0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;">
+      <div style="display:flex;align-items:center;gap:0.6rem;">
+        <span style="font-size:1.6rem;">🗳️</span>
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:800;color:var(--text);margin:0;">Voter Slip Export Options</h3>
+          <p style="font-size:0.75rem;color:var(--text3);margin:2px 0 0;">Choose your preferred download method</p>
+        </div>
+      </div>
+      <button onclick="closeSlipDownloadModal()" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text3);">&times;</button>
+    </div>
+
+    <!-- Option 1: Part-wise Instant Print / PDF (Fastest) -->
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+        <span style="font-weight:800;font-size:0.92rem;color:#166534;">१) Part-wise Instant Slips (Recommended)</span>
+        <span style="background:#dcfce7;color:#15803d;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:10px;">⚡ Instant 2 Sec</span>
+      </div>
+      <p style="font-size:0.75rem;color:#166534;margin:0 0 0.75rem;line-height:1.4;">
+        Generates clean, printable campaign slips for electors in this booth (Part). Perfect for printing and WhatsApp sharing.
+      </p>
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        <select id="modalPartSelect" style="flex:1;padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid #bbf7d0;border-radius:6px;background:#fff;outline:none;">
+          <option value="">Select Part No...</option>
+        </select>
+        <input type="text" id="modalCustomPart" placeholder="Or type Part No" style="width:120px;padding:0.45rem 0.6rem;font-size:0.82rem;border:1px solid #bbf7d0;border-radius:6px;background:#fff;outline:none;" />
+        <button class="btn" style="background:#16a34a;color:#fff;border:none;padding:0.45rem 0.85rem;font-size:0.82rem;font-weight:700;" onclick="triggerModalPartDownload()">
+          Open Slips 🖨️
+        </button>
+      </div>
+    </div>
+
+    <!-- Option 2: Full Database Server ZIP -->
+    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:1rem;margin-bottom:1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+        <span style="font-weight:800;font-size:0.92rem;color:#9a3412;">२) All Database ZIP (Server-Side)</span>
+        <span style="background:#ffedd5;color:#c2410c;font-size:0.68rem;font-weight:800;padding:2px 8px;border-radius:10px;">📦 Full DB</span>
+      </div>
+      <p style="font-size:0.75rem;color:#9a3412;margin:0 0 0.75rem;line-height:1.4;">
+        Packages all <strong id="modalAllTotal">62,099</strong> elector records organized by Parts into a single server-generated ZIP archive.
+      </p>
+      <button class="btn" style="background:#ea580c;color:#fff;border:none;width:100%;justify-content:center;font-weight:700;font-size:0.85rem;" onclick="triggerServerBatchZip()">
+        Download Complete Server ZIP 📦
+      </button>
+    </div>
+
+    <!-- Option 3: Browser Batch PNGs -->
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:0.85rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <span style="font-weight:700;font-size:0.85rem;color:var(--text);">३) Browser Individual PNGs Batch</span>
+          <p style="font-size:0.72rem;color:var(--text3);margin:2px 0 0;">Generates separate high-res PNG images in 500-batch ZIPs via browser.</p>
+        </div>
+        <button class="btn btn-ghost" style="font-size:0.78rem;" onclick="closeSlipDownloadModal(); downloadAllSlips();">
+          Start Batch
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- Modal for Batch Slip Download Progress -->
 <div id="batchSlipModal" class="batch-modal" style="display:none;">
