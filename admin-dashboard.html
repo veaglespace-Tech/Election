@@ -416,19 +416,25 @@
       padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
       flex-wrap: wrap; gap: 0.75rem;
-      background: rgba(0,0,0,0.02);
+      background: #ffffff;
     }
     .table-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
 
     .data-table { width: 100%; border-collapse: collapse; }
+    .data-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: #f1f5f9;
+    }
     .data-table th {
-      background: rgba(0,0,0,0.02);
-      padding: 0.7rem 0.85rem;
+      background: #f1f5f9;
+      padding: 0.75rem 0.85rem;
       text-align: left;
       font-size: 0.68rem; font-weight: 800;
       text-transform: uppercase; letter-spacing: 0.08em;
       color: var(--text2);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 2px solid var(--border2);
       white-space: nowrap;
     }
     .data-table td {
@@ -582,8 +588,8 @@
     .table-scroll::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 5px; }
     .table-scroll::-webkit-scrollbar-thumb:hover { background: #64748b; }
     /* Admin sticky thead */
-    .table-card .data-table thead { position: sticky; top: 0; z-index: 5; }
-    .table-card .data-table th { box-shadow: 0 2px 4px rgba(0,0,0,0.07); }
+    .table-card .data-table thead { position: sticky; top: 0; z-index: 10; background: #f1f5f9; }
+    .table-card .data-table th { background: #f1f5f9 !important; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
     .data-table { min-width: 1450px; }
 
     /* ── Batch Slip Modal ─────────────────────────────────────────────── */
