@@ -112,129 +112,157 @@ if ($action === 'print_part_slips') {
             die("No electors found for Part No {$part_no}.");
         }
 
-        // Output high-quality printable HTML
-        header('Content-Type: text/html; charset=utf-8');
-        ?>
-        <!DOCTYPE html>
-        <html lang="mr">
-        <head>
-          <meta charset="utf-8" />
-          <title>Voter Slips - Part No <?= htmlspecialchars($part_no) ?> (<?= count($rows) ?> Electors)</title>
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap');
-            * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            body { margin: 0; padding: 12px; font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; background: #525659; }
-            .no-print-bar {
-              position: sticky; top: 0; background: #1e293b; color: #fff; padding: 12px 20px;
-              display: flex; justify-content: space-between; align-items: center; border-radius: 8px;
-              margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 1000;
-            }
-            .no-print-bar button {
-              background: #ea580c; color: #fff; border: none; padding: 8px 18px; border-radius: 6px;
-              font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
-            }
-            .no-print-bar button:hover { background: #c2410c; }
-            .slip-grid {
-              display: flex; flex-direction: column; gap: 14px; max-width: 820px; margin: 0 auto;
-            }
-            .slip-card {
-              background: #fff; border: 1.5px solid #0f172a; border-radius: 10px; overflow: hidden;
-              page-break-inside: avoid; break-inside: avoid; margin-bottom: 12px;
-            }
-            .slip-banner { width: 100%; height: auto; display: block; border-bottom: 1px solid #e2e8f0; }
-            .slip-header {
-              background: #0f172a; color: #fff; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center;
-              font-weight: 800; font-size: 13px;
-            }
-            .slip-body { padding: 12px 16px; }
-            .elector-name { font-size: 18px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px; }
-            .meta-box {
-              display: flex; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px;
-              font-size: 12px; margin-bottom: 8px; flex-wrap: wrap;
-            }
-            .meta-item { flex: 1; min-width: 120px; }
-            .meta-label { color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-            .meta-val { font-weight: 700; color: #1e293b; margin-top: 2px; }
-            .info-line { font-size: 12px; color: #334155; margin-bottom: 6px; line-height: 1.4; }
-            .station-box {
-              background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 8px 12px; font-size: 12px;
-              color: #166534; font-weight: 700; line-height: 1.4; margin-top: 6px;
-            }
-            .slip-footer {
-              background: #fef3c7; border-top: 1px solid #fcd34d; padding: 6px; text-align: center; font-size: 11px;
-              font-weight: 800; color: #92400e;
-            }
-            @media print {
-              body { background: #fff; padding: 0; }
-              .no-print-bar { display: none !important; }
-              .slip-grid { max-width: 100%; margin: 0; }
-              .slip-card { border: 1px solid #333; margin-bottom: 16px; box-shadow: none; }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="no-print-bar">
-            <div>
-              <strong>📦 Part No <?= htmlspecialchars($part_no) ?> Voter Slips</strong>
-              <span style="font-size:12px;opacity:0.85;margin-left:10px;">Total <?= count($rows) ?> Electors Ready to Print</span>
-            </div>
-            <div style="display:flex;gap:10px;">
-              <button onclick="window.print()">🖨️ Print / Save as PDF</button>
-            </div>
-          </div>
+function generatePartSlipsHtmlContent(string $part_no, array $rows): string
+{
+    ob_start();
+    ?>
+    <!DOCTYPE html>
+    <html lang="mr">
+    <head>
+      <meta charset="utf-8" />
+      <title>Voter Slips - Part No <?= htmlspecialchars($part_no) ?> (<?= count($rows) ?> Electors)</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap');
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { margin: 0; padding: 12px; font-family: 'Noto Sans Devanagari', 'Inter', sans-serif; background: #525659; }
+        .no-print-bar {
+          position: sticky; top: 0; background: #1e293b; color: #fff; padding: 12px 20px;
+          display: flex; justify-content: space-between; align-items: center; border-radius: 8px;
+          margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 1000;
+        }
+        .no-print-bar button {
+          background: #ea580c; color: #fff; border: none; padding: 8px 18px; border-radius: 6px;
+          font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+        }
+        .no-print-bar button:hover { background: #c2410c; }
+        .slip-grid {
+          display: flex; flex-direction: column; gap: 14px; max-width: 820px; margin: 0 auto;
+        }
+        .slip-card {
+          background: #fff; border: 1.5px solid #0f172a; border-radius: 10px; overflow: hidden;
+          page-break-inside: avoid; break-inside: avoid; margin-bottom: 12px;
+        }
+        .slip-banner { width: 100%; height: auto; display: block; border-bottom: 1px solid #e2e8f0; }
+        .slip-header {
+          background: #0f172a; color: #fff; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center;
+          font-weight: 800; font-size: 13px;
+        }
+        .slip-body { padding: 12px 16px; }
+        .elector-name { font-size: 18px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px; }
+        .meta-box {
+          display: flex; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px;
+          font-size: 12px; margin-bottom: 8px; flex-wrap: wrap;
+        }
+        .meta-item { flex: 1; min-width: 120px; }
+        .meta-label { color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .meta-val { font-weight: 700; color: #1e293b; margin-top: 2px; }
+        .info-line { font-size: 12px; color: #334155; margin-bottom: 6px; line-height: 1.4; }
+        .station-box {
+          background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 8px 12px; font-size: 12px;
+          color: #166534; font-weight: 700; line-height: 1.4; margin-top: 6px;
+        }
+        .slip-footer {
+          background: #fef3c7; border-top: 1px solid #fcd34d; padding: 6px; text-align: center; font-size: 11px;
+          font-weight: 800; color: #92400e;
+        }
+        @media print {
+          body { background: #fff; padding: 0; }
+          .no-print-bar { display: none !important; }
+          .slip-grid { max-width: 100%; margin: 0; }
+          .slip-card { border: 1px solid #333; margin-bottom: 16px; box-shadow: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="no-print-bar">
+        <div>
+          <strong>📦 Part No <?= htmlspecialchars($part_no) ?> Voter Slips</strong>
+          <span style="font-size:12px;opacity:0.85;margin-left:10px;">Total <?= count($rows) ?> Electors Ready to Print</span>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="window.print()">🖨️ Print / Save as PDF</button>
+        </div>
+      </div>
 
-          <div class="slip-grid">
-            <?php foreach ($rows as $r): 
-                $bldg = $r['station_building'] ?? $r['building'] ?? '';
-                $genderTxt = ($r['gender'] === 'M') ? 'Male (पुरुष)' : (($r['gender'] === 'F') ? 'Female (स्त्री)' : $r['gender']);
-            ?>
-              <div class="slip-card">
-                <img src="images/img1_banner.jpg" class="slip-banner" onerror="this.src='images/img1.png'" alt="Campaign Banner" />
-                <div class="slip-header">
-                  <span>भाग क्र. <?= htmlspecialchars((string)$r['part_no']) ?> (PT <?= htmlspecialchars((string)$r['part_no']) ?>) &nbsp;|&nbsp; अनु. क्र. <?= htmlspecialchars((string)$r['sr_no']) ?> (SR <?= htmlspecialchars((string)$r['sr_no']) ?>)</span>
-                  <span style="background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:12px;font-size:11px;">मतदार यादी २०२६</span>
+      <div class="slip-grid">
+        <?php foreach ($rows as $r): 
+            $bldg = $r['station_building'] ?? $r['building'] ?? '';
+            $genderTxt = ($r['gender'] === 'M') ? 'Male (पुरुष)' : (($r['gender'] === 'F') ? 'Female (स्त्री)' : $r['gender']);
+        ?>
+          <div class="slip-card">
+            <img src="https://sunilmadhukarjagtap.co.in/images/img1_banner.jpg" class="slip-banner" onerror="this.src='https://sunilmadhukarjagtap.co.in/images/img1.png'" alt="Campaign Banner" />
+            <div class="slip-header">
+              <span>भाग क्र. <?= htmlspecialchars((string)$r['part_no']) ?> (PT <?= htmlspecialchars((string)$r['part_no']) ?>) &nbsp;|&nbsp; अनु. क्र. <?= htmlspecialchars((string)$r['sr_no']) ?> (SR <?= htmlspecialchars((string)$r['sr_no']) ?>)</span>
+              <span style="background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:12px;font-size:11px;">मतदार यादी २०२६</span>
+            </div>
+            <div class="slip-body">
+              <div class="elector-name"><?= htmlspecialchars((string)$r['elector_name']) ?></div>
+              <div class="meta-box">
+                <div class="meta-item" style="flex:2;">
+                  <div class="meta-label">नातेवाईक / Relative Name</div>
+                  <div class="meta-val"><?= htmlspecialchars((string)($r['relative_name'] ?: '—')) ?></div>
                 </div>
-                <div class="slip-body">
-                  <div class="elector-name"><?= htmlspecialchars((string)$r['elector_name']) ?></div>
-                  <div class="meta-box">
-                    <div class="meta-item" style="flex:2;">
-                      <div class="meta-label">नातेवाईक / Relative Name</div>
-                      <div class="meta-val"><?= htmlspecialchars((string)($r['relative_name'] ?: '—')) ?></div>
-                    </div>
-                    <div class="meta-item" style="max-width:70px;text-align:center;">
-                      <div class="meta-label">वय / Age</div>
-                      <div class="meta-val" style="color:#ea580c;font-size:14px;"><?= htmlspecialchars((string)($r['age'] ?: '—')) ?></div>
-                    </div>
-                    <div class="meta-item" style="max-width:100px;">
-                      <div class="meta-label">लिंग / Gender</div>
-                      <div class="meta-val"><?= htmlspecialchars((string)$genderTxt) ?></div>
-                    </div>
-                    <div class="meta-item" style="max-width:130px;">
-                      <div class="meta-label">EPIC NO</div>
-                      <div class="meta-val" style="font-family:monospace;"><?= htmlspecialchars((string)($r['epic_no'] ?: '—')) ?></div>
-                    </div>
-                  </div>
-                  <?php if (!empty($r['address'])): ?>
-                    <div class="info-line"><strong>📍 पत्ता:</strong> <?= htmlspecialchars((string)$r['address']) ?></div>
-                  <?php endif; ?>
-                  <?php if (!empty($r['institute'])): ?>
-                    <div class="info-line"><strong>🎓 संस्था:</strong> <?= htmlspecialchars((string)$r['institute']) ?></div>
-                  <?php endif; ?>
-                  <?php if (!empty($bldg)): ?>
-                    <div class="station-box">
-                      🏛️ <strong>मतदान केंद्र / POLLING STATION:</strong> <?= htmlspecialchars((string)$bldg) ?>
-                    </div>
-                  <?php endif; ?>
+                <div class="meta-item" style="max-width:70px;text-align:center;">
+                  <div class="meta-label">वय / Age</div>
+                  <div class="meta-val" style="color:#ea580c;font-size:14px;"><?= htmlspecialchars((string)($r['age'] ?: '—')) ?></div>
                 </div>
-                <div class="slip-footer">
-                  मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ &nbsp;|&nbsp; वेळ: सकाळी ०८:०० ते दुपारी ०४:०० वा.
+                <div class="meta-item" style="max-width:100px;">
+                  <div class="meta-label">लिंग / Gender</div>
+                  <div class="meta-val"><?= htmlspecialchars((string)$genderTxt) ?></div>
+                </div>
+                <div class="meta-item" style="max-width:130px;">
+                  <div class="meta-label">EPIC NO</div>
+                  <div class="meta-val" style="font-family:monospace;"><?= htmlspecialchars((string)($r['epic_no'] ?: '—')) ?></div>
                 </div>
               </div>
-            <?php endforeach; ?>
+              <?php if (!empty($r['address'])): ?>
+                <div class="info-line"><strong>📍 पत्ता:</strong> <?= htmlspecialchars((string)$r['address']) ?></div>
+              <?php endif; ?>
+              <?php if (!empty($r['institute'])): ?>
+                <div class="info-line"><strong>🎓 संस्था:</strong> <?= htmlspecialchars((string)$r['institute']) ?></div>
+              <?php endif; ?>
+              <?php if (!empty($bldg)): ?>
+                <div class="station-box">
+                  🏛️ <strong>मतदान केंद्र / POLLING STATION:</strong> <?= htmlspecialchars((string)$bldg) ?>
+                </div>
+              <?php endif; ?>
+            </div>
+            <div class="slip-footer">
+              मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ &nbsp;|&nbsp; वेळ: सकाळी ०८:०० ते दुपारी ०४:०० वा.
+            </div>
           </div>
-        </body>
-        </html>
-        <?php
+        <?php endforeach; ?>
+      </div>
+    </body>
+    </html>
+    <?php
+    return ob_get_clean();
+}
+
+if ($action === 'print_part_slips') {
+    $part_no = trim($_GET['part_no'] ?? '');
+    if ($part_no === '') {
+        die('Part No is required.');
+    }
+
+    try {
+        $db = getDB();
+        $sql = "SELECT e.*, COALESCE(ps.building, '') AS station_building
+                FROM electors e
+                LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
+                WHERE e.part_no = :part
+                ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':part' => $part_no]);
+        $rows = $stmt->fetchAll();
+
+        if (empty($rows)) {
+            die("No electors found for Part No {$part_no}.");
+        }
+
+        header('Content-Type: text/html; charset=utf-8');
+        echo generatePartSlipsHtmlContent($part_no, $rows);
         exit;
     } catch (Exception $e) {
         die('Error generating slips: ' . $e->getMessage());
@@ -242,7 +270,7 @@ if ($action === 'print_part_slips') {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 3. ACTION: start_server_zip - Builds full or part ZIP archives on server
+// 3. ACTION: start_server_zip - Builds full or part ZIP archives of ACTUAL SLIPS
 // ─────────────────────────────────────────────────────────────────────────────
 if ($action === 'start_server_zip') {
     header('Content-Type: application/json; charset=utf-8');
@@ -262,12 +290,11 @@ if ($action === 'start_server_zip') {
         'processed' => 0,
         'file_url' => '',
         'file_name' => '',
-        'message' => 'Initializing server export...',
+        'message' => 'Initializing voter slips export...',
         'created_at' => date('Y-m-d H:i:s')
     ];
     file_put_contents($statusFile, json_encode($initData, JSON_PRETTY_PRINT));
 
-    // Execute in current script synchronously or batch-safe
     try {
         $db = getDB();
         if ($scope === 'part' && $part_no !== '') {
@@ -275,7 +302,6 @@ if ($action === 'start_server_zip') {
             $stmtCount->execute([':part' => $part_no]);
             $totalCount = (int)$stmtCount->fetchColumn();
             
-            // Build direct download link for Part
             $downloadUrl = "slips_api.php?action=print_part_slips&part_no=" . urlencode($part_no);
             
             $initData['status'] = 'completed';
@@ -294,7 +320,6 @@ if ($action === 'start_server_zip') {
             $stmtCount = $db->query("SELECT COUNT(*) FROM electors");
             $totalCount = (int)$stmtCount->fetchColumn();
 
-            // Check if ZipArchive is available
             if (!class_exists('ZipArchive')) {
                 throw new Exception('PHP ZipArchive extension is not enabled on server.');
             }
@@ -307,100 +332,26 @@ if ($action === 'start_server_zip') {
                 throw new Exception("Cannot open file <$zipFilePath>\n");
             }
 
-            // Read banner image as base64 so slips work standalone anywhere offline
-            $bannerBase64 = '';
-            $bannerPath = __DIR__ . '/images/img1_banner.jpg';
-            if (!file_exists($bannerPath)) $bannerPath = __DIR__ . '/images/img1.png';
-            if (file_exists($bannerPath)) {
-                $bannerType = pathinfo($bannerPath, PATHINFO_EXTENSION);
-                $bannerData = file_get_contents($bannerPath);
-                $bannerBase64 = 'data:image/' . $bannerType . ';base64,' . base64_encode($bannerData);
-            }
+            // Fetch distinct parts and package ACTUAL formatted printable voter slips inside ZIP
+            $partsStmt = $db->query("SELECT DISTINCT part_no FROM electors ORDER BY CAST(part_no AS UNSIGNED) ASC");
+            $allParts = $partsStmt->fetchAll(PDO::FETCH_COLUMN);
 
             $processed = 0;
             foreach ($allParts as $p) {
-                if ($hasBuilding && $hasPsTable) {
-                    $sql = "SELECT e.*, COALESCE(NULLIF(e.building, ''), ps.building, '') AS station_building
-                            FROM electors e
-                            LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
-                            WHERE e.part_no = :part
-                            ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
-                } elseif ($hasPsTable) {
-                    $sql = "SELECT e.*, COALESCE(ps.building, '') AS station_building
-                            FROM electors e
-                            LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
-                            WHERE e.part_no = :part
-                            ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
-                } else {
-                    $sql = "SELECT e.*, '' AS station_building
-                            FROM electors e
-                            WHERE e.part_no = :part
-                            ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
-                }
-
-                $pDataStmt = $db->prepare($sql);
+                $pDataStmt = $db->prepare("
+                    SELECT e.*, COALESCE(ps.building, '') AS station_building
+                    FROM electors e
+                    LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
+                    WHERE e.part_no = :part 
+                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC
+                ");
                 $pDataStmt->execute([':part' => $p]);
                 $pRows = $pDataStmt->fetchAll();
 
-                // Generate standalone printable HTML containing all slips of this Part
-                $partSlipsHtml = '<!DOCTYPE html><html lang="mr"><head><meta charset="utf-8"/><title>Voter Slips - Part ' . htmlspecialchars((string)$p) . '</title>';
-                $partSlipsHtml .= '<style>
-                  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap");
-                  * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-                  body { margin: 0; padding: 12px; font-family: "Noto Sans Devanagari", Inter, sans-serif; background: #525659; }
-                  .no-print-bar { position: sticky; top: 0; background: #1e293b; color: #fff; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 1000; }
-                  .no-print-bar button { background: #ea580c; color: #fff; border: none; padding: 8px 18px; border-radius: 6px; font-size: 14px; font-weight: 700; cursor: pointer; }
-                  .slip-grid { display: flex; flex-direction: column; gap: 14px; max-width: 820px; margin: 0 auto; }
-                  .slip-card { background: #fff; border: 1.5px solid #0f172a; border-radius: 10px; overflow: hidden; page-break-inside: avoid; break-inside: avoid; margin-bottom: 12px; }
-                  .slip-banner { width: 100%; height: auto; display: block; border-bottom: 1px solid #e2e8f0; }
-                  .slip-header { background: #0f172a; color: #fff; padding: 8px 14px; display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 13px; }
-                  .slip-body { padding: 12px 16px; }
-                  .elector-name { font-size: 18px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px; }
-                  .meta-box { display: flex; gap: 10px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 8px; flex-wrap: wrap; }
-                  .meta-item { flex: 1; min-width: 120px; }
-                  .meta-label { color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-                  .meta-val { font-weight: 700; color: #1e293b; margin-top: 2px; }
-                  .info-line { font-size: 12px; color: #334155; margin-bottom: 6px; line-height: 1.4; }
-                  .station-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #166534; font-weight: 700; line-height: 1.4; margin-top: 6px; }
-                  .slip-footer { background: #fef3c7; border-top: 1px solid #fcd34d; padding: 6px; text-align: center; font-size: 11px; font-weight: 800; color: #92400e; }
-                  @media print { body { background: #fff; padding: 0; } .no-print-bar { display: none !important; } .slip-grid { max-width: 100%; margin: 0; } .slip-card { border: 1px solid #333; margin-bottom: 16px; box-shadow: none; } }
-                </style></head><body>';
-                $partSlipsHtml .= '<div class="no-print-bar"><div><strong>📦 Part No ' . htmlspecialchars((string)$p) . ' Voter Slips</strong> (' . count($pRows) . ' Electors)</div><button onclick="window.print()">🖨️ Print / Save as PDF</button></div>';
-                $partSlipsHtml .= '<div class="slip-grid">';
-
-                foreach ($pRows as $r) {
-                    $bldg = $r['station_building'] ?? $r['building'] ?? '';
-                    $genderTxt = ($r['gender'] === 'M') ? 'Male (पुरुष)' : (($r['gender'] === 'F') ? 'Female (स्त्री)' : $r['gender']);
-                    $bannerSrc = $bannerBase64 ?: 'images/img1_banner.jpg';
-
-                    $partSlipsHtml .= '<div class="slip-card">';
-                    $partSlipsHtml .= '<img src="' . $bannerSrc . '" class="slip-banner" alt="Campaign Banner" />';
-                    $partSlipsHtml .= '<div class="slip-header"><span>भाग क्र. ' . htmlspecialchars((string)$r['part_no']) . ' (PT ' . htmlspecialchars((string)$r['part_no']) . ') | अनु. क्र. ' . htmlspecialchars((string)$r['sr_no']) . ' (SR ' . htmlspecialchars((string)$r['sr_no']) . ')</span><span style="background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:12px;font-size:11px;">मतदार यादी २०२६</span></div>';
-                    $partSlipsHtml .= '<div class="slip-body">';
-                    $partSlipsHtml .= '<div class="elector-name">' . htmlspecialchars((string)$r['elector_name']) . '</div>';
-                    $partSlipsHtml .= '<div class="meta-box">';
-                    $partSlipsHtml .= '<div class="meta-item" style="flex:2;"><div class="meta-label">नातेवाईक / Relative Name</div><div class="meta-val">' . htmlspecialchars((string)($r['relative_name'] ?: '—')) . '</div></div>';
-                    $partSlipsHtml .= '<div class="meta-item" style="max-width:70px;text-align:center;"><div class="meta-label">वय / Age</div><div class="meta-val" style="color:#ea580c;font-size:14px;">' . htmlspecialchars((string)($r['age'] ?: '—')) . '</div></div>';
-                    $partSlipsHtml .= '<div class="meta-item" style="max-width:100px;"><div class="meta-label">लिंग / Gender</div><div class="meta-val">' . htmlspecialchars((string)$genderTxt) . '</div></div>';
-                    $partSlipsHtml .= '<div class="meta-item" style="max-width:130px;"><div class="meta-label">EPIC NO</div><div class="meta-val" style="font-family:monospace;">' . htmlspecialchars((string)($r['epic_no'] ?: '—')) . '</div></div>';
-                    $partSlipsHtml .= '</div>';
-                    if (!empty($r['address'])) {
-                        $partSlipsHtml .= '<div class="info-line"><strong>📍 पत्ता:</strong> ' . htmlspecialchars((string)$r['address']) . '</div>';
-                    }
-                    if (!empty($r['institute'])) {
-                        $partSlipsHtml .= '<div class="info-line"><strong>🎓 संस्था:</strong> ' . htmlspecialchars((string)$r['institute']) . '</div>';
-                    }
-                    if (!empty($bldg)) {
-                        $partSlipsHtml .= '<div class="station-box">🏛️ <strong>मतदान केंद्र / POLLING STATION:</strong> ' . htmlspecialchars((string)$bldg) . '</div>';
-                    }
-                    $partSlipsHtml .= '</div>';
-                    $partSlipsHtml .= '<div class="slip-footer">मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ | वेळ: सकाळी ०८:०० ते दुपारी ०४:०० वा.</div>';
-                    $partSlipsHtml .= '</div>';
-                }
-                $partSlipsHtml .= '</div></body></html>';
-
-                // Save formatted Slip HTML directly inside ZIP
+                // 1. Generate the actual formatted printable HTML slips for this Part
+                $partSlipsHtml = generatePartSlipsHtmlContent((string)$p, $pRows);
                 $zip->addFromString("Part_{$p}_Voter_Slips.html", $partSlipsHtml);
+
                 $processed += count($pRows);
 
                 // Update status
@@ -412,7 +363,7 @@ if ($action === 'start_server_zip') {
                 file_put_contents($statusFile, json_encode($initData, JSON_PRETTY_PRINT));
             }
 
-            // Include full campaign banner in root of ZIP
+            // Also add full campaign banner image into root of ZIP
             $bannerPath = __DIR__ . '/images/img1_banner.jpg';
             if (file_exists($bannerPath)) {
                 $zip->addFile($bannerPath, 'campaign_banner.jpg');
@@ -426,7 +377,7 @@ if ($action === 'start_server_zip') {
             $initData['total'] = $totalCount;
             $initData['file_url'] = "slips_api.php?action=download_zip&file=" . urlencode($zipFileName);
             $initData['file_name'] = $zipFileName;
-            $initData['message'] = "All {$totalCount} elector packages ready in server ZIP!";
+            $initData['message'] = "All {$totalCount} voter slips generated and packaged into ZIP!";
             file_put_contents($statusFile, json_encode($initData, JSON_PRETTY_PRINT));
 
             echo json_encode(['success' => true, 'job' => $initData]);
