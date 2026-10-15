@@ -1463,15 +1463,17 @@ async function loadSettings() {
 }
 
 function handleSlideImgError(img) {
-  if (!img.dataset.triedFallback && img.src && img.src.includes('uploads/')) {
+  if (!img.dataset.triedFallback) {
     img.dataset.triedFallback = '1';
-    const parts = img.src.split('uploads/');
-    const filename = parts[1].split('?')[0];
-    img.src = 'settings_api.php?action=image&name=' + encodeURIComponent(filename);
-    return;
+    if (img.src && img.src.includes('uploads/')) {
+      const parts = img.src.split('uploads/');
+      const filename = parts[1].split('?')[0].split('&')[0];
+      img.src = 'settings_api.php?action=image&name=' + encodeURIComponent(filename);
+      return;
+    }
   }
   img.onerror = null;
-  img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="52" viewBox="0 0 80 52"><rect width="80" height="52" fill="%23f1f5f9"/><text x="40" y="30" fill="%2394a3b8" font-size="11" text-anchor="middle" font-family="sans-serif">Image</text></svg>';
+  img.src = 'icon.png';
 }
 
 function renderSlides(slides) {
@@ -1481,8 +1483,10 @@ function renderSlides(slides) {
     return;
   }
   list.innerHTML = slides.map((s, i) => {
-    const isBlob = s.src && (s.src.startsWith('blob:') || s.src.startsWith('data:'));
-    const imgSrc = isBlob ? s.src : `${s.src}?t=${Date.now()}`;
+    let imgSrc = s.src || '';
+    if (!imgSrc.startsWith('blob:') && !imgSrc.startsWith('data:')) {
+      imgSrc += (imgSrc.includes('?') ? '&' : '?') + 't=' + Date.now();
+    }
     return `
     <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);">
       <img src="${imgSrc}" alt="slide ${i+1}"
