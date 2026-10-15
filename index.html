@@ -467,18 +467,67 @@
     }
     .table-topbar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 0;
+      padding: 0.85rem 0;
       border-bottom: 1px solid var(--border);
-      gap: 1rem; flex-wrap: wrap;
+      gap: 0.75rem; flex-wrap: wrap;
     }
-    .table-title { font-size: 0.9rem; font-weight: 700; color: var(--text); }
+    .table-title { font-size: 0.95rem; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 0.4rem; }
     .result-badge {
       background: var(--accent-lt);
       border: 1px solid rgba(37,99,235,0.15);
       color: var(--accent);
       padding: 0.3rem 0.875rem;
       border-radius: 20px;
-      font-size: 0.75rem; font-weight: 600;
+      font-size: 0.75rem; font-weight: 700;
+    }
+    .visitor-badge-topbar {
+      background: #fef3c7;
+      border: 1px solid #fde047;
+      color: #92400e;
+      padding: 0.3rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    /* Floating Sticky Visitor Pill */
+    .floating-visitor-pill {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      background: #ffffff;
+      border: 1.5px solid #facc15;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border-radius: 30px;
+      padding: 0.45rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      z-index: 999;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #1e293b;
+      animation: pillFadeIn 0.4s ease;
+      backdrop-filter: blur(8px);
+    }
+    .floating-visitor-pill .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+      animation: pulseGreen 1.8s infinite;
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+    @keyframes pillFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* ── Loading / Empty ─────────────────────────────────────────────── */
@@ -1224,8 +1273,15 @@
   <!-- Table card -->
   <div class="table-card">
     <div class="table-topbar">
-      <span class="table-title">Elector Records</span>
-      <span class="result-badge" id="resultBadge">Loading…</span>
+      <span class="table-title">
+        <span>📋</span> Elector Records
+      </span>
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+        <span class="visitor-badge-topbar" title="Total Website Visits">
+          <span>👁️</span> Visitors: <strong id="topbarVisitors">1</strong>
+        </span>
+        <span class="result-badge" id="resultBadge">Loading…</span>
+      </div>
     </div>
 
     <div id="tableBody">
@@ -1238,6 +1294,12 @@
     <div class="pagination" id="paginationBar" style="display:none"></div>
   </div>
 </main>
+
+<!-- Floating Live Visitor Pill -->
+<div class="floating-visitor-pill" id="floatingVisitorPill" title="Live Site Visits Count">
+  <div class="pulse-dot"></div>
+  <span>Live Visitors: <strong id="floatingVisitors">1</strong></span>
+</div>
 
 <footer>
   <span style="display:inline-block; font-weight: 500; color: var(--text2);">Designed &amp; Developed by <a href="https://veaglespace.com/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none; font-weight: 600;">Veagle Space Technology Pvt. Ltd.</a> | &copy; 2026 All Rights Reserved.</span>
@@ -1524,12 +1586,19 @@
     // ── Apply header text ──────────────────────────────────────────────
     if (settings) {
       const el = (id) => document.getElementById(id);
-      if (settings.candidate_name    && el('headerCandidateName'))
-        el('headerCandidateName').textContent = settings.candidate_name;
-      if (settings.constituency_name && el('headerConstituency'))
-        el('headerConstituency').textContent  = settings.constituency_name;
-      if (settings.preference_number && el('headerPreference'))
-        el('headerPreference').textContent    = settings.preference_number;
+      if (settings.candidate_name && el('headerCandidateName')) {
+        // Strip out 'मा. श्री.' prefix if present so ballot box looks clean
+        const cleanName = settings.candidate_name.replace(/^(मा\.\s*श्री\.?\s*)/i, '').trim();
+        el('headerCandidateName').textContent = cleanName || settings.candidate_name;
+      }
+      if (settings.constituency_name && el('headerConstituency')) {
+        el('headerConstituency').textContent = settings.constituency_name;
+      }
+      if (settings.preference_number && el('headerPreference')) {
+        // Only extract the digit (e.g., '1' from 'पसंती क्र. १' or '1')
+        const match = settings.preference_number.match(/[1-9१-९]/);
+        el('headerPreference').textContent = match ? '1' : settings.preference_number;
+      }
       if (settings.header_left_image && el('headerLeftImg'))
         el('headerLeftImg').src               = settings.header_left_image;
       if (settings.header_right_image && el('headerRightImg'))
@@ -1542,8 +1611,18 @@
       if (settings.carousel_slides && settings.carousel_slides.length) {
         _slipSlides = settings.carousel_slides.map(s => s.src).slice(0, 4);
       }
-      if (settings.visitor_count && el('statVisitors')) {
-        el('statVisitors').textContent = Number(settings.visitor_count).toLocaleString('en-IN');
+      function updateVisitorUI(count) {
+        const fmt = Number(count).toLocaleString('en-IN');
+        const v1 = document.getElementById('statVisitors');
+        const v2 = document.getElementById('topbarVisitors');
+        const v3 = document.getElementById('floatingVisitors');
+        if (v1) v1.textContent = fmt;
+        if (v2) v2.textContent = fmt;
+        if (v3) v3.textContent = fmt;
+      }
+
+      if (settings.visitor_count) {
+        updateVisitorUI(settings.visitor_count);
       }
     }
 
@@ -1552,8 +1631,14 @@
       fetch('settings_api.php?action=hit_visitor')
         .then(r => r.json())
         .then(res => {
-          if (res.success && res.visitor_count && document.getElementById('statVisitors')) {
-            document.getElementById('statVisitors').textContent = Number(res.visitor_count).toLocaleString('en-IN');
+          if (res.success && res.visitor_count) {
+            const fmt = Number(res.visitor_count).toLocaleString('en-IN');
+            const v1 = document.getElementById('statVisitors');
+            const v2 = document.getElementById('topbarVisitors');
+            const v3 = document.getElementById('floatingVisitors');
+            if (v1) v1.textContent = fmt;
+            if (v2) v2.textContent = fmt;
+            if (v3) v3.textContent = fmt;
           }
         }).catch(() => {});
     } catch(e) {}
