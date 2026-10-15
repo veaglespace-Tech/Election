@@ -353,7 +353,7 @@ if ($action === 'start_server_zip') {
             $initData['progress'] = 100;
             $initData['processed'] = $totalCount;
             $initData['total'] = $totalCount;
-            $initData['file_url'] = "uploads/slips_export/" . $zipFileName;
+            $initData['file_url'] = "slips_api.php?action=download_zip&file=" . urlencode($zipFileName);
             $initData['file_name'] = $zipFileName;
             $initData['message'] = "All {$totalCount} elector packages ready in server ZIP!";
             file_put_contents($statusFile, json_encode($initData, JSON_PRETTY_PRINT));
@@ -369,6 +369,44 @@ if ($action === 'start_server_zip') {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
         exit;
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 3.1 ACTION: download_zip - Stream ZIP file directly via PHP (Bypasses Nginx 404)
+// ─────────────────────────────────────────────────────────────────────────────
+if ($action === 'download_zip') {
+    $file = basename($_GET['file'] ?? '');
+    if (!$file || !preg_match('/^[a-zA-Z0-9_\-]+\.zip$/', $file)) {
+        http_response_code(400);
+        die('Invalid ZIP file request.');
+    }
+
+    $filePath = $outputDir . '/' . $file;
+    if (!file_exists($filePath)) {
+        // Also check if file exists directly in uploads
+        $altPath = __DIR__ . '/uploads/' . $file;
+        if (file_exists($altPath)) {
+            $filePath = $altPath;
+        } else {
+            http_response_code(404);
+            die("File not found on server ($file). Please generate again.");
+        }
+    }
+
+    // Clear output buffering
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
+
+    header('Content-Description: File Transfer');
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="' . $file . '"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . filesize($filePath));
+    readfile($filePath);
+    exit;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
