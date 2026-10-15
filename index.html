@@ -205,22 +205,131 @@
 .campaign-text {
   text-align: center;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-    .campaign-text h2 {
-      font-size: 1.7rem; font-weight: 800; color: #ffffff;
-      margin-bottom: 0.4rem; letter-spacing: 0.02em;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    .ballot-table-wrap {
+      width: 100%;
+      max-width: 580px;
+      margin: 0.2rem auto 0.6rem;
+      background: #ffffff;
+      border: 2px solid #0f172a;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     }
-    .campaign-text h1 {
-      font-size: 2.8rem; font-weight: 900; color: #ffffff;
-      margin-bottom: 0.4rem; line-height: 1.1;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    .ballot-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
     }
-    .campaign-text h3 {
-      font-size: 2.4rem; font-weight: 800; color: #ffeb3b;
-      margin-bottom: 1rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    .ballot-table th {
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1.5px solid #0f172a;
+      border-right: 1.5px solid #0f172a;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+    .ballot-table th:last-child {
+      border-right: none;
+    }
+    .ballot-table th span {
+      display: block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+    .ballot-table td {
+      padding: 0.45rem 0.5rem;
+      border-right: 1.5px solid #0f172a;
+      vertical-align: middle;
+      background: #ffffff;
+    }
+    .ballot-table td:last-child {
+      border-right: none;
+    }
+    .ballot-sr {
+      font-family: 'Times New Roman', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1;
+      width: 75px;
+    }
+    .ballot-cand {
+      text-align: left;
+      padding-left: 0.85rem !important;
+    }
+    .ballot-cand-mr {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+    .ballot-cand-en {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #334155;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 2px;
+    }
+    .ballot-photo-cell {
+      width: 65px;
+      text-align: center;
+    }
+    .ballot-cand-photo {
+      width: 48px;
+      height: 54px;
+      object-fit: cover;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .ballot-vote {
+      width: 80px;
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: #a855f7;
+      font-family: 'Times New Roman', serif;
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(168,85,247,0.3);
+    }
+    .ballot-appeal {
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      margin-top: 0.35rem;
+      line-height: 1.35;
+    }
+    .ballot-date {
+      color: #fef08a;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+      margin-top: 0.2rem;
+    }
+    @media (max-width: 768px) {
+      .ballot-table-wrap { max-width: 95%; }
+      .ballot-sr { font-size: 1.7rem; width: 55px; }
+      .ballot-cand-mr { font-size: 1.15rem; }
+      .ballot-cand-en { font-size: 0.72rem; }
+      .ballot-cand-photo { width: 40px; height: 46px; }
+      .ballot-vote { font-size: 1.8rem; width: 60px; }
+      .ballot-appeal { font-size: 0.85rem; }
+      .ballot-date { font-size: 0.75rem; }
+      .campaign-inner { flex-direction: column; gap: 1rem; padding: 0 1rem; }
+      .campaign-img { width: 140px; height: 140px; }
     }
 
 
@@ -938,9 +1047,45 @@
            onerror="if(!this.dataset.fallback && this.src.includes('uploads/')){this.dataset.fallback='1';this.src='settings_api.php?action=image&name='+encodeURIComponent(this.src.split('uploads/')[1].split('?')[0]);}else{this.style.display='none';}" />
     </div>
     <div class="campaign-text">
-      <h2 id="headerConstituency">पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
-      <h1 id="headerCandidateName">मा. श्री. सुनीलभाऊ जगताप</h1>
-      <h3 id="headerPreference">पसंती क्र. १</h3>
+      <!-- Election Title -->
+      <div id="headerConstituency" style="font-size:1.15rem;font-weight:800;color:#ffffff;letter-spacing:0.04em;text-shadow:0 2px 4px rgba(0,0,0,0.3);margin-bottom:0.4rem;">
+        पुणे शिक्षक मतदारसंघ निवडणूक २०२६
+      </div>
+
+      <!-- Official Ballot Voting Box -->
+      <div class="ballot-table-wrap">
+        <table class="ballot-table">
+          <thead>
+            <tr>
+              <th style="width:75px;">अनु. क्र.<span>SR.NO.</span></th>
+              <th>उमेदवाराचे नाव<span>NAME OF CANDIDATE</span></th>
+              <th style="width:65px;">फोटो<span>PHOTO</span></th>
+              <th style="width:80px;">पसंती क्र.<span>CHOICE NO.</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ballot-sr">30</td>
+              <td class="ballot-cand">
+                <div class="ballot-cand-mr" id="headerCandidateName">सुनीलभाऊ जगताप</div>
+                <div class="ballot-cand-en">SUNILBHAU JAGTAP</div>
+              </td>
+              <td class="ballot-photo-cell">
+                <img class="ballot-cand-photo" src="icon.png" alt="Photo" onerror="this.src='icon1.png'" />
+              </td>
+              <td class="ballot-vote" id="headerPreference">1</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Voting Appeal -->
+      <div class="ballot-appeal">
+        यांना पसंती क्रमांक 1 चे मत देऊन प्रचंड बहुमताने विजयी करा
+      </div>
+      <div class="ballot-date">
+        मतदान: शुक्रवार दि. २३ ऑक्टोबर २०२६ | वेळ: सकाळी ०८ ते दुपारी ०४ वा.
+      </div>
     </div>
     <div class="campaign-img right-img">
       <img id="headerRightImg" src="icon1.png" alt="Right Image"
