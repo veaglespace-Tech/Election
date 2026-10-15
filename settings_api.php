@@ -107,7 +107,42 @@ try {
                 $result[$key] = $val;
             }
         }
+
+        // Get visitor count
+        $vCount = 0;
+        try {
+            $db = getDB();
+            $db->exec("CREATE TABLE IF NOT EXISTS `site_visitors` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `ip_hash` VARCHAR(64) NOT NULL,
+                `visited_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+            $vCount = (int)$db->query("SELECT COUNT(*) FROM `site_visitors`")->fetchColumn();
+        } catch (Exception $e) {}
+
+        $result['visitor_count'] = max(1, $vCount);
         ok(['settings' => $result]);
+    }
+
+    elseif ($action === 'hit_visitor') {
+        $ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ipHash = hash('sha256', $ip . date('Y-m-d')); // counts unique daily visit or increment
+        $vCount = 0;
+        try {
+            $db = getDB();
+            $db->exec("CREATE TABLE IF NOT EXISTS `site_visitors` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `ip_hash` VARCHAR(64) NOT NULL,
+                `visited_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+            // Insert visit record
+            $st = $db->prepare("INSERT INTO `site_visitors` (`ip_hash`) VALUES (?)");
+            $st->execute([$ipHash]);
+
+            $vCount = (int)$db->query("SELECT COUNT(*) FROM `site_visitors`")->fetchColumn();
+        } catch (Exception $e) {}
+        ok(['visitor_count' => max(1, $vCount)]);
     }
 
     elseif ($action === 'save') {

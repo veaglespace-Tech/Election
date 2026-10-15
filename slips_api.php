@@ -65,53 +65,8 @@ if ($action === 'get_parts') {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 2. ACTION: print_part_slips - Generate Printable A4 Slips (3 slips per page)
+// Function: Generate Printable A4 Slips HTML
 // ─────────────────────────────────────────────────────────────────────────────
-if ($action === 'print_part_slips') {
-    $part_no = trim($_GET['part_no'] ?? '');
-    if ($part_no === '') {
-        die('Part No is required.');
-    }
-
-    try {
-        $db = getDB();
-        // Check building table
-        $hasBuilding = false;
-        $hasPsTable = false;
-        try {
-            $cols = $db->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors' AND COLUMN_NAME = 'building'")->fetchAll();
-            $hasBuilding = count($cols) > 0;
-            $checkPs = $db->query("SHOW TABLES LIKE 'polling_stations'")->fetchAll();
-            $hasPsTable = count($checkPs) > 0;
-        } catch (Exception $e) {}
-
-        if ($hasBuilding && $hasPsTable) {
-            $sql = "SELECT e.*, COALESCE(NULLIF(e.building, ''), ps.building, '') AS station_building
-                    FROM electors e
-                    LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
-                    WHERE e.part_no = :part
-                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
-        } elseif ($hasPsTable) {
-            $sql = "SELECT e.*, COALESCE(ps.building, '') AS station_building
-                    FROM electors e
-                    LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
-                    WHERE e.part_no = :part
-                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
-        } else {
-            $sql = "SELECT e.*, '' AS station_building
-                    FROM electors e
-                    WHERE e.part_no = :part
-                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
-        }
-
-        $stmt = $db->prepare($sql);
-        $stmt->execute([':part' => $part_no]);
-        $rows = $stmt->fetchAll();
-
-        if (empty($rows)) {
-            die("No electors found for Part No {$part_no}.");
-        }
-
 function generatePartSlipsHtmlContent(string $part_no, array $rows): string
 {
     ob_start();
@@ -190,7 +145,7 @@ function generatePartSlipsHtmlContent(string $part_no, array $rows): string
             $genderTxt = ($r['gender'] === 'M') ? 'Male (पुरुष)' : (($r['gender'] === 'F') ? 'Female (स्त्री)' : $r['gender']);
         ?>
           <div class="slip-card">
-            <img src="https://sunilmadhukarjagtap.co.in/images/img1_banner.jpg" class="slip-banner" onerror="this.src='https://sunilmadhukarjagtap.co.in/images/img1.png'" alt="Campaign Banner" />
+            <img src="images/img1_banner.jpg" class="slip-banner" onerror="this.src='images/img1.png'" alt="Campaign Banner" />
             <div class="slip-header">
               <span>भाग क्र. <?= htmlspecialchars((string)$r['part_no']) ?> (PT <?= htmlspecialchars((string)$r['part_no']) ?>) &nbsp;|&nbsp; अनु. क्र. <?= htmlspecialchars((string)$r['sr_no']) ?> (SR <?= htmlspecialchars((string)$r['sr_no']) ?>)</span>
               <span style="background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:12px;font-size:11px;">मतदार यादी २०२६</span>
@@ -239,6 +194,9 @@ function generatePartSlipsHtmlContent(string $part_no, array $rows): string
     return ob_get_clean();
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 2. ACTION: print_part_slips - Generate Printable A4 Slips (3 slips per page)
+// ─────────────────────────────────────────────────────────────────────────────
 if ($action === 'print_part_slips') {
     $part_no = trim($_GET['part_no'] ?? '');
     if ($part_no === '') {
@@ -247,11 +205,34 @@ if ($action === 'print_part_slips') {
 
     try {
         $db = getDB();
-        $sql = "SELECT e.*, COALESCE(ps.building, '') AS station_building
-                FROM electors e
-                LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
-                WHERE e.part_no = :part
-                ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
+        // Check building column & polling_stations table safely
+        $hasBuilding = false;
+        $hasPsTable = false;
+        try {
+            $cols = $db->query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'electors' AND COLUMN_NAME = 'building'")->fetchAll();
+            $hasBuilding = count($cols) > 0;
+            $checkPs = $db->query("SHOW TABLES LIKE 'polling_stations'")->fetchAll();
+            $hasPsTable = count($checkPs) > 0;
+        } catch (Exception $e) {}
+
+        if ($hasBuilding && $hasPsTable) {
+            $sql = "SELECT e.*, COALESCE(NULLIF(e.building, ''), ps.building, '') AS station_building
+                    FROM electors e
+                    LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
+                    WHERE e.part_no = :part
+                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
+        } elseif ($hasPsTable) {
+            $sql = "SELECT e.*, COALESCE(ps.building, '') AS station_building
+                    FROM electors e
+                    LEFT JOIN polling_stations ps ON ps.station_no = e.part_no
+                    WHERE e.part_no = :part
+                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
+        } else {
+            $sql = "SELECT e.*, '' AS station_building
+                    FROM electors e
+                    WHERE e.part_no = :part
+                    ORDER BY CAST(e.sr_no AS UNSIGNED) ASC, e.sr_no ASC";
+        }
 
         $stmt = $db->prepare($sql);
         $stmt->execute([':part' => $part_no]);
