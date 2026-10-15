@@ -330,16 +330,16 @@
       padding: 0.35rem 0.25rem !important;
     }
     .ballot-cand-photo {
-      width: 54px;
-      height: 62px;
-      object-fit: cover;
-      object-position: top center;
-      border: 1.5px solid #0f172a;
-      border-radius: 4px;
+      width: 52px;
+      height: 60px;
+      object-fit: contain;
       display: block;
       margin: 0 auto;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      background: #f8fafc;
+      border: 1px solid #1e293b;
+      border-radius: 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      background: #ffffff;
+      image-rendering: -webkit-optimize-contrast;
     }
     .ballot-vote {
       text-align: center;
@@ -1292,7 +1292,7 @@
                 <span class="ballot-cand-badge"><i class="fa-solid fa-award"></i> अधिकृत उमेदवार</span>
               </td>
               <td class="ballot-photo-cell">
-                <img class="ballot-cand-photo" src="images/candidate_photo.png" alt="सुनीलभाऊ जगताप" onerror="this.src='icon.png'" />
+                <img class="ballot-cand-photo" src="images/candidate_photo.png?v=2" alt="सुनीलभाऊ जगताप" onerror="this.src='icon.png'" />
               </td>
               <td class="ballot-vote">
                 <div class="ballot-stamp-box">
