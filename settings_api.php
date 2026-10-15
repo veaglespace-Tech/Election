@@ -69,15 +69,24 @@ $DEFAULTS = [
 ];
 
 function fixUploadPermissions(): void {
-    if (!is_dir(UPLOAD_DIR)) {
-        @mkdir(UPLOAD_DIR, 0755, true);
-    }
-    @chmod(UPLOAD_DIR, 0755);
-    $files = @glob(UPLOAD_DIR . '*');
-    if (is_array($files)) {
-        foreach ($files as $f) {
-            if (is_file($f)) {
-                @chmod($f, 0644);
+    $dirs = array_unique(array_filter([
+        UPLOAD_DIR,
+        __DIR__ . '/uploads/',
+        !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . '/uploads/' : null,
+        '/var/www/html/uploads/',
+        '/var/www/Election/uploads/'
+    ]));
+    foreach ($dirs as $d) {
+        if (!is_dir($d)) {
+            @mkdir($d, 0777, true);
+        }
+        @chmod($d, 0777);
+        $files = @glob(rtrim($d, '/\\') . '/*');
+        if (is_array($files)) {
+            foreach ($files as $f) {
+                if (is_file($f)) {
+                    @chmod($f, 0666);
+                }
             }
         }
     }
@@ -124,24 +133,101 @@ try {
             err('Only JPG, PNG, WEBP, GIF allowed');
         }
 
-        if (!is_dir(UPLOAD_DIR)) {
-            @mkdir(UPLOAD_DIR, 0755, true);
-        }
-        @chmod(UPLOAD_DIR, 0755);
-
         $filename = 'img_'.time().'_'.substr(md5(rand()),0,8).'.'.$ext;
-        $dest     = UPLOAD_DIR . $filename;
-        if (!move_uploaded_file($file['tmp_name'], $dest)) err('Failed to save file');
-        @chmod($dest, 0644);
-        ok(['url' => UPLOAD_URL.$filename, 'filename' => $filename]);
+
+        $targetDirs = array_unique(array_filter([
+            UPLOAD_DIR,
+            __DIR__ . '/uploads/',
+            !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . '/uploads/' : null,
+            '/var/www/html/uploads/',
+            '/var/www/Election/uploads/'
+        ]));
+
+        $savedPath = false;
+        foreach ($targetDirs as $d) {
+            if (!is_dir($d)) {
+                @mkdir($d, 0777, true);
+            }
+            @chmod($d, 0777);
+            $dest = rtrim($d, '/\\') . '/' . $filename;
+            if (!$savedPath) {
+                if (move_uploaded_file($file['tmp_name'], $dest)) {
+                    @chmod($dest, 0666);
+                    $savedPath = $dest;
+                }
+            } else {
+                @copy($savedPath, $dest);
+                @chmod($dest, 0666);
+            }
+        }
+
+        if (!$savedPath) err('Failed to save file');
+
+        ok([
+            'url'          => UPLOAD_URL . $filename,
+            'fallback_url' => 'settings_api.php?action=image&name=' . $filename,
+            'filename'     => $filename
+        ]);
+    }
+
+    elseif ($action === 'image') {
+        $file = basename($_GET['file'] ?? $_GET['name'] ?? '');
+        if (!$file) { http_response_code(400); exit; }
+
+        $candidates = array_unique(array_filter([
+            UPLOAD_DIR . $file,
+            __DIR__ . '/uploads/' . $file,
+            !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . '/uploads/' . $file : null,
+            '/var/www/html/uploads/' . $file,
+            '/var/www/Election/uploads/' . $file,
+        ]));
+
+        $found = null;
+        foreach ($candidates as $c) {
+            if (file_exists($c) && is_file($c)) {
+                $found = $c;
+                break;
+            }
+        }
+
+        if ($found) {
+            $ext = strtolower(pathinfo($found, PATHINFO_EXTENSION));
+            $mimes = [
+                'jpg'  => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'png'  => 'image/png',
+                'webp' => 'image/webp',
+                'gif'  => 'image/gif'
+            ];
+            header('Content-Type: ' . ($mimes[$ext] ?? 'image/jpeg'));
+            header('Content-Length: ' . filesize($found));
+            header('Cache-Control: public, max-age=31536000, immutable');
+            readfile($found);
+            exit;
+        }
+
+        http_response_code(404);
+        echo 'Not found';
+        exit;
     }
 
     elseif ($action === 'delete_slide') {
         $body = json_decode(file_get_contents('php://input'), true);
         $url  = $body['url'] ?? '';
-        if (strpos($url, 'uploads/') !== 0) err('Cannot delete this file');
-        $path = __DIR__.'/'.$url;
-        if (file_exists($path)) unlink($path);
+        $file = basename($url);
+        if ($file) {
+            $dirs = array_unique(array_filter([
+                UPLOAD_DIR,
+                __DIR__ . '/uploads/',
+                !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/\\') . '/uploads/' : null,
+                '/var/www/html/uploads/',
+                '/var/www/Election/uploads/'
+            ]));
+            foreach ($dirs as $d) {
+                $path = rtrim($d, '/\\') . '/' . $file;
+                if (file_exists($path)) @unlink($path);
+            }
+        }
         ok(['message' => 'Deleted']);
     }
 

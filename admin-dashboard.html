@@ -1456,19 +1456,34 @@ async function loadSettings() {
   } catch(e) { showToast('Error loading settings: ' + e.message, 'error'); }
 }
 
+function handleSlideImgError(img) {
+  if (!img.dataset.triedFallback && img.src && img.src.includes('uploads/')) {
+    img.dataset.triedFallback = '1';
+    const parts = img.src.split('uploads/');
+    const filename = parts[1].split('?')[0];
+    img.src = 'settings_api.php?action=image&name=' + encodeURIComponent(filename);
+    return;
+  }
+  img.onerror = null;
+  img.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="52" viewBox="0 0 80 52"><rect width="80" height="52" fill="%23f1f5f9"/><text x="40" y="30" fill="%2394a3b8" font-size="11" text-anchor="middle" font-family="sans-serif">Image</text></svg>';
+}
+
 function renderSlides(slides) {
   const list = document.getElementById('slidesList');
-  if (!slides.length) {
+  if (!slides || !slides.length) {
     list.innerHTML = '<p style="color:var(--text3);font-size:0.82rem;">No slides yet. Click "+ Add Slide Image" to add one.</p>';
     return;
   }
-  list.innerHTML = slides.map((s, i) => `
+  list.innerHTML = slides.map((s, i) => {
+    const isBlob = s.src && (s.src.startsWith('blob:') || s.src.startsWith('data:'));
+    const imgSrc = isBlob ? s.src : `${s.src}?t=${Date.now()}`;
+    return `
     <div style="display:flex;align-items:center;gap:1rem;padding:0.75rem;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);">
-      <img src="${s.src}?t=${Date.now()}" alt="slide ${i+1}"
+      <img src="${imgSrc}" alt="slide ${i+1}"
            style="width:80px;height:52px;object-fit:cover;border-radius:6px;border:1px solid var(--border2);flex-shrink:0;"
-           onerror="this.onerror=null; this.src='icon.png';" />
+           onerror="handleSlideImgError(this)" />
       <div style="flex:1;min-width:0;">
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text2);margin-bottom:0.2rem;">Slide ${i+1}</div>
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text2);margin-bottom:0.2rem;">Slide ${i+1}${s._pending ? ' <span style="font-size:0.7rem;color:var(--accent);font-weight:normal;">(Uploading...)</span>' : ''}</div>
         <input type="text" value="${esc(s.alt||'')}" placeholder="Caption / Alt text"
                style="width:100%;padding:0.3rem 0.5rem;border:1px solid var(--border2);border-radius:4px;font-size:0.78rem;font-family:inherit;"
                oninput="_settingsCache.carousel_slides[${i}].alt=this.value" />
@@ -1479,10 +1494,18 @@ function renderSlides(slides) {
       </div>
       <button class="btn" style="background:var(--red-lt);color:var(--red);border:1px solid rgba(220,38,38,0.2);padding:0.3rem 0.7rem;font-size:0.78rem;" onclick="deleteSlide(${i})">&#128465;</button>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function saveSettings() {
+  const cleanSlides = (_settingsCache.carousel_slides || [])
+    .filter(s => s && s.src && !s.src.startsWith('blob:'))
+    .map(s => ({
+      src: s.src,
+      alt: s.alt || ''
+    }));
+
   const payload = {
     constituency_name  : document.getElementById('s-constituency').value.trim(),
     candidate_name     : document.getElementById('s-candidate').value.trim(),
@@ -1490,7 +1513,7 @@ async function saveSettings() {
     carousel_speed_ms  : document.getElementById('s-speed').value || '2000',
     header_left_image  : _settingsCache.header_left_image  || 'icon.png',
     header_right_image : _settingsCache.header_right_image || 'icon1.png',
-    carousel_slides    : _settingsCache.carousel_slides    || [],
+    carousel_slides    : cleanSlides,
   };
   try {
     const r = await fetch('settings_api.php?action=save', {
@@ -1506,6 +1529,11 @@ async function handleHeaderUpload(side) {
   const fileInput = document.getElementById('upload-' + side);
   const file = fileInput.files[0];
   if (!file) return;
+
+  const localPreview = URL.createObjectURL(file);
+  const previewEl = document.getElementById('preview-' + side);
+  if (previewEl) previewEl.src = localPreview;
+
   showToast('Uploading image...', 'info');
   const fd = new FormData();
   fd.append('image', file);
@@ -1514,11 +1542,9 @@ async function handleHeaderUpload(side) {
     const j = await r.json();
     if (!j.success) throw new Error(j.error);
     if (side === 'left') {
-      _settingsCache.header_left_image  = j.url;
-      document.getElementById('preview-left').src  = j.url + '?t=' + Date.now();
+      _settingsCache.header_left_image = j.url;
     } else {
       _settingsCache.header_right_image = j.url;
-      document.getElementById('preview-right').src = j.url + '?t=' + Date.now();
     }
     showToast('Image uploaded! Click "Save All Changes" to apply.', 'success');
   } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
@@ -1529,6 +1555,16 @@ async function addCarouselSlide() {
   const fileInput = document.getElementById('upload-slide');
   const file = fileInput.files[0];
   if (!file) return;
+
+  // Immediate preview with actual selected image
+  const localPreview = URL.createObjectURL(file);
+  const slideTitle = file.name.replace(/\.[^.]+$/, '');
+
+  if (!_settingsCache.carousel_slides) _settingsCache.carousel_slides = [];
+  const slideItem = { src: localPreview, alt: slideTitle, _pending: true };
+  _settingsCache.carousel_slides.push(slideItem);
+  renderSlides(_settingsCache.carousel_slides);
+
   showToast('Uploading slide...', 'info');
   const fd = new FormData();
   fd.append('image', file);
@@ -1536,11 +1572,17 @@ async function addCarouselSlide() {
     const r = await fetch('settings_api.php?action=upload', { method:'POST', body:fd });
     const j = await r.json();
     if (!j.success) throw new Error(j.error);
-    if (!_settingsCache.carousel_slides) _settingsCache.carousel_slides = [];
-    _settingsCache.carousel_slides.push({ src: j.url, alt: file.name.replace(/\.[^.]+$/, '') });
+    slideItem.src = j.url;
+    if (j.fallback_url) slideItem._fallback = j.fallback_url;
+    delete slideItem._pending;
     renderSlides(_settingsCache.carousel_slides);
     showToast('Slide added! Click "Save All Changes" to apply.', 'success');
-  } catch(e) { showToast('Upload failed: ' + e.message, 'error'); }
+  } catch(e) {
+    const idx = _settingsCache.carousel_slides.indexOf(slideItem);
+    if (idx !== -1) _settingsCache.carousel_slides.splice(idx, 1);
+    renderSlides(_settingsCache.carousel_slides);
+    showToast('Upload failed: ' + e.message, 'error');
+  }
   fileInput.value = '';
 }
 

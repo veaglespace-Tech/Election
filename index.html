@@ -934,7 +934,8 @@
   </div>
   <div class="campaign-inner">
     <div class="campaign-img left-img">
-      <img id="headerLeftImg" src="icon.png" alt="Left Image" onerror="this.style.display='none'" />
+      <img id="headerLeftImg" src="icon.png" alt="Left Image"
+           onerror="if(!this.dataset.fallback && this.src.includes('uploads/')){this.dataset.fallback='1';this.src='settings_api.php?action=image&name='+encodeURIComponent(this.src.split('uploads/')[1].split('?')[0]);}else{this.style.display='none';}" />
     </div>
     <div class="campaign-text">
       <h2 id="headerConstituency">पुणे शिक्षक मतदारसंघ निवडणूक २०२६</h2>
@@ -942,7 +943,8 @@
       <h3 id="headerPreference">पसंती क्र. १</h3>
     </div>
     <div class="campaign-img right-img">
-      <img id="headerRightImg" src="icon1.png" alt="Right Image" onerror="this.style.display='none'" />
+      <img id="headerRightImg" src="icon1.png" alt="Right Image"
+           onerror="if(!this.dataset.fallback && this.src.includes('uploads/')){this.dataset.fallback='1';this.src='settings_api.php?action=image&name='+encodeURIComponent(this.src.split('uploads/')[1].split('?')[0]);}else{this.style.display='none';}" />
     </div>
   </div>
 </div>
@@ -1425,7 +1427,7 @@
       const safeAlt = escapeAttr(s.alt || 'Campaign Photo');
       return `<div class="carousel-slide">
         <img class="carousel-slide-img" src="${safeSrc}" alt="${safeAlt}"
-             onerror="this.onerror=null; this.src='icon.png';" />
+             onerror="if(!this.dataset.fallback && this.src.includes('uploads/')){this.dataset.fallback='1';this.src='settings_api.php?action=image&name='+encodeURIComponent(this.src.split('uploads/')[1].split('?')[0]);}else{this.onerror=null;this.src='icon.png';}" />
       </div>`;
     }
 
